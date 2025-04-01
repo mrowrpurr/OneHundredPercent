@@ -1,6 +1,8 @@
 #include <SkyrimScripting/Plugin.h>
 #include <collections.h>
 
+#include <unordered_set>
+
 constexpr auto QUEST_EDITOR_NAME            = "MP_HazTheCompletionizt";
 constexpr auto OBJECT_REFERENCE_SCRIPT_NAME = "ObjectReference";
 constexpr auto FN_IS_MAP_MARKER_VISIBLE     = "IsMapMarkerVisible";
@@ -69,7 +71,7 @@ void GetTotalCountOfLocationsWithMarkers() {
     auto                                         allLocationsInGame = RE::TESDataHandler::GetSingleton()->GetFormArray<RE::BGSLocation>();
     for (const auto* location : allLocationsInGame) {
         if (location->fullName.empty()) continue;
-        if (location->worldLocMarker) {
+        if (location->worldLocMarker && location->worldLocMarker.get()) {
             auto* file = location->GetFile(0);
             if (file) {
                 auto& count = locationCountPerFile[file];
@@ -88,152 +90,79 @@ void GetTotalCountOfLocationsWithMarkers() {
 }
 
 void RecalculateTotalNumberOfDiscoveredLocationsWithMapMarkers() {
-    if (_currentCalculation_isRunning.exchange(true)) {
-        Log("Recalculation already in progress, skipping...");
-        return;
-    }
+    std::unordered_set<const RE::TESObjectREFR*> mapMarkersSet;
 
     Log("Recalculating total number of discovered locations with map markers...");
 
-    _currentCalculation_totalCount      = 0;
-    _currentCalculation_discoveredCount = 0;
-    _currentCalculation_markersInfo.clear();
-    _currentCalculation_startTime = std::chrono::steady_clock::now();
+    auto now = std::chrono::steady_clock::now();
 
-    auto* vm = RE::BSScript::Internal::VirtualMachine::GetSingleton();
-    if (!vm) return;
+    auto  playerTotalCount     = 0;
+    auto  playerTotalBothCount = 0;
+    auto* player               = RE::PlayerCharacter::GetSingleton();
+    Log("Player has {} map markers", player->currentMapMarkers.size());
+    for (auto& markerPtr : player->currentMapMarkers) {
+        if (auto marker = markerPtr.get()) {
+            if (const auto* extraMapMarker = marker->extraList.GetByType<RE::ExtraMapMarker>()) {
+                if (auto* mapData = extraMapMarker->mapData) {
+                    auto isVisible        = mapData->flags.any(RE::MapMarkerData::Flag::kVisible);
+                    auto isFastTravelable = mapData->flags.any(RE::MapMarkerData::Flag::kCanTravelTo);
+                    auto isBoth           = isVisible && isFastTravelable;
 
-    auto* objectHandlePolicy = vm->GetObjectHandlePolicy();
-    if (!objectHandlePolicy) return;
+                    playerTotalCount++;
+                    if (isBoth) playerTotalBothCount++;
 
-    auto allLocationsInGame = RE::TESDataHandler::GetSingleton()->GetFormArray<RE::BGSLocation>();
-    for (const auto* location : allLocationsInGame) {
-        if (location->fullName.empty()) continue;
-        Log("Checking location: {}", location->fullName.c_str());
-        auto markerHandle = location->worldLocMarker;
-        if (markerHandle) {
-            Log("markerHandle is true... does get() explode?");
-            auto marker = markerHandle.get();
-            Log("Nope, we're good for this one...");
-            if (marker) {
-                auto ranObjectReferenceScripts = false;
-                Log("Marker is valid, checking stuff...");
-                _currentCalculation_totalCount++;
-                auto& markerInfo = _currentCalculation_markersInfo.emplace(location, LocationMarkerInfo{location, marker.get(), {}, {}}).first->second;
-                Log("A");
-                auto markerVmHandle = objectHandlePolicy->GetHandleForObject(marker->GetFormType(), marker.get());
-                Log("B");
-                auto scriptsAttachedToThisMarker = vm->attachedScripts.find(markerVmHandle);
-                Log("C");
-                if (scriptsAttachedToThisMarker != vm->attachedScripts.end()) {
-                    for (auto& script : scriptsAttachedToThisMarker->second) {
-                        Log("Script: {}", script->type->name.c_str());
-                        if (script->type->name == OBJECT_REFERENCE_SCRIPT_NAME) {
-                            ranObjectReferenceScripts = true;
+                    Log("Player location {}, isVisible: {}, isFastTravelable: {}, isBoth: {}", mapData->locationName.GetFullName(), isVisible, isFastTravelable, isBoth);
 
-                            // We found ObjectReference for this marker
-                            // Use it to check if the player has discovered this location
-                            auto functionCount = script->type->GetNumMemberFuncs();
-                            Log("Function count: {}", functionCount);
-                            for (auto i = 0; i < functionCount; i++) {
-                                Log("Function: {}", i);
-                                auto* functionIterator = script->type->GetMemberFuncIter();
-                                if (functionIterator) {
-                                    auto function = functionIterator[i].func;
-                                    Log("Function name: {}", function->GetName().c_str());
-                                    if (function->GetName() == FN_IS_MAP_MARKER_VISIBLE) {
-                                        // IsMapMarkerVisible()
-                                        RE::BSTSmartPointer<RE::BSScript::IStackCallbackFunctor> callbackPtr{nullptr};
-                                        callbackPtr = RE::make_smart<PapyrusBoolFunctionCallback>([&](bool isVisible) {
-                                            Log("!! IsMapMarkerVisible: {} - {}", location->fullName.c_str(), isVisible ? "true" : "false");
-                                            markerInfo.isVisible = isVisible;
-                                        });
-                                        auto args   = RE::MakeFunctionArguments();
-                                        Log("Dispatching IsMapMarkerVisible...");
-                                        vm->DispatchMethodCall(markerVmHandle, OBJECT_REFERENCE_SCRIPT_NAME, FN_IS_MAP_MARKER_VISIBLE, args, callbackPtr);
-                                        Log("Dispatched IsMapMarkerVisible");
-                                    } else if (function->GetName() == FN_CAN_FAST_TRAVEL_TO_MARKER) {
-                                        // CanFastTravelToMarker()
-                                        RE::BSTSmartPointer<RE::BSScript::IStackCallbackFunctor> callbackPtr{nullptr};
-                                        callbackPtr = RE::make_smart<PapyrusBoolFunctionCallback>([&](bool isFastTravelable) {
-                                            Log("!! CanFastTravelToMarker: {} - {}", location->fullName.c_str(), isFastTravelable ? "true" : "false");
-                                            markerInfo.isFastTravelable = isFastTravelable;
-                                        });
-                                        auto args   = RE::MakeFunctionArguments();
-                                        Log("Dispatching CanFastTravelToMarker...");
-                                        vm->DispatchMethodCall(markerVmHandle, OBJECT_REFERENCE_SCRIPT_NAME, FN_CAN_FAST_TRAVEL_TO_MARKER, args, callbackPtr);
-                                        Log("Dispatched CanFastTravelToMarker");
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (!ranObjectReferenceScripts) {
-                    RE::BSTSmartPointer<RE::BSScript::Object> object;
-                    vm->CreateObject(OBJECT_REFERENCE_SCRIPT_NAME, object);
-                    vm->GetObjectBindPolicy1()->BindObject(object, markerVmHandle);
-                    Log("We hooked up ObjectReference script to the marker, now we can run the functions...");
-
-                    //
-                    // DUPLICATED
-                    //
-
-                    scriptsAttachedToThisMarker = vm->attachedScripts.find(markerVmHandle);
-                    Log("xC");
-                    if (scriptsAttachedToThisMarker != vm->attachedScripts.end()) {
-                        for (auto& script : scriptsAttachedToThisMarker->second) {
-                            Log("xScript: {}", script->type->name.c_str());
-                            if (script->type->name == OBJECT_REFERENCE_SCRIPT_NAME) {
-                                ranObjectReferenceScripts = true;
-
-                                // We found ObjectReference for this marker
-                                // Use it to check if the player has discovered this location
-                                auto functionCount = script->type->GetNumMemberFuncs();
-                                Log("xFunction count: {}", functionCount);
-                                for (auto i = 0; i < functionCount; i++) {
-                                    Log("xFunction: {}", i);
-                                    auto* functionIterator = script->type->GetMemberFuncIter();
-                                    if (functionIterator) {
-                                        auto function = functionIterator[i].func;
-                                        Log("xFunction name: {}", function->GetName().c_str());
-                                        if (function->GetName() == FN_IS_MAP_MARKER_VISIBLE) {
-                                            // IsMapMarkerVisible()
-                                            RE::BSTSmartPointer<RE::BSScript::IStackCallbackFunctor> callbackPtr{nullptr};
-                                            callbackPtr = RE::make_smart<PapyrusBoolFunctionCallback>([&](bool isVisible) {
-                                                Log("x!! IsMapMarkerVisible: {} - {}", location->fullName.c_str(), isVisible ? "true" : "false");
-                                                markerInfo.isVisible = isVisible;
-                                            });
-                                            auto args   = RE::MakeFunctionArguments();
-                                            Log("Dispatching IsMapMarkerVisible...");
-                                            vm->DispatchMethodCall(markerVmHandle, OBJECT_REFERENCE_SCRIPT_NAME, FN_IS_MAP_MARKER_VISIBLE, args, callbackPtr);
-                                            Log("Dispatched IsMapMarkerVisible");
-                                        } else if (function->GetName() == FN_CAN_FAST_TRAVEL_TO_MARKER) {
-                                            // CanFastTravelToMarker()
-                                            RE::BSTSmartPointer<RE::BSScript::IStackCallbackFunctor> callbackPtr{nullptr};
-                                            callbackPtr = RE::make_smart<PapyrusBoolFunctionCallback>([&](bool isFastTravelable) {
-                                                Log("x!! CanFastTravelToMarker: {} - {}", location->fullName.c_str(), isFastTravelable ? "true" : "false");
-                                                markerInfo.isFastTravelable = isFastTravelable;
-                                            });
-                                            auto args   = RE::MakeFunctionArguments();
-                                            Log("xDispatching CanFastTravelToMarker...");
-                                            vm->DispatchMethodCall(markerVmHandle, OBJECT_REFERENCE_SCRIPT_NAME, FN_CAN_FAST_TRAVEL_TO_MARKER, args, callbackPtr);
-                                            Log("xDispatched CanFastTravelToMarker");
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    //
-                    // DUPLICATED
-                    //
+                    mapMarkersSet.insert(marker.get());
                 }
             }
         }
     }
+
+    std::unordered_set<const RE::TESObjectREFR*> uniqueMapMarkerDataInTheseObjects;
+
+    auto countOfDifferent             = 0;
+    auto isVisibleCount               = 0;
+    auto isFastTravelableCount        = 0;
+    auto isBothCount                  = 0;
+    auto totalCount                   = 0;
+    auto allObjectReferencesInTheGame = RE::TESDataHandler::GetSingleton()->GetFormArray<RE::TESObjectREFR>();
+    for (const auto* reference : allObjectReferencesInTheGame) {
+        if (reference->extraList.HasType<RE::ExtraMapMarker>()) {
+            if (auto* extraMapMarker = reference->extraList.GetByType<RE::ExtraMapMarker>()) {
+                if (auto* mapData = extraMapMarker->mapData) {
+                    uniqueMapMarkerDataInTheseObjects.insert(reference);
+
+                    auto isVisible        = mapData->flags.any(RE::MapMarkerData::Flag::kVisible);
+                    auto isFastTravelable = mapData->flags.any(RE::MapMarkerData::Flag::kCanTravelTo);
+                    auto isBoth           = isVisible && isFastTravelable;
+                    totalCount++;
+                    if (isVisible) isVisibleCount++;
+                    if (isFastTravelable) isFastTravelableCount++;
+                    if (isBoth) isBothCount++;
+
+                    // Is this in the list of markers which the player stored?
+                    if (!mapMarkersSet.contains(reference)) {
+                        Log("------> LOCATION *not* IN PLAYER MAP MARKERS: {}", mapData->locationName.GetFullName());
+                        countOfDifferent++;
+                    }
+                }
+            }
+        }
+    }
+
+    Log("--> UNIQUE MAP MARKERS IN OBJECTS: {}", uniqueMapMarkerDataInTheseObjects.size());
+    Log("DIFFERENT COUNT: {}", countOfDifferent);
+
+    Log("Player has {} map markers", playerTotalCount);
+    Log("Player has {} map markers that are visible", playerTotalBothCount);
+
+    auto durationMs = std::chrono::duration_cast<std::chrono::milliseconds>(now - std::chrono::steady_clock::now()).count();
+    Log("Total locations with map markers: {}", totalLocationsWithMarkersCount);
+    Log("Total locations with map markers that are visible: {}", isVisibleCount);
+    Log("Total locations with map markers that are fast travelable: {}", isFastTravelableCount);
+    Log("Total locations with map markers that are both visible and fast travelable: {}", isBothCount);
+    Log("Duration of calculation: {} ms", durationMs);
 }
 
 class EventSink : public RE::BSTEventSink<RE::MenuOpenCloseEvent> {
