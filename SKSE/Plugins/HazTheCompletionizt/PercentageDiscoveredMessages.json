@@ -1,0 +1,508 @@
+{
+  "PercentageDiscoveredMessages": {
+    "0": [
+      "You haven't even stepped outside, have you?",
+      "0% complete. Maybe try leaving the tutorial cave first?"
+    ],
+    "1": [
+      "1% complete. Bold of you to open your journal this early.",
+      "A journey of a thousand steps begins with... apparently none yet.",
+      "You found something! A single something. Woo!"
+    ],
+    "2": [
+      "2% complete. Bold of you to open your journal this early.",
+      "A journey of a thousand steps begins with... apparently none yet.",
+      "You found something! A single something. Woo!"
+    ],
+    "3": [
+      "3% complete. Bold of you to open your journal this early.",
+      "A journey of a thousand steps begins with... apparently none yet.",
+      "You found something! A single something. Woo!"
+    ],
+    "4": [
+      "4% complete. Bold of you to open your journal this early.",
+      "A journey of a thousand steps begins with... apparently none yet.",
+      "You found something! A single something. Woo!"
+    ],
+    "5": [
+      "5% complete. Bold of you to open your journal this early.",
+      "A journey of a thousand steps begins with... apparently none yet.",
+      "You found something! A single something. Woo!"
+    ],
+    "6": [
+      "6% complete. Okay, now we're cooking.",
+      "That's a start. Maybe check behind the inn next time.",
+      "Look at you go! Slowly. But still go!"
+    ],
+    "7": [
+      "7% complete. Okay, now we're cooking.",
+      "That's a start. Maybe check behind the inn next time.",
+      "Look at you go! Slowly. But still go!"
+    ],
+    "8": [
+      "8% complete. Okay, now we're cooking.",
+      "That's a start. Maybe check behind the inn next time.",
+      "Look at you go! Slowly. But still go!"
+    ],
+    "9": [
+      "9% complete. Okay, now we're cooking.",
+      "That's a start. Maybe check behind the inn next time.",
+      "Look at you go! Slowly. But still go!"
+    ],
+    "10": [
+      "10% complete. Okay, now we're cooking.",
+      "That's a start. Maybe check behind the inn next time.",
+      "Look at you go! Slowly. But still go!"
+    ],
+    "11": [
+      "11% done. Not bad, not bad.",
+      "You've discovered more than just your shoelaces. Nice.",
+      "You might actually be trying. We see you!"
+    ],
+    "12": [
+      "12% done. Not bad, not bad.",
+      "You've discovered more than just your shoelaces. Nice.",
+      "You might actually be trying. We see you!"
+    ],
+    "13": [
+      "13% done. Not bad, not bad.",
+      "You've discovered more than just your shoelaces. Nice.",
+      "You might actually be trying. We see you!"
+    ],
+    "14": [
+      "14% done. Not bad, not bad.",
+      "You've discovered more than just your shoelaces. Nice.",
+      "You might actually be trying. We see you!"
+    ],
+    "15": [
+      "15% done. Not bad, not bad.",
+      "You've discovered more than just your shoelaces. Nice.",
+      "You might actually be trying. We see you!"
+    ],
+    "16": [
+      "16% complete. You\u2019re just getting warmed up.",
+      "Progress is progress... even if it's mostly walking in circles.",
+      "You're making moves. Small ones, but still!"
+    ],
+    "17": [
+      "17% complete. You\u2019re just getting warmed up.",
+      "Progress is progress... even if it's mostly walking in circles.",
+      "You're making moves. Small ones, but still!"
+    ],
+    "18": [
+      "18% complete. You\u2019re just getting warmed up.",
+      "Progress is progress... even if it's mostly walking in circles.",
+      "You're making moves. Small ones, but still!"
+    ],
+    "19": [
+      "19% complete. You\u2019re just getting warmed up.",
+      "Progress is progress... even if it's mostly walking in circles.",
+      "You're making moves. Small ones, but still!"
+    ],
+    "20": [
+      "20% complete. You\u2019re just getting warmed up.",
+      "Progress is progress... even if it's mostly walking in circles.",
+      "You're making moves. Small ones, but still!"
+    ],
+    "21": [
+      "21% complete. You're clearly an adventurer now.",
+      "Look at this explorer! Skyrim\u2019s proud of you. Probably.",
+      "You're on the board and climbing. Keep that momentum!"
+    ],
+    "22": [
+      "22% complete. You're clearly an adventurer now.",
+      "Look at this explorer! Skyrim\u2019s proud of you. Probably.",
+      "You're on the board and climbing. Keep that momentum!"
+    ],
+    "23": [
+      "23% complete. You're clearly an adventurer now.",
+      "Look at this explorer! Skyrim\u2019s proud of you. Probably.",
+      "You're on the board and climbing. Keep that momentum!"
+    ],
+    "24": [
+      "24% complete. You're clearly an adventurer now.",
+      "Look at this explorer! Skyrim\u2019s proud of you. Probably.",
+      "You're on the board and climbing. Keep that momentum!"
+    ],
+    "25": [
+      "25% complete. You're clearly an adventurer now.",
+      "Look at this explorer! Skyrim\u2019s proud of you. Probably.",
+      "You're on the board and climbing. Keep that momentum!"
+    ],
+    "26": [
+      "26% complete. You're clearly an adventurer now.",
+      "Look at this explorer! Skyrim\u2019s proud of you. Probably.",
+      "You're on the board and climbing. Keep that momentum!"
+    ],
+    "27": [
+      "27% complete. You're clearly an adventurer now.",
+      "Look at this explorer! Skyrim\u2019s proud of you. Probably.",
+      "You're on the board and climbing. Keep that momentum!"
+    ],
+    "28": [
+      "28% complete. You're clearly an adventurer now.",
+      "Look at this explorer! Skyrim\u2019s proud of you. Probably.",
+      "You're on the board and climbing. Keep that momentum!"
+    ],
+    "29": [
+      "29% complete. You're clearly an adventurer now.",
+      "Look at this explorer! Skyrim\u2019s proud of you. Probably.",
+      "You're on the board and climbing. Keep that momentum!"
+    ],
+    "30": [
+      "30% complete. You're clearly an adventurer now.",
+      "Look at this explorer! Skyrim\u2019s proud of you. Probably.",
+      "You're on the board and climbing. Keep that momentum!"
+    ],
+    "31": [
+      "31% down. Starting to feel the burn yet?",
+      "This is getting real. Or at least moderately impressive.",
+      "You've definitely been places. Probably with skeletons."
+    ],
+    "32": [
+      "32% down. Starting to feel the burn yet?",
+      "This is getting real. Or at least moderately impressive.",
+      "You've definitely been places. Probably with skeletons."
+    ],
+    "33": [
+      "33% down. Starting to feel the burn yet?",
+      "This is getting real. Or at least moderately impressive.",
+      "You've definitely been places. Probably with skeletons."
+    ],
+    "34": [
+      "34% down. Starting to feel the burn yet?",
+      "This is getting real. Or at least moderately impressive.",
+      "You've definitely been places. Probably with skeletons."
+    ],
+    "35": [
+      "35% down. Starting to feel the burn yet?",
+      "This is getting real. Or at least moderately impressive.",
+      "You've definitely been places. Probably with skeletons."
+    ],
+    "36": [
+      "36% down. Starting to feel the burn yet?",
+      "This is getting real. Or at least moderately impressive.",
+      "You've definitely been places. Probably with skeletons."
+    ],
+    "37": [
+      "37% down. Starting to feel the burn yet?",
+      "This is getting real. Or at least moderately impressive.",
+      "You've definitely been places. Probably with skeletons."
+    ],
+    "38": [
+      "38% down. Starting to feel the burn yet?",
+      "This is getting real. Or at least moderately impressive.",
+      "You've definitely been places. Probably with skeletons."
+    ],
+    "39": [
+      "39% down. Starting to feel the burn yet?",
+      "This is getting real. Or at least moderately impressive.",
+      "You've definitely been places. Probably with skeletons."
+    ],
+    "40": [
+      "40% down. Starting to feel the burn yet?",
+      "This is getting real. Or at least moderately impressive.",
+      "You've definitely been places. Probably with skeletons."
+    ],
+    "41": [
+      "41% complete. That\u2019s halfway to bragging rights!",
+      "You've discovered half of Skyrim. The other half misses you.",
+      "Halfway there! Or just tired. Take a snack break."
+    ],
+    "42": [
+      "42% complete. That\u2019s halfway to bragging rights!",
+      "You've discovered half of Skyrim. The other half misses you.",
+      "Halfway there! Or just tired. Take a snack break."
+    ],
+    "43": [
+      "43% complete. That\u2019s halfway to bragging rights!",
+      "You've discovered half of Skyrim. The other half misses you.",
+      "Halfway there! Or just tired. Take a snack break."
+    ],
+    "44": [
+      "44% complete. That\u2019s halfway to bragging rights!",
+      "You've discovered half of Skyrim. The other half misses you.",
+      "Halfway there! Or just tired. Take a snack break."
+    ],
+    "45": [
+      "45% complete. That\u2019s halfway to bragging rights!",
+      "You've discovered half of Skyrim. The other half misses you.",
+      "Halfway there! Or just tired. Take a snack break."
+    ],
+    "46": [
+      "46% complete. That\u2019s halfway to bragging rights!",
+      "You've discovered half of Skyrim. The other half misses you.",
+      "Halfway there! Or just tired. Take a snack break."
+    ],
+    "47": [
+      "47% complete. That\u2019s halfway to bragging rights!",
+      "You've discovered half of Skyrim. The other half misses you.",
+      "Halfway there! Or just tired. Take a snack break."
+    ],
+    "48": [
+      "48% complete. That\u2019s halfway to bragging rights!",
+      "You've discovered half of Skyrim. The other half misses you.",
+      "Halfway there! Or just tired. Take a snack break."
+    ],
+    "49": [
+      "49% complete. That\u2019s halfway to bragging rights!",
+      "You've discovered half of Skyrim. The other half misses you.",
+      "Halfway there! Or just tired. Take a snack break."
+    ],
+    "50": [
+      "50% complete. That\u2019s halfway to bragging rights!",
+      "You've discovered half of Skyrim. The other half misses you.",
+      "Halfway there! Or just tired. Take a snack break."
+    ],
+    "51": [
+      "51% complete. This is officially 'a lot'.",
+      "You\u2019re now a semi-professional cave enterer.",
+      "Most NPCs haven\u2019t even *heard* of this many places."
+    ],
+    "52": [
+      "52% complete. This is officially 'a lot'.",
+      "You\u2019re now a semi-professional cave enterer.",
+      "Most NPCs haven\u2019t even *heard* of this many places."
+    ],
+    "53": [
+      "53% complete. This is officially 'a lot'.",
+      "You\u2019re now a semi-professional cave enterer.",
+      "Most NPCs haven\u2019t even *heard* of this many places."
+    ],
+    "54": [
+      "54% complete. This is officially 'a lot'.",
+      "You\u2019re now a semi-professional cave enterer.",
+      "Most NPCs haven\u2019t even *heard* of this many places."
+    ],
+    "55": [
+      "55% complete. This is officially 'a lot'.",
+      "You\u2019re now a semi-professional cave enterer.",
+      "Most NPCs haven\u2019t even *heard* of this many places."
+    ],
+    "56": [
+      "56% complete. This is officially 'a lot'.",
+      "You\u2019re now a semi-professional cave enterer.",
+      "Most NPCs haven\u2019t even *heard* of this many places."
+    ],
+    "57": [
+      "57% complete. This is officially 'a lot'.",
+      "You\u2019re now a semi-professional cave enterer.",
+      "Most NPCs haven\u2019t even *heard* of this many places."
+    ],
+    "58": [
+      "58% complete. This is officially 'a lot'.",
+      "You\u2019re now a semi-professional cave enterer.",
+      "Most NPCs haven\u2019t even *heard* of this many places."
+    ],
+    "59": [
+      "59% complete. This is officially 'a lot'.",
+      "You\u2019re now a semi-professional cave enterer.",
+      "Most NPCs haven\u2019t even *heard* of this many places."
+    ],
+    "60": [
+      "60% complete. This is officially 'a lot'.",
+      "You\u2019re now a semi-professional cave enterer.",
+      "Most NPCs haven\u2019t even *heard* of this many places."
+    ],
+    "61": [
+      "61% complete. Completionist instincts detected.",
+      "You've gone places. Lots of places. Your boots agree.",
+      "You know what's up. And where. And probably under it too."
+    ],
+    "62": [
+      "62% complete. Completionist instincts detected.",
+      "You've gone places. Lots of places. Your boots agree.",
+      "You know what's up. And where. And probably under it too."
+    ],
+    "63": [
+      "63% complete. Completionist instincts detected.",
+      "You've gone places. Lots of places. Your boots agree.",
+      "You know what's up. And where. And probably under it too."
+    ],
+    "64": [
+      "64% complete. Completionist instincts detected.",
+      "You've gone places. Lots of places. Your boots agree.",
+      "You know what's up. And where. And probably under it too."
+    ],
+    "65": [
+      "65% complete. Completionist instincts detected.",
+      "You've gone places. Lots of places. Your boots agree.",
+      "You know what's up. And where. And probably under it too."
+    ],
+    "66": [
+      "66% complete. Completionist instincts detected.",
+      "You've gone places. Lots of places. Your boots agree.",
+      "You know what's up. And where. And probably under it too."
+    ],
+    "67": [
+      "67% complete. Completionist instincts detected.",
+      "You've gone places. Lots of places. Your boots agree.",
+      "You know what's up. And where. And probably under it too."
+    ],
+    "68": [
+      "68% complete. Completionist instincts detected.",
+      "You've gone places. Lots of places. Your boots agree.",
+      "You know what's up. And where. And probably under it too."
+    ],
+    "69": [
+      "69% complete. Completionist instincts detected.",
+      "You've gone places. Lots of places. Your boots agree.",
+      "You know what's up. And where. And probably under it too."
+    ],
+    "70": [
+      "70% complete. Completionist instincts detected.",
+      "You've gone places. Lots of places. Your boots agree.",
+      "You know what's up. And where. And probably under it too."
+    ],
+    "71": [
+      "71% complete. You're in too deep to stop now.",
+      "This journal is basically just a flex at this point.",
+      "This is what dedication smells like. It smells like old ruins."
+    ],
+    "72": [
+      "72% complete. You're in too deep to stop now.",
+      "This journal is basically just a flex at this point.",
+      "This is what dedication smells like. It smells like old ruins."
+    ],
+    "73": [
+      "73% complete. You're in too deep to stop now.",
+      "This journal is basically just a flex at this point.",
+      "This is what dedication smells like. It smells like old ruins."
+    ],
+    "74": [
+      "74% complete. You're in too deep to stop now.",
+      "This journal is basically just a flex at this point.",
+      "This is what dedication smells like. It smells like old ruins."
+    ],
+    "75": [
+      "75% complete. You're in too deep to stop now.",
+      "This journal is basically just a flex at this point.",
+      "This is what dedication smells like. It smells like old ruins."
+    ],
+    "76": [
+      "76% complete. You're in too deep to stop now.",
+      "This journal is basically just a flex at this point.",
+      "This is what dedication smells like. It smells like old ruins."
+    ],
+    "77": [
+      "77% complete. You're in too deep to stop now.",
+      "This journal is basically just a flex at this point.",
+      "This is what dedication smells like. It smells like old ruins."
+    ],
+    "78": [
+      "78% complete. You're in too deep to stop now.",
+      "This journal is basically just a flex at this point.",
+      "This is what dedication smells like. It smells like old ruins."
+    ],
+    "79": [
+      "79% complete. You're in too deep to stop now.",
+      "This journal is basically just a flex at this point.",
+      "This is what dedication smells like. It smells like old ruins."
+    ],
+    "80": [
+      "80% complete. You're in too deep to stop now.",
+      "This journal is basically just a flex at this point.",
+      "This is what dedication smells like. It smells like old ruins."
+    ],
+    "81": [
+      "81% done. You absolute location maniac.",
+      "You\u2019re basically Google Maps now.",
+      "Skyrim trembles before your cartographic might."
+    ],
+    "82": [
+      "82% done. You absolute location maniac.",
+      "You\u2019re basically Google Maps now.",
+      "Skyrim trembles before your cartographic might."
+    ],
+    "83": [
+      "83% done. You absolute location maniac.",
+      "You\u2019re basically Google Maps now.",
+      "Skyrim trembles before your cartographic might."
+    ],
+    "84": [
+      "84% done. You absolute location maniac.",
+      "You\u2019re basically Google Maps now.",
+      "Skyrim trembles before your cartographic might."
+    ],
+    "85": [
+      "85% done. You absolute location maniac.",
+      "You\u2019re basically Google Maps now.",
+      "Skyrim trembles before your cartographic might."
+    ],
+    "86": [
+      "86% done. You absolute location maniac.",
+      "You\u2019re basically Google Maps now.",
+      "Skyrim trembles before your cartographic might."
+    ],
+    "87": [
+      "87% done. You absolute location maniac.",
+      "You\u2019re basically Google Maps now.",
+      "Skyrim trembles before your cartographic might."
+    ],
+    "88": [
+      "88% done. You absolute location maniac.",
+      "You\u2019re basically Google Maps now.",
+      "Skyrim trembles before your cartographic might."
+    ],
+    "89": [
+      "89% done. You absolute location maniac.",
+      "You\u2019re basically Google Maps now.",
+      "Skyrim trembles before your cartographic might."
+    ],
+    "90": [
+      "90% done. You absolute location maniac.",
+      "You\u2019re basically Google Maps now.",
+      "Skyrim trembles before your cartographic might."
+    ],
+    "91": [
+      "91% complete. Just a few more... do it for the snark.",
+      "You\u2019re *so close*. Go poke some ruins already!",
+      "You\u2019re on the brink of map domination!"
+    ],
+    "92": [
+      "92% complete. Just a few more... do it for the snark.",
+      "You\u2019re *so close*. Go poke some ruins already!",
+      "You\u2019re on the brink of map domination!"
+    ],
+    "93": [
+      "93% complete. Just a few more... do it for the snark.",
+      "You\u2019re *so close*. Go poke some ruins already!",
+      "You\u2019re on the brink of map domination!"
+    ],
+    "94": [
+      "94% complete. Just a few more... do it for the snark.",
+      "You\u2019re *so close*. Go poke some ruins already!",
+      "You\u2019re on the brink of map domination!"
+    ],
+    "95": [
+      "95% complete. Just a few more... do it for the snark.",
+      "You\u2019re *so close*. Go poke some ruins already!",
+      "You\u2019re on the brink of map domination!"
+    ],
+    "96": [
+      "96% complete. Just a few more... do it for the snark.",
+      "You\u2019re *so close*. Go poke some ruins already!",
+      "You\u2019re on the brink of map domination!"
+    ],
+    "97": [
+      "97% complete. Just a few more... do it for the snark.",
+      "You\u2019re *so close*. Go poke some ruins already!",
+      "You\u2019re on the brink of map domination!"
+    ],
+    "98": [
+      "98% complete. Just a few more... do it for the snark.",
+      "You\u2019re *so close*. Go poke some ruins already!",
+      "You\u2019re on the brink of map domination!"
+    ],
+    "99": [
+      "99% complete. Just a few more... do it for the snark.",
+      "You\u2019re *so close*. Go poke some ruins already!",
+      "You\u2019re on the brink of map domination!"
+    ],
+    "100": [
+      "100% COMPLETE. You're a legend. Also, maybe take a nap.",
+      "You did it! Every. Single. Location. Respect.",
+      "All of Skyrim bows to your map-marking prowess."
+    ]
+  }
+}

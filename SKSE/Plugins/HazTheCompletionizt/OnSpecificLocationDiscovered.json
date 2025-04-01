@@ -1,0 +1,89 @@
+{
+  "OnSpecificLocationDiscovered": {
+    "Pelagia Farm": [
+      "Ah yes, the thrill of... cabbage?",
+      "You discovered Pelagia Farm. Slow down, adventurer."
+    ],
+    "Solitude Lighthouse": [
+      "You found the lighthouse. Try not to fall off.",
+      "Solitude Lighthouse: because someone has to keep ships from crashing."
+    ],
+    "Thalmor Embassy": [
+      "Thalmor spotted. Better keep your mouth shut.",
+      "You're not supposed to be here... are you?"
+    ],
+    "Clearpine Pond": [
+      "It's a pond. It's clear. It's piney. Nature, wow.",
+      "Discovered a pond. Good job, Dovah-fish."
+    ],
+    "Ragnvald": [
+      "Home of restless draugr and bad decisions.",
+      "You found Ragnvald! Now turn around and pretend you didn't."
+    ],
+    "The Guardian Stones": [
+      "Choose your fate! Or just fast-travel away.",
+      "Ah, Skyrim's starting zone... nostalgic, huh?"
+    ],
+    "Shor's Stone": [
+      "A tiny town with big mining dreams.",
+      "You found Shor\u2019s Stone. Population: barely."
+    ],
+    "Glenmoril Coven": [
+      "Witch central! Smells like alchemy and regret.",
+      "Discovered Glenmoril Coven. Time to hex someone."
+    ],
+    "Honningbrew Meadery": [
+      "Mead, mead, glorious mead!",
+      "Found the meadery. Hope you brought a drinking horn."
+    ],
+    "Snapleg Cave": [
+      "What a charming name. What could go wrong?",
+      "Discovered Snapleg Cave. Try to keep yours intact."
+    ],
+    "Bilegulch Mine": [
+      "You found Bilegulch Mine. Sounds... appetizing?",
+      "Ore and orcs and ouch."
+    ],
+    "Embershard Mine": [
+      "Classic starter dungeon. Feeling nostalgic?",
+      "Ah, Embershard \u2014 the first cave every player clears accidentally."
+    ],
+    "College of Winterhold": [
+      "School of magic or frostbite simulator?",
+      "You discovered the College! Please don't blow it up."
+    ],
+    "Forelhost": ["Forelhost. For real ghosts.", "One word: Draugr."],
+    "Castle Volkihar": [
+      "You've reached vampire HQ. Bring garlic.",
+      "Castle Volkihar \u2014 now featuring 80% more brooding."
+    ],
+    "Dawnstar": [
+      "Sleepy coastal town. Emphasis on nightmares.",
+      "Welcome to Dawnstar. Population: insomniacs."
+    ],
+    "The Throat of the World": [
+      "Top of the world, Ma!",
+      "Hope you brought a coat."
+    ],
+    "High Hrothgar": [
+      "So many steps... so much wheezing.",
+      "You met the Greybeards! No shouting indoors."
+    ],
+    "Riverwood": [
+      "Where every journey begins \u2014 and chickens fear you.",
+      "Riverwood: scenic, peaceful, terribly doomed if you sneeze."
+    ],
+    "Bleak Falls Barrow": [
+      "You discovered the tutorial dungeon! Again.",
+      "Guaranteed to have a claw puzzle and restless Draugr."
+    ],
+    "Labyrinthian": [
+      "It's big. It's cold. It's full of regrets.",
+      "You found Labyrinthian. Good luck finding the exit."
+    ],
+    "Fort Dawnguard": [
+      "Home of the vampire hunters! And some questionable interior decorating.",
+      "You discovered Fort Dawnguard. Now slay responsibly."
+    ]
+  }
+}

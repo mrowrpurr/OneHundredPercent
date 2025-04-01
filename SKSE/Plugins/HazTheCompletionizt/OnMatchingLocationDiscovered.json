@@ -1,0 +1,79 @@
+{
+  "OnMatchingLocationDiscovered": {
+    "(.*) Grotto$": [
+      "Hope you brought your water boots - $1 Grotto doesn' clean itself.",
+      "Grotto life chose you. Welcome to $1.",
+      "$1 Grotto discovered. Smells like wet troll and regret."
+    ],
+    "(.*) Cave$": [
+      "You discovered $1 Cave. It' probably filled with totally friendly people!",
+      "$1 Cave? Classic place to catch a cold and maybe a bandit axe to the face.",
+      "Echoes of your bad decisions await in $1 Cave."
+    ],
+    "(.*) Barrow$": [
+      "Welcome to $1 Barrow. Please keep hands and feet away from the Draugr.",
+      "$1 Barrow unlocked! Time to disturb ancient resting places. Again.",
+      "You found $1 Barrow. Did you bring your anti-undead spray?"
+    ],
+    "(.*) Crypt$": [
+      "Congrats, $1 Crypt. 10/10 skeletons recommend it.",
+      "A fine place to take your final nap: $1 Crypt.",
+      "$1 Crypt - because nothing says adventure like being neck-deep in corpses."
+    ],
+    "(.*) Farm$": [
+      "You discovered $1 Farm. Smells like honest labor and slightly less honest manure.",
+      "$1 Farm: Skyrim' #1 location for cabbage-based adventures.",
+      "No dragons, just turnips. Welcome to $1 Farm."
+    ],
+    "(.*) Camp$": [
+      "Another camp! $1 Camp might even have... tents!",
+      "You found $1 Camp. Don' step on any bear traps.",
+      "$1 Camp: Because Skyrim didn' have enough rocks and bad weather already."
+    ],
+    "(.*) Mine$": [
+      "Welcome to $1 Mine. Hope you like swinging pickaxes and existential dread.",
+      "You discovered $1 Mine. Ore today, gone tomorrow.",
+      "$1 Mine: Not OSHA-approved, but full of character (and probably spiders)."
+    ],
+    "(.*) Tower$": [
+      "You discovered $1 Tower. Time to climb something unnecessarily tall!",
+      "What's in $1 Tower? Definitely not a romantic view and a picnic.",
+      "$1 Tower: Because being grounded is for Nords with no ambition."
+    ],
+    "(.*) Watchtower$": [
+      "Another scenic $1 Watchtower. Trolls and arrows, guaranteed.",
+      "$1 Watchtower: Perfect for spotting dragons, or getting spotted by them.",
+      "You found $1 Watchtower. No one' watching, though. They're all dead."
+    ],
+    "(.*) Ruins$": [
+      "You discovered $1 Ruins. Bet it' full of perfectly safe architecture.",
+      "$1 Ruins: Because nothing says 'tourist trap' like ancient traps.",
+      "Another ruin, another day of looting cultural heritage. Thanks $1!"
+    ],
+    "(.*) Shack$": [
+      "You found $1 Shack. It' cozy, if your idea of cozy is mold and splinters.",
+      "$1 Shack: Home is where the bloodstains are.",
+      "Discovered $1 Shack. Now with 50% more tragic backstory!"
+    ],
+    "(.*) Redoubt$": [
+      "$1 Redoubt discovered. Forsworn probably not thrilled you're here.",
+      "$1 Redoubt: Come for the scenery, stay for the ambushes.",
+      "Discovered $1 Redoubt. Rated 3/5 stars on BanditAdvisor."
+    ],
+    "(.*) Stone$": [
+      "$1 Stone! Time to pick a zodiac sign and pretend it matters.",
+      "You found $1 Stone. Sparkly! Mysterious! Questionably useful!",
+      "$1 Stone discovered. Empower yourself... or get mildly buffed."
+    ],
+    "(.*) Mill$": [
+      "$1 Mill discovered. Smells like flour, woodchips, and childhood trauma.",
+      "$1 Mill - just add water and existential dread.",
+      "You discovered $1 Mill. I bet it'... rotating slowly."
+    ],
+    "(.*) Overlook$": [
+      "$1 Overlook - because Skyrim has a law requiring scenic danger zones.",
+      "Discovered $1 Overlook. Don' trip, it' a long way down.",
+      "You found $1 Overlook. Majestic views. Hostile locals."
+    ]
+  }
+}

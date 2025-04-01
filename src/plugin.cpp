@@ -116,8 +116,8 @@ SKSEPlugin_OnDataLoaded {
             if (location->worldLocMarker && location->worldLocMarker.get()) {
                 if (location->HasKeyword(clearableKeyword)) {
                     Log("CLEARABLE location: {}", location->GetName());
-                } else {
-                    Log("not clearable: {}", location->GetName());
+                    // } else {
+                    //     Log("not clearable: {}", location->GetName());
                 }
             }
         }
