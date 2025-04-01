@@ -32,7 +32,7 @@ skse_plugin({
     version = "0.0.1",
     author = "Mrowr Purr",
     email = "mrowr.purr@gmail.com",
-    mod_files = {"Scripts", "HazTheCompletionizt.esp"},
+    mod_files = {"Scripts", "HazTheCompletionizt.esp", "SKSE"},
     deps = {"Build Papyrus Scripts"},
     packages = {"SkyrimScripting.Plugin", "collections", "unordered_dense"},
 })
