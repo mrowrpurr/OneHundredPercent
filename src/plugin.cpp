@@ -3,6 +3,8 @@
 
 #include <nlohmann/json.hpp>
 
+#include "Hooks.h"
+
 constexpr auto QUEST_EDITORID = "MP_HazTheCompletionizt";
 
 const std::filesystem::path JSON_FILES_FOLDER = "Data/SKSE/Plugins/HazTheCompletionizt";
@@ -142,13 +144,30 @@ public:
 
     RE::BSEventNotifyControl ProcessEvent(const RE::LocationCleared::Event* event, RE::BSTEventSource<RE::LocationCleared::Event>*) override {
         Log("LOCATION CLEARED");
+
+        auto* location = BGSLocationEx::GetLastChecked();
+        if (location) {
+            if (location->IsLoaded()) {
+                Log("Location cleared: {} - {}", location->GetName(), location->GetFormID());
+            } else {
+                Log("Location not loaded: {}", location->GetName());
+            }
+        } else {
+            Log("No location found for clearing event.");
+        }
+
         return RE::BSEventNotifyControl::kContinue;
     }
 };
 
 SKSEPlugin_OnDataLoaded {
+    auto& trampoline = SKSE::GetTrampoline();
+    trampoline.create(256);
+
+    BGSLocationEx::Install(trampoline);
     RE::UI::GetSingleton()->AddEventSink<RE::MenuOpenCloseEvent>(EventSink::instance());
     RE::LocationDiscovery::GetEventSource()->AddEventSink(EventSink::instance());
+    RE::LocationCleared::GetEventSource()->AddEventSink(EventSink::instance());
 
     auto* clearableKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("LocTypeClearable");
     if (clearableKeyword) {
