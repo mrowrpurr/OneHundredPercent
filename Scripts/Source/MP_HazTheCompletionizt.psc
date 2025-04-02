@@ -1,0 +1,3 @@
+scriptName MP_HazTheCompletionizt hidden
+
+function UpdateJournalWithLatestDiscoveredLocationStats() global native

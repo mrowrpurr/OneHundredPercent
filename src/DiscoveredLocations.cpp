@@ -19,14 +19,8 @@ DiscoveredLocationStats GetDiscoveredLocationStats() {
             if (const auto* extraMapMarker = marker->extraList.GetByType<RE::ExtraMapMarker>()) {
                 if (auto* mapData = extraMapMarker->mapData) {
                     stats.totalLocations++;
-                    Log("{}", mapData->locationName.GetFullName());
-                    if (mapData->flags.any(RE::MapMarkerData::Flag::kVisible) && mapData->flags.any(RE::MapMarkerData::Flag::kCanTravelTo)) {
-                        stats.discoveredLocations++;
-                    }
-                    if (marker->HasKeyword(clearableKeyword)) {
-                        stats.clearedLocations++;
-                        Log("CLEARED location: {}", mapData->locationName.GetFullName());
-                    }
+                    if (mapData->flags.any(RE::MapMarkerData::Flag::kVisible) && mapData->flags.any(RE::MapMarkerData::Flag::kCanTravelTo)) stats.discoveredLocations++;
+                    if (marker->HasKeyword(clearableKeyword)) stats.clearedLocations++;
                 }
             }
         }
