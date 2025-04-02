@@ -7,16 +7,14 @@
 #include "DiscoveredLocations.h"
 #include "JournalManager.h"
 
-void EventHandler::OnLocationDiscovered(const RE::MapMarkerData* mapMarkerData) {
-    //
-}
-
-void EventHandler::OnLocationCleared(const BGSLocationEx* locationEx) {
-    //
-}
-
-void EventHandler::OnOpenJournal() {
+void EventHandler::UpdateJournalWithLatestStats() {
     auto displayedLocationStates = GetDiscoveredLocationStats();
-    JournalManager::UpdateObjectiveText(0, std::format("{} / {}", displayedLocationStates.discoveredLocations, displayedLocationStates.totalLocations).c_str());
+    JournalManager::UpdateObjectiveText(
+        0, std::format("{} discovered locations out of {}", displayedLocationStates.discoveredLocations, displayedLocationStates.totalLocations).c_str()
+    );
     JournalManager::SetStatus(0, true, false);
 }
+
+void EventHandler::OnLocationDiscovered(const RE::MapMarkerData* mapMarkerData) { UpdateJournalWithLatestStats(); }
+void EventHandler::OnLocationCleared(const BGSLocationEx* locationEx) { UpdateJournalWithLatestStats(); }
+void EventHandler::OnOpenJournal() { UpdateJournalWithLatestStats(); }

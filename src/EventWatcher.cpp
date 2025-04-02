@@ -14,7 +14,6 @@ public:
     }
 
     RE::BSEventNotifyControl ProcessEvent(const RE::MenuOpenCloseEvent* event, RE::BSTEventSource<RE::MenuOpenCloseEvent>*) override {
-        Log("Menu Open/Close Event: {} - {}", event->opening ? "Opened" : "Closed", event->menuName.c_str());
         if (event->opening && event->menuName == RE::JournalMenu::MENU_NAME) {
             EventHandler::OnOpenJournal();
         }
