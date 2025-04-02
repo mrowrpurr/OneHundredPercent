@@ -1,9 +1,10 @@
-#include "Hooks.h"
-
-#include <RE/Skyrim.h>
-
 // Experience
 // Apache-2.0
+// https://github.com/zax-ftw/Experience/blob/52002dbc04558e91a9b27d7ebf4612f3b1863435/src/Hooks/BGSLocation.cpp
+
+#include "BGSLocationEx.h"
+
+#include <RE/Skyrim.h>
 
 // https://github.com/zax-ftw/Experience/blob/52002dbc04558e91a9b27d7ebf4612f3b1863435/src/PCH.h#L31
 #ifdef SKYRIM_SUPPORT_AE
@@ -95,8 +96,6 @@ namespace RE {
 
 }
 
-// https://github.com/zax-ftw/Experience/blob/52002dbc04558e91a9b27d7ebf4612f3b1863435/src/Hooks/BGSLocation.cpp
-
 using namespace RE;
 
 BGSLocationEx* BGSLocationEx::lastChecked = nullptr;
@@ -107,7 +106,6 @@ bool BGSLocationEx::ClearedCheck(int time, bool force) {
     return func(this, time, force);
 }
 
-// TODO: refr->GetMapMarkerData
 MARKER_TYPE BGSLocationEx::GetMapMarkerType() {
     if (auto marker = worldLocMarker.get()) {
         ExtraMapMarker* extra = marker->extraList.GetByType<ExtraMapMarker>();
@@ -127,6 +125,5 @@ void BGSLocationEx::Install(SKSE::Trampoline& trampoline) {
 
 bool BGSLocationEx::ClearedCheck_Hook(int time, bool force) {
     lastChecked = this;
-
     return ClearedCheck(time, force);
 }

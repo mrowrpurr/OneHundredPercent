@@ -3,7 +3,7 @@
 
 #include <nlohmann/json.hpp>
 
-constexpr auto QUEST_EDITORID = "MP_HazTheCompletionizt";
+constexpr auto QUEST_EDITOR_ID = "MP_HazTheCompletionizt";
 
 const std::filesystem::path JSON_FILES_FOLDER = "Data/SKSE/Plugins/HazTheCompletionizt";
 
