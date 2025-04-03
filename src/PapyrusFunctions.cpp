@@ -12,3 +12,5 @@ namespace PapyrusFunctions {
         return true;
     }
 }
+
+void SetupPapyrusFunctions() { SKSE::GetPapyrusInterface()->Register(PapyrusFunctions::BindFunctions); }

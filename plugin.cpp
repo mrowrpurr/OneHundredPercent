@@ -7,7 +7,7 @@
 
 SKSEPlugin_Entrypoint {
     SetupSaveCallbacks();
-    SKSE::GetPapyrusInterface()->Register(PapyrusFunctions::BindFunctions);
+    SetupPapyrusFunctions();
 }
 SKSEPlugin_OnDataLoaded { WatchForEvents(); }
 SKSEPlugin_OnPostLoadGame { EventHandler::UpdateJournalWithLatestStats(); }

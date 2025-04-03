@@ -24,6 +24,7 @@ void SaveData::Save(SKSE::SerializationInterface* intfc) {
     intfc->WriteRecordData(count);
 
     for (const auto& e : locationEvents) {
+        WriteString(intfc, e.locationName);
         intfc->WriteRecordData(static_cast<std::uint32_t>(e.eventType));
         intfc->WriteRecordData(e.eventTime);
         intfc->WriteRecordData(e.eventPosition);
@@ -39,6 +40,7 @@ void SaveData::Load(SKSE::SerializationInterface* intfc) {
 
     for (std::uint32_t i = 0; i < count; ++i) {
         LocationEvent e;
+        ReadString(intfc, e.locationName);
         std::uint32_t type;
         intfc->ReadRecordData(type);
         e.eventType = static_cast<LocationEventType>(type);
@@ -79,3 +81,16 @@ void SetupSaveCallbacks() {
     serializationInterface->SetSaveCallback(SaveCallback);
     serializationInterface->SetLoadCallback(LoadCallback);
 }
+
+void SaveLocationEvent(LocationEventType type, std::string_view locationName) {
+    auto* playerCharacter = RE::PlayerCharacter::GetSingleton();
+    auto* currentLocation = playerCharacter->GetCurrentLocation();
+
+    GetSaveData().locationEvents.emplace_back(
+        std::string(locationName), type, RE::Calendar::GetSingleton()->GetCurrentGameTime(), playerCharacter->GetPosition(), playerCharacter->GetAngle(),
+        currentLocation ? currentLocation->GetFullName() : "<Unknown Location>"
+    );
+}
+
+void SaveLocationDiscoveredEvent(std::string_view locationName) { SaveLocationEvent(LocationEventType::Discovered, locationName); }
+void SaveLocationClearedEvent(std::string_view locationName) { SaveLocationEvent(LocationEventType::Cleared, locationName); }

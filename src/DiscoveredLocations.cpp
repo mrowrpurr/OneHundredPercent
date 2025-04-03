@@ -2,9 +2,9 @@
 
 #include <SKSE/SKSE.h>
 #include <SkyrimScripting/Logging.h>
+#include <collections.h>
 
 #include <chrono>
-#include <unordered_set>
 
 std::string ToLowerCase(std::string_view text) {
     std::string result;
@@ -24,7 +24,7 @@ DiscoveredLocationStats GetDiscoveredLocationStats() {
     auto* player           = RE::PlayerCharacter::GetSingleton();
     auto* clearableKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("LocTypeClearable");
 
-    std::unordered_set<RE::MapMarkerData*> discoveredLocations;
+    collections_set<RE::MapMarkerData*> discoveredMapMarkers;
 
     for (auto& markerPtr : player->currentMapMarkers) {
         if (auto marker = markerPtr.get()) {
@@ -32,28 +32,17 @@ DiscoveredLocationStats GetDiscoveredLocationStats() {
                 if (auto* mapData = extraMapMarker->mapData) {
                     statsFromPlayer.totalLocations++;
                     markersPerFile[marker->GetFile(0)]++;
-                    if (mapData->flags.any(RE::MapMarkerData::Flag::kVisible) && mapData->flags.any(RE::MapMarkerData::Flag::kCanTravelTo)) statsFromPlayer.discoveredLocations++;
-                    if (marker->HasKeyword(clearableKeyword)) statsFromPlayer.clearedLocations++;
-                    discoveredLocations.insert(mapData);
+                    if (mapData->flags.any(RE::MapMarkerData::Flag::kVisible) && mapData->flags.any(RE::MapMarkerData::Flag::kCanTravelTo)) {
+                        discoveredMapMarkers.insert(mapData);
+                    }
+                    // if (marker->HasKeyword(clearableKeyword)) statsFromPlayer.clearedLocations++;
                 }
             }
         }
     }
 
-    Log("PLAYER:");
-    for (auto& [file, count] : markersPerFile) {
-        if (file) {
-            Log("Found {} markers in file: {}", count, file->GetFilename());
-        }
-    }
+    collections_set<RE::MapMarkerData*> discoveredByPlayerAndIsInTheBigList;
 
-    Log("Found {} markers in player", statsFromPlayer.discoveredLocations);
-
-    //
-
-    markersPerFile.clear();
-
-    auto skipped                      = 0;
     auto workspaceBasedCountOfMarkers = 0;
     auto worldspaces                  = RE::TESDataHandler::GetSingleton()->GetFormArray<RE::TESWorldSpace>();
     for (auto* worldspace : worldspaces) {
@@ -68,7 +57,6 @@ DiscoveredLocationStats GetDiscoveredLocationStats() {
                 // 3. Location must exist and have a name (i.e., not a dummy marker)
                 auto* location = ref->GetCurrentLocation();
                 if (!location || location->fullName.empty()) {
-                    skipped++;
                     continue;
                 }
 
@@ -77,7 +65,6 @@ DiscoveredLocationStats GetDiscoveredLocationStats() {
                     if (mapData) {
                         // 1. Must have a name
                         if (mapData->locationName.fullName.empty()) {
-                            skipped++;
                             continue;
                         }
 
@@ -85,14 +72,8 @@ DiscoveredLocationStats GetDiscoveredLocationStats() {
                         // (If visible at game start, it's probably a quest point, not a discoverable)
                         if (mapData->flags.any(RE::MapMarkerData::Flag::kVisible)) continue;
 
-                        // Did the player NOT have this one?
-                        if (discoveredLocations.find(mapData) == discoveredLocations.end()) {
-                            Log("THIS MARKER is NOT IN THE PLAYER LIST: {} [FormID: {:X}]", mapData->locationName.GetFullName(), ref->GetFormID());
-                            if (mapData->flags.any(RE::MapMarkerData::Flag::kVisible)) {
-                                Log("THIS MARKER is VISIBLE: {} [FormID: {:X}]", mapData->locationName.GetFullName(), ref->GetFormID());
-                            } else {
-                                Log("THIS MARKER is NOT VISIBLE: {} [FormID: {:X}]", mapData->locationName.GetFullName(), ref->GetFormID());
-                            }
+                        if (discoveredMapMarkers.contains(mapData)) {
+                            discoveredByPlayerAndIsInTheBigList.insert(mapData);
                         }
 
                         workspaceBasedCountOfMarkers++;
@@ -108,17 +89,7 @@ DiscoveredLocationStats GetDiscoveredLocationStats() {
         }
     }
 
-    Log("Found {} markers in worldspaces", workspaceBasedCountOfMarkers);
-    Log("Skipped {} markers in worldspaces", skipped);
-
-    Log("WORLDSPACES:");
-    for (auto& [file, count] : markersPerFile) {
-        if (file) {
-            Log("Found {} markers in file: {}", count, file->GetFilename());
-        }
-    }
-
-    //
+    Log("Ok, the player has {} total discovered locations, {} of which are in the big list", statsFromPlayer.totalLocations, discoveredByPlayerAndIsInTheBigList.size());
 
     // Print out the stats from the player
     Log("Player discovered locations: {} / {} (cleared: {})", statsFromPlayer.discoveredLocations, statsFromPlayer.totalLocations, statsFromPlayer.clearedLocations);
@@ -130,5 +101,5 @@ DiscoveredLocationStats GetDiscoveredLocationStats() {
     auto durationMs = std::chrono::duration_cast<std::chrono::milliseconds>(now - std::chrono::steady_clock::now()).count();
     Log("Recalculation took {} ms", durationMs);
 
-    return statsFromPlayer;
+    return statsFromReferences;
 }

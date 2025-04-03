@@ -16,6 +16,7 @@ enum class LocationEventType : std::uint32_t {
 };
 
 struct LocationEvent {
+    std::string       locationName;
     LocationEventType eventType;
     float             eventTime;
     RE::NiPoint3      eventPosition;
@@ -40,3 +41,6 @@ inline SaveData          g_saveData;
 inline std::atomic<bool> g_isSaveDataLoaded{false};
 
 inline SaveData& GetSaveData() { return g_saveData; }
+
+void SaveLocationDiscoveredEvent(std::string_view locationName);
+void SaveLocationClearedEvent(std::string_view locationName);
