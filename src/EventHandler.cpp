@@ -12,7 +12,18 @@
 #include "SaveData.h"
 #include "SillyMessages.h"
 
+std::chrono::steady_clock::time_point lastJournalUpdate = std::chrono::steady_clock::now();
+
+auto dontUpdateTheJournalMultipleTimesWithinMs = 100;
+
 void EventHandler::UpdateJournalWithLatestStats(bool showSillyMessage) {
+    auto now = std::chrono::steady_clock::now();
+    if (now - lastJournalUpdate < std::chrono::milliseconds(dontUpdateTheJournalMultipleTimesWithinMs)) {
+        Log("Skipping journal update to avoid multiple updates within {} ms", dontUpdateTheJournalMultipleTimesWithinMs);
+        return;
+    }
+    lastJournalUpdate = now;
+
     Log("Updating journal with latest stats...");
 
     auto displayedLocationStates = GetDiscoveredLocationStats();
@@ -21,11 +32,12 @@ void EventHandler::UpdateJournalWithLatestStats(bool showSillyMessage) {
 
     auto objectiveId = saveData.locationEvents.size();
 
+    auto discoveredCount = displayedLocationStates.discoveredLocations;
+    if (saveData.locationEvents.size() > discoveredCount) discoveredCount = saveData.locationEvents.size();
+
     Log("Adding the 'discovered locations' objective...");
     JournalManager::SetStatus(objectiveId, true, false, true);
-    JournalManager::UpdateObjectiveText(
-        objectiveId, std::format("{} discovered locations out of {}", displayedLocationStates.discoveredLocations, displayedLocationStates.totalLocations).c_str()
-    );
+    JournalManager::UpdateObjectiveText(objectiveId, std::format("{} discovered locations out of {}", discoveredCount, displayedLocationStates.totalLocations).c_str());
 
     for (auto& locationEvent : saveData.locationEvents) {
         objectiveId--;
@@ -35,13 +47,13 @@ void EventHandler::UpdateJournalWithLatestStats(bool showSillyMessage) {
                 Log("Cleared location: {}", locationEvent.locationName);
                 JournalManager::UpdateObjectiveText(objectiveId, std::format("Cleared location: {}", locationEvent.locationName).c_str());
                 JournalManager::SetStatus(objectiveId, true, true, false);
-                JournalManager::SetStatus(objectiveId, true, true, false);
+                // JournalManager::SetStatus(objectiveId, true, true, false);
                 break;
             default:
                 Log("Discovered location: {}", locationEvent.locationName);
                 JournalManager::UpdateObjectiveText(objectiveId, std::format("Discovered location: {}", locationEvent.locationName).c_str());
                 JournalManager::SetStatus(objectiveId, true, true, false);
-                JournalManager::SetStatus(objectiveId, true, true, false);
+                // JournalManager::SetStatus(objectiveId, true, true, false);
                 break;
         }
     }

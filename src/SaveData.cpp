@@ -87,7 +87,20 @@ void SaveLocationEvent(LocationEventType type, std::string_view locationName) {
     auto* currentLocation = playerCharacter->GetCurrentLocation();
 
     Log("Saving location event: {}", (currentLocation ? currentLocation->GetFullName() : "<Unknown Location>"));
+
+    // If it already in the list?
     auto& saveData = GetSaveData();
+
+    // O(n)
+    auto existing = std::find_if(saveData.locationEvents.begin(), saveData.locationEvents.end(), [&locationName](const auto& e) { return e.locationName == locationName; });
+
+    if (existing != saveData.locationEvents.end()) {
+        // If it is, update the time
+        existing->eventTime = RE::Calendar::GetSingleton()->GetCurrentGameTime();
+        if (existing->eventType == LocationEventType::Discovered && type == LocationEventType::Cleared) existing->eventType = LocationEventType::Cleared;
+        return;
+    }
+
     saveData.locationEvents.emplace_back(
         std::string(locationName), type, RE::Calendar::GetSingleton()->GetCurrentGameTime(), playerCharacter->GetPosition(), playerCharacter->GetAngle(),
         currentLocation ? currentLocation->GetFullName() : "<Unknown Location>"

@@ -32,6 +32,7 @@ public:
         if (location && location->IsLoaded()) {
             Log("Location cleared: {} - {}", location->GetName(), location->GetFormID());
             EventHandler::OnLocationCleared(location);
+            EventHandler::OnOpenJournal();  // for testing
         }
         return RE::BSEventNotifyControl::kContinue;
     }
