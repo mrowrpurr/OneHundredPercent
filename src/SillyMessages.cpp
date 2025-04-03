@@ -184,7 +184,7 @@ std::string SillyMessages::GetRandomMessage_LocationCleared(std::string_view loc
     Log("Trying regex patterns for location: '{}'", locationName);
     std::string location(locationName);
     for (const auto& [pattern, messages] : OnMatchingLocationCleared) {
-        Log("  Checking pattern: '{}'", pattern);
+        // Log("  Checking pattern: '{}'", pattern);
         std::regex  regexPattern(pattern, std::regex_constants::icase);
         std::smatch matches;
 
