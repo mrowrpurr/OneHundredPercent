@@ -8,5 +8,4 @@ namespace EventHandler {
     void UpdateJournalWithLatestStats(bool showSillyMessage = false);
     void OnLocationDiscovered(const RE::MapMarkerData* mapMarkerData);
     void OnLocationCleared(const BGSLocationEx* locationEx);
-    void OnOpenJournal();
 }

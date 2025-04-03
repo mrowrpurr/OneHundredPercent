@@ -12,10 +12,6 @@ DiscoveredLocationStats GetDiscoveredLocationStats() {
     Log("Recalculating total number of discovered locations with map markers...");
     auto now = std::chrono::steady_clock::now();
 
-    for (auto formId : IgnoredLocationIDs) {
-        Log("IGNORED: {:x}", formId);
-    }
-
     DiscoveredLocationStats discoveredLocations;
 
     auto* player = RE::PlayerCharacter::GetSingleton();
@@ -69,8 +65,8 @@ DiscoveredLocationStats GetDiscoveredLocationStats() {
                         // 2. Should NOT be visible by default
                         // (If visible at game start, it's probably a quest point, not a discoverable)
                         if (mapData->flags.any(RE::MapMarkerData::Flag::kVisible)) {
-                            Log("(visible) [Worldspace Marker] w/ MapData: {} @ {:x} -- {:x} @ {}", mapData->locationName.GetFullName(), mapDataAddr, location->GetLocalFormID(),
-                                location->GetFile(0)->GetFilename());
+                            // Log("(visible) [Worldspace Marker] w/ MapData: {} @ {:x} -- {:x} @ {}", mapData->locationName.GetFullName(), mapDataAddr, location->GetLocalFormID(),
+                            //     location->GetFile(0)->GetFilename());
                             continue;
                         }
 

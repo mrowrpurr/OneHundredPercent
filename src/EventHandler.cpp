@@ -36,8 +36,9 @@ void EventHandler::UpdateJournalWithLatestStats(bool showSillyMessage) {
     if (saveData.locationEvents.size() > discoveredCount) discoveredCount = saveData.locationEvents.size();
 
     Log("Adding the 'discovered locations' objective...");
-    JournalManager::SetStatus(objectiveId, true, false, true);
     JournalManager::UpdateObjectiveText(objectiveId, std::format("{} discovered locations out of {}", discoveredCount, displayedLocationStates.totalLocations).c_str());
+    JournalManager::UpdateObjectiveText(objectiveId, std::format("{} discovered locations out of {}", discoveredCount, displayedLocationStates.totalLocations).c_str());
+    JournalManager::SetStatus(objectiveId, true, false, true);
 
     for (auto& locationEvent : saveData.locationEvents) {
         objectiveId--;
@@ -52,8 +53,8 @@ void EventHandler::UpdateJournalWithLatestStats(bool showSillyMessage) {
             default:
                 Log("Discovered location: {}", locationEvent.locationName);
                 JournalManager::UpdateObjectiveText(objectiveId, std::format("Discovered location: {}", locationEvent.locationName).c_str());
-                JournalManager::SetStatus(objectiveId, true, true, false);
                 // JournalManager::SetStatus(objectiveId, true, true, false);
+                JournalManager::SetStatus(objectiveId, true, true, false);
                 break;
         }
     }
@@ -78,8 +79,6 @@ void EventHandler::UpdateJournalWithLatestStats(bool showSillyMessage) {
             Log("No message found for percentage discovered: {}", percentageDiscovered);
             JournalManager::SetStatus(1, false, false);
         }
-    } else {
-        JournalManager::SetStatus(1, false, false);
     }
     Log("Journal updated with latest stats.");
 }
@@ -101,8 +100,7 @@ void EventHandler::OnLocationDiscovered(const RE::MapMarkerData* mapMarkerData) 
         }
 
         if (!message.empty()) {
-            Log("Location discovered: {}", locationName);
-            Log("Message: {}", message);
+            Log("Silly Message: {} - {}", locationName, message);
             RE::DebugNotification(message.c_str());
         } else {
             Log("No message found for discovered location: {}", locationName);
@@ -117,13 +115,10 @@ void EventHandler::OnLocationCleared(const BGSLocationEx* locationEx) {
     if (GetIni().notification_on_location_cleared) {
         auto message = SillyMessages::instance().GetRandomMessage_LocationCleared(locationEx->GetFullName());
         if (!message.empty()) {
-            Log("Location cleared: {}", locationEx->GetFullName());
-            Log("Message: {}", message);
+            Log("Silly Message, Location cleared: {} - {}", locationEx->GetFullName(), message);
             RE::DebugNotification(message.c_str());
         } else {
             Log("No message found for cleared location: {}", locationEx->GetFullName());
         }
     }
 }
-
-void EventHandler::OnOpenJournal() { UpdateJournalWithLatestStats(); }
