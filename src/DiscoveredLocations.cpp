@@ -19,28 +19,23 @@ DiscoveredLocationStats GetDiscoveredLocationStats() {
     DiscoveredLocationStats discoveredLocations;
 
     auto* player = RE::PlayerCharacter::GetSingleton();
-    // auto* clearableKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("LocTypeClearable");
 
-    collections_set<RE::MapMarkerData*> discoveredLocationsMapMarkerData;
+    collections_set<RE::MapMarkerData*> discoveredFromPlayerMap;
 
     for (auto& markerPtr : player->currentMapMarkers) {
         if (auto marker = markerPtr.get()) {
             if (const auto* extraMapMarker = marker->extraList.GetByType<RE::ExtraMapMarker>()) {
                 if (auto* mapData = extraMapMarker->mapData) {
                     if (mapData->flags.any(RE::MapMarkerData::Flag::kVisible) && mapData->flags.any(RE::MapMarkerData::Flag::kCanTravelTo)) {
-                        Log("> DISCOVERED: {}", mapData->locationName.GetFullName());
-                        discoveredLocations.discoveredLocations++;
-                        discoveredLocationsMapMarkerData.insert(mapData);
+                        Log("[Player Markers] DISCOVERED: {}", mapData->locationName.GetFullName());
+                        discoveredFromPlayerMap.insert(mapData);
                     }
-                    // No, this is CLEAR-ABLE, not CLEAR-ed ...
-                    // if (marker->HasKeyword(clearableKeyword)) {
-                    //     Log("CLEARED: {}", mapData->locationName.GetFullName());
-                    //     discoveredLocations.clearedLocations++;
-                    // }
                 }
             }
         }
     }
+
+    collections_set<RE::MapMarkerData*> discoveredFromWorldSpace;
 
     auto worldspaces = RE::TESDataHandler::GetSingleton()->GetFormArray<RE::TESWorldSpace>();
     for (auto* worldspace : worldspaces) {
@@ -72,21 +67,17 @@ DiscoveredLocationStats GetDiscoveredLocationStats() {
 
                         discoveredLocations.totalLocations++;
 
-                        if (!discoveredLocationsMapMarkerData.contains(mapData)) {
+                        if (discoveredFromPlayerMap.contains(mapData)) {
+                            Log("[Is in worldspace + Player discovered] DISCOVERED: {}", mapData->locationName.GetFullName());
+                            discoveredLocations.discoveredLocations++;
+                        } else {
                             // Is it discovered?
                             if (mapData->flags.any(RE::MapMarkerData::Flag::kVisible) && mapData->flags.any(RE::MapMarkerData::Flag::kCanTravelTo)) {
-                                Log(">>> DISCOVERED: {}", mapData->locationName.GetFullName());
+                                Log("[Just worldspace discovered]: {}", mapData->locationName.GetFullName());
                                 discoveredLocations.discoveredLocations++;
-                                discoveredLocationsMapMarkerData.insert(mapData);
+                            } else {
+                                Log("[Player discovered but NOT discovered in worldspace]: {}", mapData->locationName.GetFullName());
                             }
-
-                            // Is it cleared
-                            // if (ref->HasKeyword(clearableKeyword)) {
-                            //     Log("CLEARED: {}", mapData->locationName.GetFullName());
-                            //     discoveredLocations.clearedLocations++;
-                            // } else {
-                            //     Log("NOT CLEARED: {}", mapData->locationName.GetFullName());
-                            // }
                         }
                     }
                 }
