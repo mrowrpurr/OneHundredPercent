@@ -3,9 +3,10 @@
 #include "EventHandler.h"
 #include "EventWatcher.h"
 #include "PapyrusFunctions.h"
+#include "SaveData.h"
 
 SKSEPlugin_Entrypoint {
-    spdlog::set_pattern("%v");
+    SetupSaveCallbacks();
     SKSE::GetPapyrusInterface()->Register(PapyrusFunctions::BindFunctions);
 }
 SKSEPlugin_OnDataLoaded { WatchForEvents(); }

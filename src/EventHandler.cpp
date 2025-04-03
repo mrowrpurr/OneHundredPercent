@@ -4,6 +4,7 @@
 
 #include <format>
 
+#include "Config.h"
 #include "DiscoveredLocations.h"
 #include "JournalManager.h"
 
@@ -15,6 +16,12 @@ void EventHandler::UpdateJournalWithLatestStats() {
     JournalManager::SetStatus(0, true, false);
 }
 
-void EventHandler::OnLocationDiscovered(const RE::MapMarkerData* mapMarkerData) { UpdateJournalWithLatestStats(); }
+void EventHandler::OnLocationDiscovered(const RE::MapMarkerData* mapMarkerData) {
+    UpdateJournalWithLatestStats();
+    //
+    // auto currentCommonLibSSE_SkyrimGameTime = RE::Calendar::GetSingleton()->GetCurrentGameTime();
+}
+
 void EventHandler::OnLocationCleared(const BGSLocationEx* locationEx) { UpdateJournalWithLatestStats(); }
+
 void EventHandler::OnOpenJournal() { UpdateJournalWithLatestStats(); }
