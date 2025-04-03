@@ -35,6 +35,7 @@ void LoadSillyMessagesFromJsonFile(std::filesystem::path jsonFilePath) {
                     if (key == "OnSpecificLocationDiscovered") return SillyMessages::instance().OnSpecificLocationDiscovered;
                     if (key == "OnMatchingLocationDiscovered") return SillyMessages::instance().OnMatchingLocationDiscovered;
                     if (key == "OnSpecificLocationCleared") return SillyMessages::instance().OnSpecificLocationCleared;
+                    if (key == "OnMatchingLocationCleared") return SillyMessages::instance().OnMatchingLocationCleared;
                     return SillyMessages::instance().OnMatchingLocationCleared;  // OnMatchingLocationCleared
                 }();
 

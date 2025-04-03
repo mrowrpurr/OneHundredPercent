@@ -50,6 +50,33 @@ SillyMessages& SillyMessages::instance() {
 }
 
 SillyMessages::SillyMessages() {
+    // Load percentage messages from PercentageDiscovered.json
+    try {
+        auto pluginPath = std::filesystem::path("Data/SKSE/Plugins/HazTheCompletionizt");
+        auto jsonPath   = pluginPath / "PercentageDiscovered.json";
+
+        if (std::filesystem::exists(jsonPath)) {
+            std::ifstream jsonFile(jsonPath);
+            if (jsonFile.is_open()) {
+                json root;
+                jsonFile >> root;
+
+                if (root.contains("PercentageDiscoveredMessages")) {
+                    auto& percentageData = root["PercentageDiscoveredMessages"];
+                    for (auto& [percentage, messages] : percentageData.items()) {
+                        std::vector<std::string> percentageMessageList;
+                        for (auto& message : messages) {
+                            percentageMessageList.push_back(message.get<std::string>());
+                        }
+                        PercentageDiscoveredMessages[percentage] = percentageMessageList;
+                    }
+                }
+            }
+        }
+    } catch (std::exception& e) {
+        // Handle error
+    }
+
     // Don't load location messages immediately - defer until needed
 }
 
@@ -138,6 +165,11 @@ std::string SillyMessages::GetRandomMessage_LocationDiscovered(std::string_view 
 }
 
 std::string SillyMessages::GetRandomMessage_LocationCleared(std::string_view locationName) {
+    // First check if we have a specific named location message
+    if (HasSpecificLocationMessage(std::string(locationName))) {
+        return GetRandomSpecificLocationMessage(std::string(locationName));
+    }
+
     // Try to find an exact match (case sensitive)
     auto specificIt = OnSpecificLocationCleared.find(std::string(locationName));
     if (specificIt != OnSpecificLocationCleared.end()) {
@@ -170,6 +202,26 @@ std::string SillyMessages::GetRandomMessage_PercentageDiscovered(float percentag
     auto it = PercentageDiscoveredMessages.find(percentKey);
     if (it != PercentageDiscoveredMessages.end()) {
         return GetRandomMessage(it->second);
+    }
+
+    // If no exact match, try range matching
+    // For example, check for ranges like "0-10", "11-20", etc.
+    for (const auto& [range, messages] : PercentageDiscoveredMessages) {
+        // Check if the range key contains a hyphen, indicating a range
+        size_t hyphenPos = range.find('-');
+        if (hyphenPos != std::string::npos) {
+            try {
+                int rangeStart = std::stoi(range.substr(0, hyphenPos));
+                int rangeEnd   = std::stoi(range.substr(hyphenPos + 1));
+
+                if (percentInt >= rangeStart && percentInt <= rangeEnd) {
+                    return GetRandomMessage(messages);
+                }
+            } catch (const std::exception&) {
+                // Ignore malformed ranges
+                continue;
+            }
+        }
     }
 
     return "";
