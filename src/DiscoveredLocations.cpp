@@ -7,7 +7,6 @@
 #include <chrono>
 
 #include "JsonFiles.h"
-#include "StringUtils.h"
 
 DiscoveredLocationStats GetDiscoveredLocationStats() {
     Log("Recalculating total number of discovered locations with map markers...");
@@ -28,7 +27,7 @@ DiscoveredLocationStats GetDiscoveredLocationStats() {
             if (const auto* extraMapMarker = marker->extraList.GetByType<RE::ExtraMapMarker>()) {
                 if (auto* mapData = extraMapMarker->mapData) {
                     if (mapData->flags.any(RE::MapMarkerData::Flag::kVisible) && mapData->flags.any(RE::MapMarkerData::Flag::kCanTravelTo)) {
-                        uintptr_t mapDataAddr = reinterpret_cast<uintptr_t>(mapData);
+                        if (mapData->locationName.fullName == "Solitude Military Camp") continue;  // Not sure how to skip these ones quite yet
                         discoveredFromPlayerMap.insert(mapData);
                     }
                 }
@@ -36,7 +35,7 @@ DiscoveredLocationStats GetDiscoveredLocationStats() {
         }
     }
 
-    collections_set<RE::MapMarkerData*> discoveredFromWorldSpace;
+    collections_map<RE::MapMarkerData*, RE::BGSLocation*> discoveredFromWorldSpaceToLocations;
 
     auto worldspaces = RE::TESDataHandler::GetSingleton()->GetFormArray<RE::TESWorldSpace>();
     for (auto* worldspace : worldspaces) {
@@ -55,15 +54,11 @@ DiscoveredLocationStats GetDiscoveredLocationStats() {
                 if (auto* marker = ref->extraList.GetByType<RE::ExtraMapMarker>()) {
                     auto* mapData = marker->mapData;
                     if (mapData) {
+                        discoveredFromWorldSpaceToLocations.insert_or_assign(mapData, location);
+
                         if (IgnoredLocationIDs.contains(location->GetFormID())) {
                             discoveredFromPlayerMap.erase(mapData);
                             continue;
-                        }
-
-                        if (location->fullName == "Campsite") {
-                            Log("~~ CAMPSIRE {:x} from {}", location->GetFormID(), location->GetFile(0)->GetFilename());
-                        } else if (location->fullName == "Solstheim") {
-                            Log("~~ SOLSTHEIM {:x} from {}", location->GetFormID(), location->GetFile(0)->GetFilename());
                         }
 
                         // 1. Must have a name
@@ -89,8 +84,6 @@ DiscoveredLocationStats GetDiscoveredLocationStats() {
                             if (mapData->flags.any(RE::MapMarkerData::Flag::kVisible) && mapData->flags.any(RE::MapMarkerData::Flag::kCanTravelTo)) {
                                 Log("[Just worldspace discovered]: {}", mapData->locationName.GetFullName());
                                 discoveredLocations.discoveredLocations++;
-                                // } else {
-                                //     Log("[Player discovered but NOT discovered in worldspace]: {}", mapData->locationName.GetFullName());
                             }
                         }
                     }
@@ -101,18 +94,21 @@ DiscoveredLocationStats GetDiscoveredLocationStats() {
 
     // Print out the player map ones:
     for (auto& markerPtr : discoveredFromPlayerMap) {
-        Log("[Player discovered] DISCOVERED: {}", markerPtr->locationName.GetFullName());
+        auto foundFromWorldSpace = discoveredFromWorldSpaceToLocations.find(markerPtr);
+        if (foundFromWorldSpace == discoveredFromWorldSpaceToLocations.end()) discoveredFromPlayerMap.erase(markerPtr);
+        else Log("[Player discovered] DISCOVERED: {}", markerPtr->locationName.GetFullName());
     }
 
     // Print out the discoveredLocations stats:
     Log("Total locations: {}", discoveredLocations.totalLocations);
     Log("Discovered locations: {}", discoveredLocations.discoveredLocations);
     Log("Discovered locations from player map: {}", discoveredFromPlayerMap.size());
-    Log("Discovered locations from worldspace: {}", discoveredFromWorldSpace.size());
-    Log("Discovered locations from worldspace (not in player map): {}", discoveredFromWorldSpace.size() - discoveredFromPlayerMap.size());
 
     auto durationMs = std::chrono::duration_cast<std::chrono::milliseconds>(now - std::chrono::steady_clock::now()).count();
     Log("Recalculation took {} ms", durationMs);
+
+    discoveredLocations.clearedLocations    = 0;
+    discoveredLocations.discoveredLocations = discoveredFromPlayerMap.size();  // + ?
 
     return discoveredLocations;
 }

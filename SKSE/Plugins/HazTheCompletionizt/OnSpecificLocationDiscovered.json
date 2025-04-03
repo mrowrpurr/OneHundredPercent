@@ -84,6 +84,58 @@
     "Fort Dawnguard": [
       "Home of the vampire hunters! And some questionable interior decorating.",
       "You discovered Fort Dawnguard. Now slay responsibly."
+    ],
+    "Windhelm": [
+      "Welcome to Windhelm! Where it's always winter and never Christmas.",
+      "You discovered Windhelm. The only place where hypothermia is considered a tourist attraction."
+    ],
+    "Whiterun": [
+      "Ah, Whiterun. Home of overpriced houses and an unnecessary amount of stairs.",
+      "You discovered Whiterun. Please don't climb the Dragonsreach walls again."
+    ],
+    "Riften": [
+      "Welcome to Riften! Watch your pockets... and your back... and your front.",
+      "You found Riften. The only city where pickpocketing is considered a formal greeting."
+    ],
+    "Markarth": [
+      "Markarth: Where the beds are stone and so are the pillows.",
+      "You discovered Markarth. Try not to get framed for murder this time."
+    ],
+    "Falkreath": [
+      "Falkreath: Because every game needs a depressing forest town.",
+      "You found Falkreath. More graves than citizens since... forever."
+    ],
+    "Morthal": [
+      "Discovered Morthal. Yes, it exists!",
+      "Welcome to Morthal: Skyrim's forgotten swamp town."
+    ],
+    "Winterhold": [
+      "You found what's left of Winterhold. It's seen better centuries.",
+      "Winterhold: Come for the College, stay because you're frozen solid."
+    ],
+    "Blackreach": [
+      "Blackreach discovered. Hope you brought a flashlight and Falmer repellent.",
+      "You found the underground realm of glowing mushrooms and bad decisions."
+    ],
+    "Helgen": [
+      "Back to where it all began. Still crispy.",
+      "Helgen: Skyrim's most famous before-and-after picture."
+    ],
+    "Jorrvaskr": [
+      "You found Jorrvaskr! Please return all stolen sweetrolls.",
+      "Home of the Companions: where every problem is solved with an axe."
+    ],
+    "Sovngarde": [
+      "Welcome to Sovngarde! Try the mead. It's literally to die for.",
+      "You discovered Sovngarde. Achievement unlocked: Visited heaven without dying!"
+    ],
+    "Dark Brotherhood Sanctuary": [
+      "You found the Dark Brotherhood. We know.",
+      "Sanctuary discovered. Remember: silence, my brother."
+    ],
+    "Azura's Shrine": [
+      "You discovered Azura's Shrine. No pressure, but a goddess is watching you now.",
+      "Giant statue found! Compensating for something, Azura?"
     ]
   }
 }

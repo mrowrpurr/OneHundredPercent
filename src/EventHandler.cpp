@@ -17,10 +17,34 @@ void EventHandler::UpdateJournalWithLatestStats(bool showSillyMessage) {
 
     auto displayedLocationStates = GetDiscoveredLocationStats();
 
+    auto& saveData = GetSaveData();
+
+    auto objectiveId = saveData.locationEvents.size();
+
+    Log("Adding the 'discovered locations' objective...");
+    JournalManager::SetStatus(objectiveId, true, false, true);
     JournalManager::UpdateObjectiveText(
-        0, std::format("{} discovered locations out of {}", displayedLocationStates.discoveredLocations, displayedLocationStates.totalLocations).c_str()
+        objectiveId, std::format("{} discovered locations out of {}", displayedLocationStates.discoveredLocations, displayedLocationStates.totalLocations).c_str()
     );
-    JournalManager::SetStatus(0, true, false, true);
+
+    for (auto& locationEvent : saveData.locationEvents) {
+        objectiveId--;
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        switch (locationEvent.eventType) {
+            case LocationEventType::Cleared:
+                Log("Cleared location: {}", locationEvent.locationName);
+                JournalManager::UpdateObjectiveText(objectiveId, std::format("Cleared location: {}", locationEvent.locationName).c_str());
+                JournalManager::SetStatus(objectiveId, true, true, false);
+                JournalManager::SetStatus(objectiveId, true, true, false);
+                break;
+            default:
+                Log("Discovered location: {}", locationEvent.locationName);
+                JournalManager::UpdateObjectiveText(objectiveId, std::format("Discovered location: {}", locationEvent.locationName).c_str());
+                JournalManager::SetStatus(objectiveId, true, true, false);
+                JournalManager::SetStatus(objectiveId, true, true, false);
+                break;
+        }
+    }
 
     if (!showSillyMessage) {
         Log("Skipping silly message display as requested.");

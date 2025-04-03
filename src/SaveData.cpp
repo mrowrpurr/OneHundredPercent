@@ -86,7 +86,9 @@ void SaveLocationEvent(LocationEventType type, std::string_view locationName) {
     auto* playerCharacter = RE::PlayerCharacter::GetSingleton();
     auto* currentLocation = playerCharacter->GetCurrentLocation();
 
-    GetSaveData().locationEvents.emplace_back(
+    Log("Saving location event: {}", (currentLocation ? currentLocation->GetFullName() : "<Unknown Location>"));
+    auto& saveData = GetSaveData();
+    saveData.locationEvents.emplace_back(
         std::string(locationName), type, RE::Calendar::GetSingleton()->GetCurrentGameTime(), playerCharacter->GetPosition(), playerCharacter->GetAngle(),
         currentLocation ? currentLocation->GetFullName() : "<Unknown Location>"
     );

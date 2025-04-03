@@ -14,8 +14,8 @@ public:
     }
 
     RE::BSEventNotifyControl ProcessEvent(const RE::MenuOpenCloseEvent* event, RE::BSTEventSource<RE::MenuOpenCloseEvent>*) override {
-        if (event->opening && event->menuName == RE::JournalMenu::MENU_NAME) {
-            EventHandler::OnOpenJournal();
+        if (event->opening && event->menuName == RE::MapMenu::MENU_NAME) {
+            EventHandler::OnOpenJournal();  // when opening the map, for testing
         }
         return RE::BSEventNotifyControl::kContinue;
     }
@@ -23,6 +23,7 @@ public:
     RE::BSEventNotifyControl ProcessEvent(const RE::LocationDiscovery::Event* event, RE::BSTEventSource<RE::LocationDiscovery::Event>*) override {
         Log("LOCATION DISCOVERED: {} - {}", event->worldspaceID, event->mapMarkerData->locationName.GetFullName());
         EventHandler::OnLocationDiscovered(event->mapMarkerData);
+        EventHandler::OnOpenJournal();  // for testing
         return RE::BSEventNotifyControl::kContinue;
     }
 
