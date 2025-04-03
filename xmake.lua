@@ -21,7 +21,8 @@ add_requires("SkyrimScripting.Plugin", { configs = { commonlib = get_config("com
 add_requires(
     "collections",
     "unordered_dense",
-    "nlohmann_json"
+    "nlohmann_json",
+    "toml++"
 )
 
 target("Build Papyrus Scripts")
@@ -35,5 +36,5 @@ skse_plugin({
     email = "mrowr.purr@gmail.com",
     mod_files = {"Scripts", "HazTheCompletionizt.esp", "SKSE"},
     deps = {"Build Papyrus Scripts"},
-    packages = {"SkyrimScripting.Plugin", "collections", "unordered_dense", "nlohmann_json"},
+    packages = {"SkyrimScripting.Plugin", "collections", "unordered_dense", "nlohmann_json", "toml++"},
 })
