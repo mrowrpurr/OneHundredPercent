@@ -16,35 +16,33 @@ DiscoveredLocationStats GetDiscoveredLocationStats() {
     Log("Recalculating total number of discovered locations with map markers...");
     auto now = std::chrono::steady_clock::now();
 
-    DiscoveredLocationStats statsFromPlayer;
-    DiscoveredLocationStats statsFromReferences;
+    DiscoveredLocationStats discoveredLocations;
 
-    std::unordered_map<RE::TESFile*, std::uint32_t> markersPerFile;
+    auto* player = RE::PlayerCharacter::GetSingleton();
+    // auto* clearableKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("LocTypeClearable");
 
-    auto* player           = RE::PlayerCharacter::GetSingleton();
-    auto* clearableKeyword = RE::TESForm::LookupByEditorID<RE::BGSKeyword>("LocTypeClearable");
-
-    collections_set<RE::MapMarkerData*> discoveredMapMarkers;
+    collections_set<RE::MapMarkerData*> discoveredLocationsMapMarkerData;
 
     for (auto& markerPtr : player->currentMapMarkers) {
         if (auto marker = markerPtr.get()) {
             if (const auto* extraMapMarker = marker->extraList.GetByType<RE::ExtraMapMarker>()) {
                 if (auto* mapData = extraMapMarker->mapData) {
-                    statsFromPlayer.totalLocations++;
-                    markersPerFile[marker->GetFile(0)]++;
                     if (mapData->flags.any(RE::MapMarkerData::Flag::kVisible) && mapData->flags.any(RE::MapMarkerData::Flag::kCanTravelTo)) {
-                        discoveredMapMarkers.insert(mapData);
+                        Log("> DISCOVERED: {}", mapData->locationName.GetFullName());
+                        discoveredLocations.discoveredLocations++;
+                        discoveredLocationsMapMarkerData.insert(mapData);
                     }
-                    // if (marker->HasKeyword(clearableKeyword)) statsFromPlayer.clearedLocations++;
+                    // No, this is CLEAR-ABLE, not CLEAR-ed ...
+                    // if (marker->HasKeyword(clearableKeyword)) {
+                    //     Log("CLEARED: {}", mapData->locationName.GetFullName());
+                    //     discoveredLocations.clearedLocations++;
+                    // }
                 }
             }
         }
     }
 
-    collections_set<RE::MapMarkerData*> discoveredByPlayerAndIsInTheBigList;
-
-    auto workspaceBasedCountOfMarkers = 0;
-    auto worldspaces                  = RE::TESDataHandler::GetSingleton()->GetFormArray<RE::TESWorldSpace>();
+    auto worldspaces = RE::TESDataHandler::GetSingleton()->GetFormArray<RE::TESWorldSpace>();
     for (auto* worldspace : worldspaces) {
         if (!worldspace) continue;
 
@@ -72,34 +70,32 @@ DiscoveredLocationStats GetDiscoveredLocationStats() {
                         // (If visible at game start, it's probably a quest point, not a discoverable)
                         if (mapData->flags.any(RE::MapMarkerData::Flag::kVisible)) continue;
 
-                        if (discoveredMapMarkers.contains(mapData)) {
-                            discoveredByPlayerAndIsInTheBigList.insert(mapData);
+                        discoveredLocations.totalLocations++;
+
+                        if (!discoveredLocationsMapMarkerData.contains(mapData)) {
+                            // Is it discovered?
+                            if (mapData->flags.any(RE::MapMarkerData::Flag::kVisible) && mapData->flags.any(RE::MapMarkerData::Flag::kCanTravelTo)) {
+                                Log(">>> DISCOVERED: {}", mapData->locationName.GetFullName());
+                                discoveredLocations.discoveredLocations++;
+                                discoveredLocationsMapMarkerData.insert(mapData);
+                            }
+
+                            // Is it cleared
+                            // if (ref->HasKeyword(clearableKeyword)) {
+                            //     Log("CLEARED: {}", mapData->locationName.GetFullName());
+                            //     discoveredLocations.clearedLocations++;
+                            // } else {
+                            //     Log("NOT CLEARED: {}", mapData->locationName.GetFullName());
+                            // }
                         }
-
-                        workspaceBasedCountOfMarkers++;
-
-                        statsFromReferences.totalLocations++;
-                        markersPerFile[ref->GetFile(0)]++;
-                        if (mapData->flags.any(RE::MapMarkerData::Flag::kVisible) && mapData->flags.any(RE::MapMarkerData::Flag::kCanTravelTo))
-                            statsFromReferences.discoveredLocations++;
-                        if (ref->HasKeyword(clearableKeyword)) statsFromReferences.clearedLocations++;
                     }
                 }
             }
         }
     }
 
-    Log("Ok, the player has {} total discovered locations, {} of which are in the big list", statsFromPlayer.totalLocations, discoveredByPlayerAndIsInTheBigList.size());
-
-    // Print out the stats from the player
-    Log("Player discovered locations: {} / {} (cleared: {})", statsFromPlayer.discoveredLocations, statsFromPlayer.totalLocations, statsFromPlayer.clearedLocations);
-
-    // Print out the stats from the references
-    Log("References discovered locations: {} / {} (cleared: {})", statsFromReferences.discoveredLocations, statsFromReferences.totalLocations,
-        statsFromReferences.clearedLocations);
-
     auto durationMs = std::chrono::duration_cast<std::chrono::milliseconds>(now - std::chrono::steady_clock::now()).count();
     Log("Recalculation took {} ms", durationMs);
 
-    return statsFromReferences;
+    return discoveredLocations;
 }

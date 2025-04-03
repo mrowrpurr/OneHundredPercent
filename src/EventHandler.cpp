@@ -2,6 +2,8 @@
 
 #include "EventHandler.h"
 
+#include <SkyrimScripting/Logging.h>
+
 #include <format>
 
 #include "DiscoveredLocations.h"
@@ -23,9 +25,12 @@ void EventHandler::UpdateJournalWithLatestStats() {
         auto integerPercentage    = static_cast<int>(std::floor(percentageDiscovered));
         auto percentageMessage    = SillyMessages::instance().GetRandomMessage_PercentageDiscovered(percentageDiscovered);
         if (!percentageMessage.empty()) {
+            Log("Percentage discovered: {}", percentageDiscovered);
+            Log("Message: {}", percentageMessage);
             JournalManager::UpdateObjectiveText(1, percentageMessage.c_str());
             JournalManager::SetStatus(1, true, false);
         } else {
+            Log("No message found for percentage discovered: {}", percentageDiscovered);
             JournalManager::SetStatus(1, false, false);
         }
     } else {
@@ -40,7 +45,7 @@ void EventHandler::OnLocationDiscovered(const RE::MapMarkerData* mapMarkerData) 
     if (GetIni().notification_on_location_discovered) {
         std::string locationName = mapMarkerData->locationName.GetFullName();
         std::string message;
-        
+
         // First try to get a specific message for this location
         if (SillyMessages::instance().HasSpecificLocationMessage(locationName)) {
             message = SillyMessages::instance().GetRandomSpecificLocationMessage(locationName);
@@ -48,8 +53,14 @@ void EventHandler::OnLocationDiscovered(const RE::MapMarkerData* mapMarkerData) 
             // Fall back to generic location discovered message if no specific one exists
             message = SillyMessages::instance().GetRandomMessage_LocationDiscovered(locationName);
         }
-        
-        if (!message.empty()) RE::DebugNotification(message.c_str());
+
+        if (!message.empty()) {
+            Log("Location discovered: {}", locationName);
+            Log("Message: {}", message);
+            RE::DebugNotification(message.c_str());
+        } else {
+            Log("No message found for discovered location: {}", locationName);
+        }
     }
 }
 
@@ -59,7 +70,13 @@ void EventHandler::OnLocationCleared(const BGSLocationEx* locationEx) {
 
     if (GetIni().notification_on_location_cleared) {
         auto message = SillyMessages::instance().GetRandomMessage_LocationCleared(locationEx->GetFullName());
-        if (!message.empty()) RE::DebugNotification(message.c_str());
+        if (!message.empty()) {
+            Log("Location cleared: {}", locationEx->GetFullName());
+            Log("Message: {}", message);
+            RE::DebugNotification(message.c_str());
+        } else {
+            Log("No message found for cleared location: {}", locationEx->GetFullName());
+        }
     }
 }
 
