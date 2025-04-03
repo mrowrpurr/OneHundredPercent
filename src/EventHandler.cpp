@@ -13,15 +13,21 @@
 #include "SillyMessages.h"
 
 void EventHandler::UpdateJournalWithLatestStats(bool showSillyMessage) {
+    Log("Updating journal with latest stats...");
+
     auto displayedLocationStates = GetDiscoveredLocationStats();
 
     JournalManager::UpdateObjectiveText(
         0, std::format("{} discovered locations out of {}", displayedLocationStates.discoveredLocations, displayedLocationStates.totalLocations).c_str()
     );
-    // JournalManager::SetStatus(0, true, false);
+    JournalManager::SetStatus(0, true, false, true);
 
-    if (!showSillyMessage) return;
+    if (!showSillyMessage) {
+        Log("Skipping silly message display as requested.");
+        return;
+    }
 
+    Log("Checking for silly messages...");
     if (GetIni().percentage_based_message_in_journal) {
         auto percentageDiscovered = static_cast<float>(displayedLocationStates.discoveredLocations) / displayedLocationStates.totalLocations * 100.0f;
         auto integerPercentage    = static_cast<int>(std::floor(percentageDiscovered));
@@ -39,6 +45,7 @@ void EventHandler::UpdateJournalWithLatestStats(bool showSillyMessage) {
     } else {
         JournalManager::SetStatus(1, false, false);
     }
+    Log("Journal updated with latest stats.");
 }
 
 void EventHandler::OnLocationDiscovered(const RE::MapMarkerData* mapMarkerData) {

@@ -6,11 +6,14 @@
 #include "PapyrusFunctions.h"
 #include "SaveData.h"
 
-
 SKSEPlugin_Entrypoint {
     SetupSaveCallbacks();
     SetupPapyrusFunctions();
-    FindAndLoadAllJsonFiles();
 }
-SKSEPlugin_OnDataLoaded { WatchForEvents(); }
+
+SKSEPlugin_OnDataLoaded {
+    WatchForEvents();
+    FindAndLoadAllJsonFiles();  // Requires data to lookup forms
+}
+
 SKSEPlugin_OnPostLoadGame { EventHandler::UpdateJournalWithLatestStats(); }

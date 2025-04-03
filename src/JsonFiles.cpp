@@ -2,6 +2,7 @@
 
 #include "JsonFiles.h"
 
+#include <RE/Skyrim.h>  // For RE::FormID
 #include <SKSE/SKSE.h>
 #include <SkyrimScripting/Logging.h>
 
@@ -9,6 +10,11 @@
 
 #include "Config.h"
 #include "SillyMessages.h"
+
+inline RE::FormID GetFormID(const RE::TESFile* plugin, RE::FormID localFormId) {
+    if (plugin->IsLight()) return localFormId | (0xFE000 | (plugin->GetSmallFileCompileIndex() << 12));
+    else return localFormId | (plugin->GetCompileIndex() << 24);
+}
 
 void LoadSillyMessagesFromJsonFile(std::filesystem::path jsonFilePath) {
     try {
@@ -23,34 +29,69 @@ void LoadSillyMessagesFromJsonFile(std::filesystem::path jsonFilePath) {
         nlohmann::json jsonData;
         file >> jsonData;
 
+        collections_map<std::string, const RE::TESFile*> plugins;
+
+        auto* dataHandler = RE::TESDataHandler::GetSingleton();
+        if (!dataHandler) {
+            SKSE::log::error("Failed to get TESDataHandler");
+            return;
+        }
+
         for (auto& [fileKey, fileValue] : jsonData.items()) {
-            const std::array<std::string, 5> knownKeys = {
-                "PercentageDiscoveredMessages", "OnSpecificLocationDiscovered", "OnMatchingLocationDiscovered", "OnSpecificLocationCleared", "OnMatchingLocationCleared"
-            };
+            Log("File: {}, Key: {}", jsonFilePath.string(), fileKey);
 
-            for (const auto& key : knownKeys) {
-                if (fileKey == key && fileValue.is_object()) {
-                    Log("Found nested structure for key: {}", key);
-                    auto& targetCollection = [&]() -> MessageCollection& {
-                        if (key == "PercentageDiscoveredMessages") return SillyMessages::instance().PercentageDiscoveredMessages;
-                        if (key == "OnSpecificLocationDiscovered") return SillyMessages::instance().OnSpecificLocationDiscovered;
-                        if (key == "OnMatchingLocationDiscovered") return SillyMessages::instance().OnMatchingLocationDiscovered;
-                        if (key == "OnSpecificLocationCleared") return SillyMessages::instance().OnSpecificLocationCleared;
-                        if (key == "OnMatchingLocationCleared") return SillyMessages::instance().OnMatchingLocationCleared;
-                        return SillyMessages::instance().OnMatchingLocationCleared;
-                    }();
-
-                    for (auto& [subKey, value] : fileValue.items()) {
-                        if (value.is_array()) {
-                            std::vector<std::string> messages;
-                            for (const auto& message : value) {
-                                if (message.is_string()) {
-                                    messages.push_back(message.get<std::string>());
-                                }
+            if (fileKey == "IgnoredLocations" && fileValue.is_array()) {
+                for (const auto& location : fileValue) {
+                    if (location.is_object() && location.contains("formId") && location.contains("plugin")) {
+                        try {
+                            auto               localFormId    = std::stoul(location["formId"].get<std::string>(), nullptr, 16);
+                            auto               pluginFilename = location["plugin"].get<std::string>();
+                            const RE::TESFile* plugin;
+                            auto               foundPlugin = plugins.find(pluginFilename);
+                            if (foundPlugin == plugins.end()) {
+                                plugin                  = dataHandler->LookupModByName(pluginFilename);
+                                plugins[pluginFilename] = plugin;
                             }
+                            if (plugin) {
+                                Log("Configured location to ignore: {} from plugin: {}", localFormId, pluginFilename);
+                                IgnoredLocationIDs.insert(GetFormID(plugin, localFormId));
+                            } else {
+                                Log("Plugin not found or invalid: {}", pluginFilename);
+                            }
+                        } catch (const std::exception& e) {
+                            SKSE::log::error("Error parsing IgnoredLocation in file {}: {}", jsonFilePath.string(), e.what());
+                        }
+                    }
+                }
+            } else {
+                const std::array<std::string, 5> knownKeys = {
+                    "PercentageDiscoveredMessages", "OnSpecificLocationDiscovered", "OnMatchingLocationDiscovered", "OnSpecificLocationCleared", "OnMatchingLocationCleared"
+                };
 
-                            if (!messages.empty()) {
-                                targetCollection[subKey] = messages;
+                for (const auto& key : knownKeys) {
+                    if (fileKey == key && fileValue.is_object()) {
+                        Log("Found nested structure for key: {}", key);
+                        auto& targetCollection = [&]() -> MessageCollection& {
+                            if (key == "PercentageDiscoveredMessages") return SillyMessages::instance().PercentageDiscoveredMessages;
+                            if (key == "OnSpecificLocationDiscovered") return SillyMessages::instance().OnSpecificLocationDiscovered;
+                            if (key == "OnMatchingLocationDiscovered") return SillyMessages::instance().OnMatchingLocationDiscovered;
+                            if (key == "OnSpecificLocationCleared") return SillyMessages::instance().OnSpecificLocationCleared;
+                            if (key == "OnMatchingLocationCleared") return SillyMessages::instance().OnMatchingLocationCleared;
+                            return SillyMessages::instance().OnMatchingLocationCleared;
+                        }();
+
+                        for (auto& [subKey, value] : fileValue.items()) {
+                            if (value.is_array()) {
+                                std::vector<std::string> messages;
+                                for (const auto& message : value) {
+                                    if (message.is_string()) {
+                                        messages.push_back(message.get<std::string>());
+                                    }
+                                }
+
+                                if (!messages.empty()) {
+                                    targetCollection[subKey] = messages;
+                                }
                             }
                         }
                     }
@@ -74,6 +115,9 @@ void FindAndLoadAllJsonFiles() {
             SKSE::log::error("JSON files folder does not exist: {}", Config::JSON_FILES_FOLDER.string());
             return;
         }
+
+        // Clear IgnoredLocations before loading
+        IgnoredLocationIDs.clear();
 
         // Iterate through all files in the directory
         for (const auto& entry : std::filesystem::directory_iterator(Config::JSON_FILES_FOLDER)) {

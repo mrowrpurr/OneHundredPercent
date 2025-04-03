@@ -1,0 +1,104 @@
+{
+  "IgnoredLocations": [
+    {
+      "formId": "18a59",
+      "plugin": "Skyrim.esm"
+    },
+    {
+      "formId": "18a57",
+      "plugin": "Skyrim.esm"
+    },
+    {
+      "formId": "18a50",
+      "plugin": "Skyrim.esm"
+    },
+    {
+      "formId": "18a53",
+      "plugin": "Skyrim.esm"
+    },
+    {
+      "formId": "18a51",
+      "plugin": "Skyrim.esm"
+    },
+    {
+      "formId": "18a56",
+      "plugin": "Skyrim.esm"
+    },
+    {
+      "formId": "18a58",
+      "plugin": "Skyrim.esm"
+    },
+    {
+      "formId": "fa6",
+      "plugin": "cceejsse002-tower.esl"
+    },
+    {
+      "formId": "18a57",
+      "plugin": "Skyrim.esm"
+    },
+    {
+      "formId": "18a4a",
+      "plugin": "Skyrim.esm"
+    },
+    {
+      "formId": "18a59",
+      "plugin": "Skyrim.esm"
+    },
+    {
+      "formId": "18a58",
+      "plugin": "Skyrim.esm"
+    },
+    {
+      "formId": "18a56",
+      "plugin": "Skyrim.esm"
+    },
+    {
+      "formId": "18a5a",
+      "plugin": "Skyrim.esm"
+    },
+    {
+      "formId": "1022",
+      "plugin": "cceejsse001-hstead.esm"
+    },
+    {
+      "formId": "18a5a",
+      "plugin": "Skyrim.esm"
+    },
+    {
+      "formId": "18a49",
+      "plugin": "Skyrim.esm"
+    },
+    {
+      "formId": "18a57",
+      "plugin": "Skyrim.esm"
+    },
+    {
+      "formId": "18a58",
+      "plugin": "Skyrim.esm"
+    },
+    {
+      "formId": "18a59",
+      "plugin": "Skyrim.esm"
+    },
+    {
+      "formId": "18a56",
+      "plugin": "Skyrim.esm"
+    },
+    {
+      "formId": "18a5a",
+      "plugin": "Skyrim.esm"
+    },
+    {
+      "formId": "4c1f",
+      "plugin": "Dawnguard.esm"
+    },
+    {
+      "formId": "16e2a",
+      "plugin": "Dragonborn.esm"
+    },
+    {
+      "formId": "16e2a",
+      "plugin": "Dragonborn.esm"
+    }
+  ]
+}
