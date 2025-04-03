@@ -2,6 +2,9 @@
 
 #include "SillyMessages.h"
 
+#include <SKSE/SKSE.h>
+#include <SkyrimScripting/Logging.h>
+
 #include <cmath>
 #include <filesystem>
 #include <fstream>
@@ -165,6 +168,8 @@ std::string SillyMessages::GetRandomMessage_LocationDiscovered(std::string_view 
 }
 
 std::string SillyMessages::GetRandomMessage_LocationCleared(std::string_view locationName) {
+    Log("Looking for cleared location message for: '{}'", locationName);
+
     // First check if we have a specific named location message
     if (HasSpecificLocationMessage(std::string(locationName))) {
         return GetRandomSpecificLocationMessage(std::string(locationName));
@@ -176,18 +181,21 @@ std::string SillyMessages::GetRandomMessage_LocationCleared(std::string_view loc
         return GetRandomMessage(specificIt->second);
     }
 
-    // Fall back to regex matching (case insensitive)
+    Log("Trying regex patterns for location: '{}'", locationName);
     std::string location(locationName);
     for (const auto& [pattern, messages] : OnMatchingLocationCleared) {
+        Log("  Checking pattern: '{}'", pattern);
         std::regex  regexPattern(pattern, std::regex_constants::icase);
         std::smatch matches;
 
         if (std::regex_match(location, matches, regexPattern)) {
+            Log("  MATCHED with pattern: '{}'", pattern);
             std::string message = GetRandomMessage(messages);
             return ReplaceCaptureGroups(message, matches);
         }
     }
 
+    Log("No matching pattern found for: '{}'", locationName);
     return "";
 }
 

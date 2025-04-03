@@ -23,49 +23,47 @@ void LoadSillyMessagesFromJsonFile(std::filesystem::path jsonFilePath) {
         nlohmann::json jsonData;
         file >> jsonData;
 
-        // Check for each of the top-level keys
-        const std::array<std::string, 5> topLevelKeys = {
-            "PercentageDiscoveredMessages", "OnSpecificLocationDiscovered", "OnMatchingLocationDiscovered", "OnSpecificLocationCleared", "OnMatchingLocationCleared"
-        };
+        for (auto& [fileKey, fileValue] : jsonData.items()) {
+            const std::array<std::string, 5> knownKeys = {
+                "PercentageDiscoveredMessages", "OnSpecificLocationDiscovered", "OnMatchingLocationDiscovered", "OnSpecificLocationCleared", "OnMatchingLocationCleared"
+            };
 
-        for (const auto& key : topLevelKeys) {
-            if (jsonData.contains(key) && jsonData[key].is_object()) {
-                auto& targetCollection = [&]() -> MessageCollection& {
-                    if (key == "PercentageDiscoveredMessages") return SillyMessages::instance().PercentageDiscoveredMessages;
-                    if (key == "OnSpecificLocationDiscovered") return SillyMessages::instance().OnSpecificLocationDiscovered;
-                    if (key == "OnMatchingLocationDiscovered") return SillyMessages::instance().OnMatchingLocationDiscovered;
-                    if (key == "OnSpecificLocationCleared") return SillyMessages::instance().OnSpecificLocationCleared;
-                    if (key == "OnMatchingLocationCleared") return SillyMessages::instance().OnMatchingLocationCleared;
-                    return SillyMessages::instance().OnMatchingLocationCleared;  // OnMatchingLocationCleared
-                }();
+            for (const auto& key : knownKeys) {
+                if (fileKey == key && fileValue.is_object()) {
+                    Log("Found nested structure for key: {}", key);
+                    auto& targetCollection = [&]() -> MessageCollection& {
+                        if (key == "PercentageDiscoveredMessages") return SillyMessages::instance().PercentageDiscoveredMessages;
+                        if (key == "OnSpecificLocationDiscovered") return SillyMessages::instance().OnSpecificLocationDiscovered;
+                        if (key == "OnMatchingLocationDiscovered") return SillyMessages::instance().OnMatchingLocationDiscovered;
+                        if (key == "OnSpecificLocationCleared") return SillyMessages::instance().OnSpecificLocationCleared;
+                        if (key == "OnMatchingLocationCleared") return SillyMessages::instance().OnMatchingLocationCleared;
+                        return SillyMessages::instance().OnMatchingLocationCleared;
+                    }();
 
-                // Iterate through each sub-object key
-                for (auto& [subKey, value] : jsonData[key].items()) {
-                    if (value.is_array()) {
-                        std::vector<std::string> messages;
-                        for (const auto& message : value) {
-                            if (message.is_string()) {
-                                messages.push_back(message.get<std::string>());
+                    for (auto& [subKey, value] : fileValue.items()) {
+                        if (value.is_array()) {
+                            std::vector<std::string> messages;
+                            for (const auto& message : value) {
+                                if (message.is_string()) {
+                                    messages.push_back(message.get<std::string>());
+                                }
                             }
-                        }
 
-                        // Add messages to the collection
-                        if (!messages.empty()) {
-                            targetCollection[subKey] = messages;
-                            Log("Added {} messages for key '{}' in {}", messages.size(), subKey, key);
+                            if (!messages.empty()) {
+                                targetCollection[subKey] = messages;
+                            }
                         }
                     }
                 }
             }
         }
 
+        Log("Finished loading JSON file: {}", jsonFilePath.string());
     } catch (const nlohmann::json::exception& e) {
         SKSE::log::error("JSON parsing error in file {}: {}", jsonFilePath.string(), e.what());
     } catch (const std::exception& e) {
         SKSE::log::error("Error processing JSON file {}: {}", jsonFilePath.string(), e.what());
     }
-
-    Log("Finished loading JSON file: {}", jsonFilePath.string());
 }
 
 void FindAndLoadAllJsonFiles() {

@@ -3,8 +3,11 @@
 #include "JournalManager.h"
 
 #include <RE/Skyrim.h>
+#include <SKSE/SKSE.h>
+#include <SkyrimScripting/Logging.h>
 
 #include "Config.h"
+#include "SetQuestObjectiveState.h"
 
 namespace JournalManager {
     inline RE::TESQuest* GetQuest() { return RE::TESForm::LookupByEditorID<RE::TESQuest>(Config::QUEST_EDITOR_ID); }
@@ -17,6 +20,7 @@ namespace JournalManager {
                 ++i;
             }
         }
+        Log("Failed to get objective {} from quest {}", index, Config::QUEST_EDITOR_ID);
         return nullptr;
     }
 
@@ -24,14 +28,15 @@ namespace JournalManager {
         if (auto* objective = GetObjective(index)) objective->displayText = text;
     }
 
-    void SetStatus(std::uint32_t index, bool visible, bool completed) {
+    void SetStatus(std::uint32_t index, bool visible, bool completed, bool active) {
+        Log("Setting status for objective {}: visible={}, completed={}", index, visible, completed);
         if (auto* objective = GetObjective(index)) {
             if (visible) {
-                if (completed) objective->state.set(RE::QUEST_OBJECTIVE_STATE::kCompletedDisplayed);
-                else objective->state.set(RE::QUEST_OBJECTIVE_STATE::kDisplayed);
+                if (completed) SetObjectiveState(objective, RE::QUEST_OBJECTIVE_STATE::kCompletedDisplayed);
+                else SetObjectiveState(objective, active ? RE::QUEST_OBJECTIVE_STATE::kDisplayed : RE::QUEST_OBJECTIVE_STATE::kDormant);
             } else {
-                if (completed) objective->state.set(RE::QUEST_OBJECTIVE_STATE::kCompleted);
-                else objective->state.reset(RE::QUEST_OBJECTIVE_STATE::kDisplayed);
+                if (completed) SetObjectiveState(objective, RE::QUEST_OBJECTIVE_STATE::kCompleted);
+                else SetObjectiveState(objective, RE::QUEST_OBJECTIVE_STATE::kDormant);
             }
         }
     }
