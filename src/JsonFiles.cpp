@@ -10,10 +10,16 @@
 
 #include "Config.h"
 #include "SillyMessages.h"
+#include "StringUtils.h"
 
 inline RE::FormID GetFormID(const RE::TESFile* plugin, RE::FormID localFormId) {
-    if (plugin->IsLight()) return localFormId | (0xFE000 | (plugin->GetSmallFileCompileIndex() << 12));
-    else return localFormId | (plugin->GetCompileIndex() << 24);
+    // Special case for Skyrim.esm which should have 0 as its index (instead of 80)
+    if (ToLowerCase(plugin->GetFilename()) == "skyrim.esm") return localFormId;  // For Skyrim.esm, we keep the local FormID as is
+    if (plugin->IsLight()) {
+        return (localFormId & 0xFFF) | (0xFE000 | (plugin->GetSmallFileCompileIndex() << 12));
+    } else {
+        return (localFormId & 0xFFFFFF) | (plugin->GetCompileIndex() << 24);
+    }
 }
 
 void LoadSillyMessagesFromJsonFile(std::filesystem::path jsonFilePath) {
@@ -53,7 +59,7 @@ void LoadSillyMessagesFromJsonFile(std::filesystem::path jsonFilePath) {
                                 plugins[pluginFilename] = plugin;
                             }
                             if (plugin) {
-                                Log("Configured location to ignore: {} from plugin: {}", localFormId, pluginFilename);
+                                Log("Configured location to ignore: {:x} from plugin: {}", localFormId, pluginFilename);
                                 IgnoredLocationIDs.insert(GetFormID(plugin, localFormId));
                             } else {
                                 Log("Plugin not found or invalid: {}", pluginFilename);
