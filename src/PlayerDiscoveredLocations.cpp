@@ -4,6 +4,7 @@
 
 #include "DiscoverableLocations.h"
 #include "FormUtils.h"
+#include "JsonFiles.h"
 #include "SaveData.h"
 
 collections_set<RE::BGSLocation*> GetPlayerDiscoveredLocationList() {
@@ -21,12 +22,13 @@ collections_set<RE::BGSLocation*> GetPlayerDiscoveredLocationList() {
             if (const auto* extraMapMarker = marker->extraList.GetByType<RE::ExtraMapMarker>()) {
                 if (auto* mapData = extraMapMarker->mapData) {
                     if (mapData->flags.any(RE::MapMarkerData::Flag::kVisible) && mapData->flags.any(RE::MapMarkerData::Flag::kCanTravelTo)) {
-                        if (mapData->locationName.fullName.contains("Military Camp")) continue;   // Not sure how to skip these ones quite yet...
-                        if (mapData->locationName.fullName.contains("Fort Dawnguard")) continue;  // Not sure how to skip these ones quite yet...
                         auto findLocation = discoverableLocations->discoverableMapMarkersToLocations.find(mapData);
                         if (findLocation != discoverableLocations->discoverableMapMarkersToLocations.end()) {
+                            if (IgnoredLocationIDs.contains(findLocation->second->GetFormID())) continue;  // Skip any ignored location IDs
+                            if (IgnoredMapMarkers.contains(ToLowerCase(std::format("{}::{}", findLocation->second->GetFullName(), mapData->locationName.GetFullName()))))
+                                continue;  // Skip any ignored map markers
                             discoveredLocations.insert(findLocation->second);
-                            Log("[Player Marker] Discovered location: {} - {} ... {:x} @ {}", findLocation->second->GetFullName(), mapData->locationName.GetFullName(),
+                            Log("[Player Marker] Discovered location: {}::{} ... {:x} @ {}", findLocation->second->GetFullName(), mapData->locationName.GetFullName(),
                                 findLocation->second->GetLocalFormID(), findLocation->second->GetFile(0)->GetFilename());
                         }
                     }

@@ -1,0 +1,11 @@
+{
+  "IgnoredMapMarkers": [
+    "Whiterun::Whiterun Military Camp",
+    "Windhelm::Windhelm Military Camp",
+    "Riften::Riften Military Camp",
+    "Markarth::Markarth Military Camp",
+    "Solitude::Solitude Military Camp",
+    "Dayspring Canyon::Fort Dawnguard",
+    "Solstheim::Campsite"
+  ]
+}

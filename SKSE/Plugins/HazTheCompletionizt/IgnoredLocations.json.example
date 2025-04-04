@@ -1,5 +1,5 @@
 {
-  "IgnoredLocations_XXX": [
+  "IgnoredLocations": [
     {
       "formId": "xxxxxx",
       "plugin": "xxxxxxxxxxxxx.esp"

@@ -59,6 +59,14 @@ void LoadSillyMessagesFromJsonFile(std::filesystem::path jsonFilePath) {
                         }
                     }
                 }
+            } else if (fileKey == "IgnoredMapMarkers" && fileValue.is_array()) {
+                for (const auto& locationName : fileValue) {
+                    if (locationName.is_string()) {
+                        std::string name = locationName.get<std::string>();
+                        Log("Configured location name to ignore: {}", name);
+                        IgnoredMapMarkers.insert(ToLowerCase(name));
+                    }
+                }
             } else {
                 const std::array<std::string, 5> knownKeys = {
                     "PercentageDiscoveredMessages", "OnSpecificLocationDiscovered", "OnMatchingLocationDiscovered", "OnSpecificLocationCleared", "OnMatchingLocationCleared"
@@ -114,6 +122,8 @@ void FindAndLoadAllJsonFiles() {
 
         // Clear IgnoredLocations before loading
         IgnoredLocationIDs.clear();
+        // Also clear IgnoredMapMarkers before loading
+        IgnoredMapMarkers.clear();
 
         // Iterate through all files in the directory
         for (const auto& entry : std::filesystem::directory_iterator(Config::JSON_FILES_FOLDER)) {
