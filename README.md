@@ -2,6 +2,8 @@
 
 **[Download from Releases](https://github.com/MrowrMisc/HazTheCompletionizt/releases)**
 
+## Screenshots
+
 ![Screenshot](screenshots/Started-Completionist.png)
 
 ![Screenshot](screenshots/OnScreenMessage-LocationDiscovered.png)
@@ -10,7 +12,7 @@
 
 ![Screenshot](screenshots/MaraStatue.png)
 
-### `HazTheCompletionist.toml`
+## `HazTheCompletionist.toml`
 
 ```toml
 [OnScreenMessages]
@@ -29,7 +31,7 @@ show_message_for_most_recent_location_in_journal = true
 max_recent_locations_in_journal = 50
 ```
 
-# Credits
+## Credits
 
 - `digitalApple` - https://next.nexusmods.com/profile/digitalApple?gameId=1704
   > _for [`BountyQuestsRedoneNG`](https://github.com/digital-apple/BountyQuestsRedoneNG) for hooks for updating Quest objectives_ - `MIT License`
