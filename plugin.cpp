@@ -3,11 +3,14 @@
 #include "DiscoverableLocations.h"
 #include "EventHandler.h"
 #include "EventWatcher.h"
+#include "IniFile.h"
 #include "JsonFiles.h"
 #include "PapyrusFunctions.h"
 #include "SaveData.h"
 
+
 SKSEPlugin_Entrypoint {
+    LoadIni();
     SetupSaveCallbacks();
     SetupPapyrusFunctions();
 }

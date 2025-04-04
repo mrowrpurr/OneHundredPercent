@@ -11,5 +11,5 @@ namespace Config {
     constexpr auto RECENT_LOCATIONS_FORMLIST = "MP_HazTheCompletionizt_Locations";
 
     const std::filesystem::path JSON_FILES_FOLDER = "Data/SKSE/Plugins/HazTheCompletionizt";
-    const std::filesystem::path INI_FILE_PATH     = "Data/SKSE/Plugins/HazTheCompletionizt.ini";
+    const std::filesystem::path INI_FILE_PATH     = "Data/SKSE/Plugins/HazTheCompletionizt.toml";
 }

@@ -5,39 +5,61 @@
 
 #include "Config.h"
 
-/*
-    [SillyMessages]
-    notification_on_location_discovered=1
-    notification_on_location_cleared=1
-*/
-
 void LoadIni() {
     if (g_iniConfigLoaded.exchange(true)) return;
 
-    auto tomlConfig = toml::parse_file(Config::INI_FILE_PATH.string());
-    if (tomlConfig.contains("SillyMessages")) {
-        auto section                                    = tomlConfig["SillyMessages"];
-        g_iniConfig.notification_on_location_discovered = section["notification_on_location_discovered"].value_or(true);
-        g_iniConfig.notification_on_location_cleared    = section["notification_on_location_cleared"].value_or(true);
-        g_iniConfig.percentage_based_message_in_journal = section["percentage_based_message_in_journal"].value_or(true);
-        g_iniConfig.silly_message_in_journal            = section["silly_message_in_journal"].value_or(true);
-        g_iniConfig.recent_locations_in_journal         = section["recent_locations_in_journal"].value_or(true);
-        g_iniConfig.most_recent_location_in_journal     = section["most_recent_location_in_journal"].value_or(true);
-    } else {
-        g_iniConfig.notification_on_location_discovered = true;
-        g_iniConfig.notification_on_location_cleared    = true;
-        g_iniConfig.percentage_based_message_in_journal = true;
-        g_iniConfig.silly_message_in_journal            = true;
-        g_iniConfig.recent_locations_in_journal         = true;
-        g_iniConfig.most_recent_location_in_journal     = true;
+    try {
+        if (!std::filesystem::exists(Config::INI_FILE_PATH)) {
+            Log("INI file not found at: {}. Using default values.", Config::INI_FILE_PATH.string());
+            goto use_defaults;
+        }
+
+        auto tomlConfig = toml::parse_file(Config::INI_FILE_PATH.string());
+        if (tomlConfig.contains("OnScreenMessages")) {
+            auto onScreenMessagesSection               = tomlConfig["OnScreenMessages"];
+            g_iniConfig.message_on_location_discovered = onScreenMessagesSection["message_on_location_discovered"].value_or(true);
+            g_iniConfig.message_on_location_cleared    = onScreenMessagesSection["message_on_location_cleared"].value_or(true);
+        } else {
+            Log("'OnScreenMessages' section not found in INI. Using default values.");
+            goto use_defaults;
+        }
+
+        if (tomlConfig.contains("Journal")) {
+            auto journalSection                                          = tomlConfig["Journal"];
+            g_iniConfig.percentage_based_message_in_journal              = journalSection["percentage_based_message_in_journal"].value_or(true);
+            g_iniConfig.show_silly_message_in_journal                    = journalSection["show_silly_message_in_journal"].value_or(true);
+            g_iniConfig.show_recent_locations_in_journal                 = journalSection["show_recent_locations_in_journal"].value_or(true);
+            g_iniConfig.show_message_for_most_recent_location_in_journal = journalSection["show_message_for_most_recent_location_in_journal"].value_or(true);
+        } else {
+            Log("'Journal' section not found in INI. Using default values.");
+            goto use_defaults;
+        }
+    } catch (const toml::parse_error& e) {
+        Log("Error parsing INI file: {}", e.what());
+        goto use_defaults;
+    } catch (const std::exception& e) {
+        Log("Unexpected error loading INI file: {}", e.what());
+        goto use_defaults;
     }
 
-    Log("Loaded INI configuration:");
-    Log("  notification_on_location_discovered: {}", g_iniConfig.notification_on_location_discovered);
-    Log("  notification_on_location_cleared: {}", g_iniConfig.notification_on_location_cleared);
-    Log("  percentage_based_message_in_journal: {}", g_iniConfig.percentage_based_message_in_journal);
-    Log("  silly_message_in_journal: {}", g_iniConfig.silly_message_in_journal);
-    Log("  recent_locations_in_journal: {}", g_iniConfig.recent_locations_in_journal);
-    Log("  most_recent_location_in_journal: {}", g_iniConfig.most_recent_location_in_journal);
     Log("INI configuration loaded successfully.");
+    goto log_values;
+
+use_defaults:
+    g_iniConfig.message_on_location_discovered                   = true;
+    g_iniConfig.message_on_location_cleared                      = true;
+    g_iniConfig.percentage_based_message_in_journal              = true;
+    g_iniConfig.show_silly_message_in_journal                    = true;
+    g_iniConfig.show_recent_locations_in_journal                 = true;
+    g_iniConfig.show_message_for_most_recent_location_in_journal = true;
+    Log("Using default configuration values.");
+
+log_values:
+    Log("Current configuration:");
+    Log("  message_on_location_discovered: {}", g_iniConfig.message_on_location_discovered);
+    Log("  message_on_location_cleared: {}", g_iniConfig.message_on_location_cleared);
+    Log("  percentage_based_message_in_journal: {}", g_iniConfig.percentage_based_message_in_journal);
+    Log("  show_silly_message_in_journal: {}", g_iniConfig.show_silly_message_in_journal);
+    Log("  show_recent_locations_in_journal: {}", g_iniConfig.show_recent_locations_in_journal);
+    Log("  show_message_for_most_recent_location_in_journal: {}", g_iniConfig.show_message_for_most_recent_location_in_journal);
 }

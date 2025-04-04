@@ -1,0 +1,9 @@
+[OnScreenMessages]
+message_on_location_discovered=1
+message_on_location_cleared=1
+
+[Journal]
+percentage_based_message_in_journal=1
+show_silly_message_in_journal=1
+show_recent_locations_in_journal=1
+show_message_for_most_recent_location_in_journal=1

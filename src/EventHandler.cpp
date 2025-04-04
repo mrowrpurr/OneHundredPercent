@@ -24,7 +24,7 @@ void EventHandler::UpdateJournalWithLatestStats(std::optional<std::string> silly
     // }
     // lastJournalUpdate = now;
 
-    // if (!GetIni().most_recent_location_in_journal) sillyMessage = std::nullopt;
+    // if (!GetIni().show_message_for_most_recent_location_in_journal) sillyMessage = std::nullopt;
 
     // Log("Updating journal with latest stats...");
 
@@ -34,7 +34,7 @@ void EventHandler::UpdateJournalWithLatestStats(std::optional<std::string> silly
 
     // Log("Checking for silly messages...");
     // std::string percentageSillyMessage;
-    // if (GetIni().silly_message_in_journal) {
+    // if (GetIni().show_silly_message_in_journal) {
     //     auto percentageDiscovered = static_cast<float>(displayedLocationStates.DiscoverableLocations) / displayedLocationStates.totalLocations * 100.0f;
     //     auto integerPercentage    = static_cast<int>(std::floor(percentageDiscovered));
     //     auto percentageMessage    = SillyMessages::instance().GetRandomMessage_PercentageDiscovered(percentageDiscovered);
@@ -53,10 +53,10 @@ void EventHandler::UpdateJournalWithLatestStats(std::optional<std::string> silly
     // Log("Journal updated with latest stats.");
     // if (saveData.locationEvents.size() > discoveredCount) discoveredCount = saveData.locationEvents.size();
 
-    // auto objectiveId = GetIni().recent_locations_in_journal ? saveData.locationEvents.size() : 0;
-    // if (GetIni().most_recent_location_in_journal)
+    // auto objectiveId = GetIni().show_recent_locations_in_journal ? saveData.locationEvents.size() : 0;
+    // if (GetIni().show_message_for_most_recent_location_in_journal)
     //     if (sillyMessage && !sillyMessage.value().empty()) objectiveId++;
-    // if (GetIni().recent_locations_in_journal)
+    // if (GetIni().show_recent_locations_in_journal)
     //     if (!percentageSillyMessage.empty()) objectiveId++;
 
     // Log("Adding the 'discovered locations' objective...");
@@ -81,7 +81,7 @@ void EventHandler::UpdateJournalWithLatestStats(std::optional<std::string> silly
     //     JournalManager::SetStatus(objectiveId, true, false, true);
     // }
 
-    // if (!GetIni().recent_locations_in_journal) {
+    // if (!GetIni().show_recent_locations_in_journal) {
     //     Log("Not adding recent locations to journal.");
     //     return;
     // }
@@ -106,47 +106,50 @@ void EventHandler::UpdateJournalWithLatestStats(std::optional<std::string> silly
 void EventHandler::OnLocationDiscovered(const RE::BGSLocation* location) {
     SaveLocationDiscoveredEvent(location);
 
-    // SaveLocationDiscoveredEvent(mapMarkerData->locationName.GetFullName());
-    // SaveLocationDiscoveredEvent()
+    // TODO: EXTRACT THIS SILLY MESSAGE STUFF :)
+    std::string sillyMessage;
+    Log("... in silly message ...");
+    if (GetIni().message_on_location_discovered) {
+        auto locationName = std::string{location->GetName()};
+        Log("...Discovered location: {}", locationName);
 
-    // std::string sillyMessage;
-    // if (GetIni().notification_on_location_discovered) {
-    //     std::string locationName = mapMarkerData->locationName.GetFullName();
+        // First try to get a specific message for this location
+        if (SillyMessages::instance().HasSpecificLocationMessage(locationName)) {
+            sillyMessage = SillyMessages::instance().GetRandomSpecificLocationMessage(locationName);
+        } else {
+            // Fall back to generic location discovered message if no specific one exists
+            sillyMessage = SillyMessages::instance().GetRandomMessage_LocationDiscovered(locationName);
+        }
 
-    //     // First try to get a specific message for this location
-    //     if (SillyMessages::instance().HasSpecificLocationMessage(locationName)) {
-    //         sillyMessage = SillyMessages::instance().GetRandomSpecificLocationMessage(locationName);
-    //     } else {
-    //         // Fall back to generic location discovered message if no specific one exists
-    //         sillyMessage = SillyMessages::instance().GetRandomMessage_LocationDiscovered(locationName);
-    //     }
+        if (!sillyMessage.empty()) {
+            Log("Silly Message: {} - {}", locationName, sillyMessage);
+            RE::DebugNotification(sillyMessage.c_str());
+        } else {
+            Log("No message found for discovered location: {}", locationName);
+        }
+    }
 
-    //     if (!sillyMessage.empty()) {
-    //         Log("Silly Message: {} - {}", locationName, sillyMessage);
-    //         RE::DebugNotification(sillyMessage.c_str());
-    //     } else {
-    //         Log("No message found for discovered location: {}", locationName);
-    //     }
-    // }
-
+    // TODO
     // UpdateJournalWithLatestStats(sillyMessage.empty() ? std::nullopt : std::make_optional(sillyMessage));
 }
 
 void EventHandler::OnLocationCleared(const RE::BGSLocation* location) {
     SaveLocationClearedEvent(location);
 
-    // SaveLocationClearedEvent(locationEx->GetFullName());
+    // TODO: EXTRACT THIS SILLY MESSAGE STUFF :)
+    std::string sillyMessage;
+    if (GetIni().message_on_location_cleared) {
+        const auto* locationName = location->GetName();
 
-    // std::string sillyMessage;
-    // if (GetIni().notification_on_location_cleared) {
-    //     sillyMessage = SillyMessages::instance().GetRandomMessage_LocationCleared(locationEx->GetFullName());
-    //     if (!sillyMessage.empty()) {
-    //         Log("Silly Message, Location cleared: {} - {}", locationEx->GetFullName(), sillyMessage);
-    //         RE::DebugNotification(sillyMessage.c_str());
-    //     } else {
-    //         Log("No message found for cleared location: {}", locationEx->GetFullName());
-    //     }
-    // }
+        sillyMessage = SillyMessages::instance().GetRandomMessage_LocationCleared(locationName);
+        if (!sillyMessage.empty()) {
+            Log("Silly Message, Location cleared: {} - {}", locationName, sillyMessage);
+            RE::DebugNotification(sillyMessage.c_str());
+        } else {
+            Log("No message found for cleared location: {}", locationName);
+        }
+    }
 
+    // TODO
     // UpdateJournalWithLatestStats(sillyMessage.empty() ? std::nullopt : std::make_optional(sillyMessage));
 }

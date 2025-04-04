@@ -87,14 +87,13 @@ void SetupSaveCallbacks() {
 }
 
 /*
-[[nodiscard]] FormID GetLocalFormID() {
-    auto file = GetFile(0);
-
-    RE::FormID fileIndex = file->compileIndex << (3 * 8);
-    fileIndex += file->smallFileCompileIndex << ((1 * 8) + 4);
-
-    return formID & ~fileIndex;
-}
+From CommonLibSSE:
+    FormID GetLocalFormID() {
+        auto file = GetFile(0);
+        RE::FormID fileIndex = file->compileIndex << (3 * 8);
+        fileIndex += file->smallFileCompileIndex << ((1 * 8) + 4);
+        return formID & ~fileIndex;
+    }
 */
 
 const RE::FormID GetLocalFormID(const RE::BGSLocation* location) {
