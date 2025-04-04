@@ -98,9 +98,9 @@ void EventHandler::UpdateJournalWithLatestStats(std::string_view sillyMessage) {
         auto percentageMessage = SillyMessages::instance().GetRandomMessage_PercentageDiscovered(percentageDiscovered);
         if (!percentageMessage.empty()) {
             journalEntries.push_back({JournalEntryType::PercentageDiscoveredSillyMessage, percentageMessage});
-            Log("[Journal] Percentage discovered: {} - {}", percentageDiscovered, percentageMessage);
+            Log("[Journal] [Message] Percentage discovered: {} - {}", percentageDiscovered, percentageMessage);
         } else {
-            Log("[Journal] PNo message found for percentage discovered: {}", percentageDiscovered);
+            Log("[Journal] No message found for percentage discovered: {}", percentageDiscovered);
         }
     }
 
