@@ -12,7 +12,7 @@
 
 ![Screenshot](screenshots/MaraStatue.png)
 
-## `HazTheCompletionist.toml`
+## `HazTheCompletionizt.toml`
 
 ```toml
 [OnScreenMessages]
