@@ -23,13 +23,15 @@ void SaveData::Save(SKSE::SerializationInterface* intfc) {
     std::uint32_t count = static_cast<std::uint32_t>(locationEvents.size());
     intfc->WriteRecordData(count);
 
-    for (const auto& e : locationEvents) {
+    for (const auto& [key, e] : locationEvents) {
         WriteString(intfc, e.locationName);
         intfc->WriteRecordData(static_cast<std::uint32_t>(e.eventType));
         intfc->WriteRecordData(e.eventTime);
         intfc->WriteRecordData(e.eventPosition);
         intfc->WriteRecordData(e.eventRotation);
         WriteString(intfc, e.eventCellName);
+        intfc->WriteRecordData(e.locationFormID);
+        WriteString(intfc, e.locationPluginName);
     }
 }
 
@@ -48,7 +50,9 @@ void SaveData::Load(SKSE::SerializationInterface* intfc) {
         intfc->ReadRecordData(e.eventPosition);
         intfc->ReadRecordData(e.eventRotation);
         ReadString(intfc, e.eventCellName);
-        locationEvents.push_back(std::move(e));
+        intfc->ReadRecordData(e.locationFormID);
+        ReadString(intfc, e.locationPluginName);
+        locationEvents[e.locationName] = std::move(e);
     }
 }
 
@@ -82,30 +86,32 @@ void SetupSaveCallbacks() {
     serializationInterface->SetLoadCallback(LoadCallback);
 }
 
-void SaveLocationEvent(LocationEventType type, std::string_view locationName) {
+void SaveLocationEvent(LocationEventType type, RE::BGSLocation* location) {
     auto* playerCharacter = RE::PlayerCharacter::GetSingleton();
     auto* currentLocation = playerCharacter->GetCurrentLocation();
+    auto  locationName    = std::string{location->GetFullName()};
+    auto& saveData        = GetSaveData();
 
-    Log("Saving location event: {}", (currentLocation ? currentLocation->GetFullName() : "<Unknown Location>"));
-
-    // If it already in the list?
-    auto& saveData = GetSaveData();
-
-    // O(n)
-    auto existing = std::find_if(saveData.locationEvents.begin(), saveData.locationEvents.end(), [&locationName](const auto& e) { return e.locationName == locationName; });
-
+    auto existing = saveData.locationEvents.find(locationName);
     if (existing != saveData.locationEvents.end()) {
         // If it is, update the time
-        existing->eventTime = RE::Calendar::GetSingleton()->GetCurrentGameTime();
-        if (existing->eventType == LocationEventType::Discovered && type == LocationEventType::Cleared) existing->eventType = LocationEventType::Cleared;
+        existing->second.eventTime = RE::Calendar::GetSingleton()->GetCurrentGameTime();
+        if (existing->second.eventType == LocationEventType::Discovered && type == LocationEventType::Cleared) existing->second.eventType = LocationEventType::Cleared;
         return;
     }
 
-    saveData.locationEvents.emplace_back(
-        std::string(locationName), type, RE::Calendar::GetSingleton()->GetCurrentGameTime(), playerCharacter->GetPosition(), playerCharacter->GetAngle(),
-        currentLocation ? currentLocation->GetFullName() : "<Unknown Location>"
-    );
+    auto& addedLocationEvent = saveData.locationEvents[locationName] = LocationEvent{
+        locationName,
+        type,
+        RE::Calendar::GetSingleton()->GetCurrentGameTime(),
+        playerCharacter->GetPosition(),
+        playerCharacter->GetAngle(),
+        currentLocation ? currentLocation->GetFullName() : "<Unknown Location>",
+        location ? location->GetLocalFormID() : 0,
+        location ? location->GetFile(0)->GetFilename().data() : "",
+    };
+    Log("[Save] [AddLocationEvent] {} - {} - {}", addedLocationEvent.locationName, LocationEventTypeToString(addedLocationEvent.eventType), addedLocationEvent.eventCellName);
 }
 
-void SaveLocationDiscoveredEvent(std::string_view locationName) { SaveLocationEvent(LocationEventType::Discovered, locationName); }
-void SaveLocationClearedEvent(std::string_view locationName) { SaveLocationEvent(LocationEventType::Cleared, locationName); }
+void SaveLocationDiscoveredEvent(RE::BGSLocation* location) { SaveLocationEvent(LocationEventType::Discovered, location); }
+void SaveLocationClearedEvent(RE::BGSLocation* location) { SaveLocationEvent(LocationEventType::Cleared, location); }

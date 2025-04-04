@@ -3,7 +3,7 @@
 #include <RE/Skyrim.h>
 
 namespace PapyrusFunctions {
-    void UpdateJournalWithLatestDiscoveredLocationStats(RE::StaticFunctionTag*);
+    void UpdateJournalWithLatestDiscoverableLocationInfo(RE::StaticFunctionTag*);
     bool BindFunctions(RE::BSScript::Internal::VirtualMachine* vm);
 }
 

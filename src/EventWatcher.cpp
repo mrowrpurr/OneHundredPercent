@@ -4,6 +4,7 @@
 #include <SkyrimScripting/Logging.h>
 
 #include "BGSLocationEx.h"
+#include "DiscoverableLocations.h"
 #include "EventHandler.h"
 
 class EventSink : public RE::BSTEventSink<RE::LocationDiscovery::Event>, public RE::BSTEventSink<RE::LocationCleared::Event> {
@@ -14,15 +15,21 @@ public:
     }
 
     RE::BSEventNotifyControl ProcessEvent(const RE::LocationDiscovery::Event* event, RE::BSTEventSource<RE::LocationDiscovery::Event>*) override {
-        Log("Location Discovered: {} - {}", event->worldspaceID, event->mapMarkerData->locationName.GetFullName());
-        EventHandler::OnLocationDiscovered(event->mapMarkerData);
+        auto* discoverableLocationInfo = GetDiscoverableLocationInfo();
+        auto  foundLocation            = discoverableLocationInfo->discoverableMapMarkersToLocations.find(event->mapMarkerData);
+        if (foundLocation != discoverableLocationInfo->discoverableMapMarkersToLocations.end()) {
+            Log("[Event] Location Discovered: {}", foundLocation->second->GetFormID());
+            EventHandler::OnLocationDiscovered(foundLocation->second);
+        } else {
+            Log("[Event] Discovered location (not found in discoverable locations list) - {}", event->mapMarkerData->locationName.GetFullName());
+        }
         return RE::BSEventNotifyControl::kContinue;
     }
 
     RE::BSEventNotifyControl ProcessEvent(const RE::LocationCleared::Event* event, RE::BSTEventSource<RE::LocationCleared::Event>*) override {
         auto* location = BGSLocationEx::GetLastChecked();
         if (location && location->IsLoaded()) {
-            Log("Location Cleared: {} - {}", location->GetName(), location->GetFormID());
+            Log("[Event] Location Cleared: {} - {}", location->GetName(), location->GetFormID());
             EventHandler::OnLocationCleared(location);
         }
         return RE::BSEventNotifyControl::kContinue;

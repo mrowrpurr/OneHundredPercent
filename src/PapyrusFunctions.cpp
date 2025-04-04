@@ -2,13 +2,15 @@
 
 #include "PapyrusFunctions.h"
 
+#include <SKSE/SKSE.h>
+
 #include "EventHandler.h"
 
 namespace PapyrusFunctions {
-    void UpdateJournalWithLatestDiscoveredLocationStats(RE::StaticFunctionTag*) { EventHandler::UpdateJournalWithLatestStats(); }
+    void UpdateJournalWithLatestDiscoverableLocationInfo(RE::StaticFunctionTag*) { EventHandler::UpdateJournalWithLatestStats(); }
 
     bool BindFunctions(RE::BSScript::Internal::VirtualMachine* vm) {
-        vm->RegisterFunction("UpdateJournalWithLatestDiscoveredLocationStats", "MP_HazTheCompletionizt", UpdateJournalWithLatestDiscoveredLocationStats);
+        vm->RegisterFunction("UpdateJournalWithLatestDiscoverableLocationInfo", "MP_HazTheCompletionizt", UpdateJournalWithLatestDiscoverableLocationInfo);
         return true;
     }
 }

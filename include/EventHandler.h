@@ -4,10 +4,8 @@
 
 #include <optional>
 
-#include "BGSLocationEx.h"
-
 namespace EventHandler {
     void UpdateJournalWithLatestStats(std::optional<std::string> sillyMessage = std::nullopt);
-    void OnLocationDiscovered(const RE::MapMarkerData* mapMarkerData);
-    void OnLocationCleared(const BGSLocationEx* locationEx);
+    void OnLocationDiscovered(const RE::BGSLocation* location);
+    void OnLocationCleared(const RE::BGSLocation* location);
 }

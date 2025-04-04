@@ -1,5 +1,6 @@
 #include <SkyrimScripting/Plugin.h>
 
+#include "DiscoverableLocations.h"
 #include "EventHandler.h"
 #include "EventWatcher.h"
 #include "JsonFiles.h"
@@ -13,7 +14,14 @@ SKSEPlugin_Entrypoint {
 
 SKSEPlugin_OnDataLoaded {
     WatchForEvents();
-    FindAndLoadAllJsonFiles();  // Requires data to lookup forms
+    FindAndLoadAllJsonFiles();  // OnDataLoaded because it requires data to lookup forms
+    ReloadDiscoverableLocationInfo();
 }
 
-SKSEPlugin_OnPostLoadGame { EventHandler::UpdateJournalWithLatestStats(); }
+void OnGameLoad() {
+    EventHandler::UpdateJournalWithLatestStats();
+    ReloadDiscoverableLocationInfo();
+}
+
+SKSEPlugin_OnPostLoadGame { OnGameLoad(); }
+SKSEPlugin_OnNewGame { OnGameLoad(); }
