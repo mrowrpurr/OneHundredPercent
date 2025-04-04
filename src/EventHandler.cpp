@@ -115,7 +115,7 @@ void EventHandler::UpdateJournalWithLatestStats(std::string_view sillyMessage) {
     if (GetConfig().show_recent_locations_in_journal) {
         auto numberOfDiscoveredLocations = saveData.locationEvents.size();
         // Get the most recent 10, max, location names
-        auto maxLocations   = std::min(numberOfDiscoveredLocations, static_cast<std::size_t>(10));
+        auto maxLocations   = std::min(numberOfDiscoveredLocations, static_cast<std::size_t>(50));
         recentLocationCount = maxLocations;
         for (auto i = 0; i < maxLocations; ++i) {
             auto&       locationEvent = saveData.locationEvents[i];
