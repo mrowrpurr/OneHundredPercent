@@ -1,5 +1,7 @@
 # Haz the Completionizt
 
+**[Download from Releases](https://github.com/MrowrMisc/HazTheCompletionizt/releases)**
+
 ![Screenshot](screenshots/Started-Completionist.png)
 
 ![Screenshot](screenshots/OnScreenMessage-LocationDiscovered.png)
