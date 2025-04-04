@@ -104,6 +104,8 @@ void EventHandler::UpdateJournalWithLatestStats(std::optional<std::string> silly
 }
 
 void EventHandler::OnLocationDiscovered(const RE::BGSLocation* location) {
+    SaveLocationDiscoveredEvent(location);
+
     // SaveLocationDiscoveredEvent(mapMarkerData->locationName.GetFullName());
     // SaveLocationDiscoveredEvent()
 
@@ -131,6 +133,8 @@ void EventHandler::OnLocationDiscovered(const RE::BGSLocation* location) {
 }
 
 void EventHandler::OnLocationCleared(const RE::BGSLocation* location) {
+    SaveLocationClearedEvent(location);
+
     // SaveLocationClearedEvent(locationEx->GetFullName());
 
     // std::string sillyMessage;

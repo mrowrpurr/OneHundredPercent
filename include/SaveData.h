@@ -54,5 +54,5 @@ inline std::atomic<bool> g_isSaveDataLoaded{false};
 
 inline SaveData& GetSaveData() { return g_saveData; }
 
-void SaveLocationDiscoveredEvent(RE::BGSLocation* location);
-void SaveLocationClearedEvent(RE::BGSLocation* location);
+void SaveLocationDiscoveredEvent(const RE::BGSLocation* location);
+void SaveLocationClearedEvent(const RE::BGSLocation* location);

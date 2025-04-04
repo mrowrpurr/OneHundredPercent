@@ -86,7 +86,30 @@ void SetupSaveCallbacks() {
     serializationInterface->SetLoadCallback(LoadCallback);
 }
 
-void SaveLocationEvent(LocationEventType type, RE::BGSLocation* location) {
+/*
+[[nodiscard]] FormID GetLocalFormID() {
+    auto file = GetFile(0);
+
+    RE::FormID fileIndex = file->compileIndex << (3 * 8);
+    fileIndex += file->smallFileCompileIndex << ((1 * 8) + 4);
+
+    return formID & ~fileIndex;
+}
+*/
+
+const RE::FormID GetLocalFormID(const RE::BGSLocation* location) {
+    if (!location) return 0;
+
+    auto file = location->GetFile(0);
+    if (!file) return 0;
+
+    RE::FormID fileIndex = file->compileIndex << (3 * 8);
+    fileIndex += file->smallFileCompileIndex << ((1 * 8) + 4);
+
+    return location->GetFormID() & ~fileIndex;
+}
+
+void SaveLocationEvent(LocationEventType type, const RE::BGSLocation* location) {
     auto* playerCharacter = RE::PlayerCharacter::GetSingleton();
     auto* currentLocation = playerCharacter->GetCurrentLocation();
     auto  locationName    = std::string{location->GetFullName()};
@@ -94,9 +117,11 @@ void SaveLocationEvent(LocationEventType type, RE::BGSLocation* location) {
 
     auto existing = saveData.locationEvents.find(locationName);
     if (existing != saveData.locationEvents.end()) {
-        // If it is, update the time
+        // If it is, update the time...
         existing->second.eventTime = RE::Calendar::GetSingleton()->GetCurrentGameTime();
+        // And if the new event type is "Cleared", update the event type to "Cleared" if it was previously "Discovered"
         if (existing->second.eventType == LocationEventType::Discovered && type == LocationEventType::Cleared) existing->second.eventType = LocationEventType::Cleared;
+        Log("[Save] [UpdateLocationEvent] {} - {} - {}", existing->second.locationName, LocationEventTypeToString(existing->second.eventType), existing->second.eventCellName);
         return;
     }
 
@@ -107,11 +132,11 @@ void SaveLocationEvent(LocationEventType type, RE::BGSLocation* location) {
         playerCharacter->GetPosition(),
         playerCharacter->GetAngle(),
         currentLocation ? currentLocation->GetFullName() : "<Unknown Location>",
-        location ? location->GetLocalFormID() : 0,
+        location ? GetLocalFormID(location) : 0,
         location ? location->GetFile(0)->GetFilename().data() : "",
     };
     Log("[Save] [AddLocationEvent] {} - {} - {}", addedLocationEvent.locationName, LocationEventTypeToString(addedLocationEvent.eventType), addedLocationEvent.eventCellName);
 }
 
-void SaveLocationDiscoveredEvent(RE::BGSLocation* location) { SaveLocationEvent(LocationEventType::Discovered, location); }
-void SaveLocationClearedEvent(RE::BGSLocation* location) { SaveLocationEvent(LocationEventType::Cleared, location); }
+void SaveLocationDiscoveredEvent(const RE::BGSLocation* location) { SaveLocationEvent(LocationEventType::Discovered, location); }
+void SaveLocationClearedEvent(const RE::BGSLocation* location) { SaveLocationEvent(LocationEventType::Cleared, location); }
