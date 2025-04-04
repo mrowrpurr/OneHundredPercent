@@ -1,13 +1,15 @@
 [OnScreenMessages]
 enable_on_screen_messages = true
 message_on_location_discovered = true
-color_on_location_discovered = "ff00ff"
+color_on_location_discovered = "00ffff"
 message_on_location_cleared = true
-color_on_location_cleared = "#ff00ff"
+color_on_location_cleared = "#ff0000"
 
 [Journal]
 enable_journal = true
-show_percentage_based_message_in_journal = true
-show_silly_message_in_journal = true
+show_percentage_in_journal = true
+show_message_for_percentage_in_journal = true
 show_recent_locations_in_journal = true
-show_message_for_most_recent_location_in_journal = true
+show_message_for_most_recent_location_in_journal = false
+# Maximum number of locations which can be shown in the journal is currently 50
+max_recent_locations_in_journal = 20

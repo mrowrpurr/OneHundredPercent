@@ -64,6 +64,15 @@ struct JournalEntry {
     std::string      text;
 };
 
+/*
+    [Journal]
+    enable_journal = true
+    show_percentage_in_journal = true
+    show_message_for_percentage_in_journal = true
+    show_recent_locations_in_journal = true
+    show_message_for_most_recent_location_in_journal = true
+*/
+
 void EventHandler::UpdateJournalWithLatestStats(std::string_view sillyMessage) {
     if (GetConfig().enable_journal == false) {
         Log("Journal updates are disabled.");
@@ -88,13 +97,14 @@ void EventHandler::UpdateJournalWithLatestStats(std::string_view sillyMessage) {
     // For now, the order of these tyes of messages is fixed.
 
     // 1. Percentage discovered
-    auto percentageMessage = std::format("{} discovered locations out of {} ({}%)", discoveredLocations, totalDiscoverableLocations, integerPercentage);
-    journalEntries.push_back({JournalEntryType::PercentageDiscovered, percentageMessage});
-
-    Log("[Journal] Percentage discovered: {} - {}", percentageDiscovered, percentageMessage);
+    if (GetConfig().show_percentage_in_journal) {
+        auto percentageMessage = std::format("{} discovered locations out of {} ({}%)", discoveredLocations, totalDiscoverableLocations, integerPercentage);
+        journalEntries.push_back({JournalEntryType::PercentageDiscovered, percentageMessage});
+        Log("[Journal] Percentage discovered: {} - {}", percentageDiscovered, percentageMessage);
+    }
 
     // 2. Silly message (for the percentage discovered)
-    if (GetConfig().show_percentage_based_message_in_journal) {
+    if (GetConfig().show_message_for_percentage_in_journal) {
         auto percentageMessage = SillyMessages::instance().GetRandomMessage_PercentageDiscovered(percentageDiscovered);
         if (!percentageMessage.empty()) {
             journalEntries.push_back({JournalEntryType::PercentageDiscoveredSillyMessage, percentageMessage});
@@ -104,21 +114,45 @@ void EventHandler::UpdateJournalWithLatestStats(std::string_view sillyMessage) {
         }
     }
 
+    auto& saveData = GetSaveData();
+
     // 3. Silly message (for the most recent location)
-    // if (GetConfig().show_message_for_most_recent_location_in_journal) {
-    //     // TODO
-    // }
+    if (GetConfig().show_message_for_most_recent_location_in_journal && !saveData.locationEvents.empty()) {
+        auto& mostRecentLocationEvent = saveData.locationEvents.back();
+        switch (mostRecentLocationEvent.eventType) {
+            case LocationEventType::Cleared: {
+                Log("[Journal] Most recent location: Cleared location: {}", mostRecentLocationEvent.locationName);
+                auto sillyRecentLocationMessage = SillyMessages::instance().GetRandomMessage_LocationCleared(mostRecentLocationEvent.locationName);
+                if (!sillyRecentLocationMessage.empty()) {
+                    journalEntries.push_back({JournalEntryType::MostRecentLocationSillyMessage, sillyRecentLocationMessage});
+                    Log("[Journal] [Message] Most recent location: Cleared location: {} - {}", mostRecentLocationEvent.locationName, sillyRecentLocationMessage);
+                } else {
+                    Log("[Journal] No message found for most recent location: {}", mostRecentLocationEvent.locationName);
+                }
+                break;
+            }
+            default: {
+                Log("[Journal] Most recent location: Discovered location: {}", mostRecentLocationEvent.locationName);
+                auto sillyRecentLocationMessage = SillyMessages::instance().GetRandomMessage_LocationDiscovered(mostRecentLocationEvent.locationName);
+                if (!sillyRecentLocationMessage.empty()) {
+                    journalEntries.push_back({JournalEntryType::MostRecentLocationSillyMessage, sillyRecentLocationMessage});
+                    Log("[Journal] [Message] Most recent location: Discovered location: {} - {}", mostRecentLocationEvent.locationName, sillyRecentLocationMessage);
+                } else {
+                    Log("[Journal] No message found for most recent location: {}", mostRecentLocationEvent.locationName);
+                }
+                break;
+            }
+        }
+    }
 
     // 4. Discovered locations
-    auto& saveData            = GetSaveData();
-    auto  recentLocationCount = 0;
-    if (GetConfig().show_recent_locations_in_journal) {
+    if (GetConfig().show_recent_locations_in_journal && GetConfig().max_recent_locations_in_journal > 0) {
+        auto recentLocationCount         = 0;
+        auto maxLocations                = std::min(static_cast<std::uint32_t>(saveData.locationEvents.size()), GetConfig().max_recent_locations_in_journal);
         auto numberOfDiscoveredLocations = saveData.locationEvents.size();
-        // Get the most recent 10, max, location names
-        auto maxLocations   = std::min(numberOfDiscoveredLocations, static_cast<std::size_t>(50));
-        recentLocationCount = maxLocations;
-        for (auto i = 0; i < maxLocations; ++i) {
-            auto&       locationEvent = saveData.locationEvents[i];
+        recentLocationCount              = maxLocations;
+        for (auto i = numberOfDiscoveredLocations; i > numberOfDiscoveredLocations - maxLocations; --i) {
+            auto&       locationEvent = saveData.locationEvents[i - 1];
             std::string locationMessage;
             switch (locationEvent.eventType) {
                 case LocationEventType::Cleared:
@@ -188,7 +222,7 @@ void EventHandler::OnLocationCleared(const RE::BGSLocation* location) {
 
 // Log("Checking for silly messages...");
 // std::string percentageSillyMessage;
-// if (GetConfig().show_silly_message_in_journal) {
+// if (GetConfig().show_message_for_percentage_in_journal) {
 //     auto percentageDiscovered = static_cast<float>(displayedLocationStates.DiscoverableLocations) / displayedLocationStates.totalLocations * 100.0f;
 //     auto integerPercentage    = static_cast<int>(std::floor(percentageDiscovered));
 //     auto percentageMessage    = SillyMessages::instance().GetRandomMessage_PercentageDiscovered(percentageDiscovered);

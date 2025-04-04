@@ -30,10 +30,11 @@ void LoadIni() {
         if (tomlConfig.contains("Journal")) {
             auto journalSection                                          = tomlConfig["Journal"];
             g_iniConfig.enable_journal                                   = journalSection["enable_journal"].value_or(true);
-            g_iniConfig.show_percentage_based_message_in_journal         = journalSection["show_percentage_based_message_in_journal"].value_or(true);
-            g_iniConfig.show_silly_message_in_journal                    = journalSection["show_silly_message_in_journal"].value_or(true);
+            g_iniConfig.show_percentage_in_journal                       = journalSection["show_percentage_in_journal"].value_or(true);
+            g_iniConfig.show_message_for_percentage_in_journal           = journalSection["show_message_for_percentage_in_journal"].value_or(true);
             g_iniConfig.show_recent_locations_in_journal                 = journalSection["show_recent_locations_in_journal"].value_or(true);
             g_iniConfig.show_message_for_most_recent_location_in_journal = journalSection["show_message_for_most_recent_location_in_journal"].value_or(true);
+            g_iniConfig.max_recent_locations_in_journal                  = std::min(journalSection["max_recent_locations_in_journal"].value_or(50), 50);
         } else {
             Log("'Journal' section not found in INI. Using default values.");
             goto use_defaults;
@@ -56,10 +57,11 @@ use_defaults:
     g_iniConfig.color_on_location_discovered                     = "";
     g_iniConfig.color_on_location_cleared                        = "";
     g_iniConfig.enable_journal                                   = true;
-    g_iniConfig.show_percentage_based_message_in_journal         = true;
-    g_iniConfig.show_silly_message_in_journal                    = true;
+    g_iniConfig.show_percentage_in_journal                       = true;
+    g_iniConfig.show_message_for_percentage_in_journal           = true;
     g_iniConfig.show_recent_locations_in_journal                 = true;
     g_iniConfig.show_message_for_most_recent_location_in_journal = true;
+    g_iniConfig.max_recent_locations_in_journal                  = 50;
     Log("Using default configuration values.");
 
 log_values:
@@ -70,8 +72,9 @@ log_values:
     Log("- color_on_location_discovered: {}", g_iniConfig.color_on_location_discovered);
     Log("- color_on_location_cleared: {}", g_iniConfig.color_on_location_cleared);
     Log("- enable_journal: {}", g_iniConfig.enable_journal);
-    Log("- show_percentage_based_message_in_journal: {}", g_iniConfig.show_percentage_based_message_in_journal);
-    Log("- show_silly_message_in_journal: {}", g_iniConfig.show_silly_message_in_journal);
+    Log("- show_percentage_in_journal: {}", g_iniConfig.show_percentage_in_journal);
+    Log("- show_message_for_percentage_in_journal: {}", g_iniConfig.show_message_for_percentage_in_journal);
     Log("- show_recent_locations_in_journal: {}", g_iniConfig.show_recent_locations_in_journal);
     Log("- show_message_for_most_recent_location_in_journal: {}", g_iniConfig.show_message_for_most_recent_location_in_journal);
+    Log("- max_recent_locations_in_journal: {}", g_iniConfig.max_recent_locations_in_journal);
 }
