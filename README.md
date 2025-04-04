@@ -8,6 +8,8 @@
 
 ![Screenshot](screenshots/annotated/AnnotatedJournal.png)
 
+![Screenshot](screenshots/MaraStatue.png)
+
 ### `HazTheCompletionist.toml`
 
 ```toml
