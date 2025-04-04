@@ -1,10 +1,26 @@
-# Papyrus & SKSE
+# Haz the Completionizt
 
-[**DRAFT**] _My current template for Papyrus and SKSE hacking_
+![Screenshot](screenshots/Started-Completionist.png)
 
-> Uses [`xmake`][] as build system.  
-> Also requires [`pyro`][] (should be installed in `PATH`).  
+![Screenshot](screenshots/OnScreenMessage-LocationDiscovered.png)
 
+![Screenshot](screenshots/annotated/AnnotatedJournal.png)
 
-[`xmake`]: https://xmake.io
-[`pyro`]: https://wiki.fireundubh.com/pyro
+### `HazTheCompletionist.toml`
+
+```toml
+[OnScreenMessages]
+enable_on_screen_messages = true
+message_on_location_discovered = true
+color_on_location_discovered = "00ffff"
+message_on_location_cleared = true
+color_on_location_cleared = "#ff0000"
+
+[Journal]
+enable_journal = true
+show_percentage_in_journal = true
+show_message_for_percentage_in_journal = true
+show_recent_locations_in_journal = true
+show_message_for_most_recent_location_in_journal = true
+max_recent_locations_in_journal = 50
+```
