@@ -18,7 +18,7 @@
 [OnScreenMessages]
 enable_on_screen_messages = true
 message_on_location_discovered = true
-color_on_location_discovered = "00ffff"
+color_on_location_discovered = "#00ffff"
 message_on_location_cleared = true
 color_on_location_cleared = "#ff0000"
 
