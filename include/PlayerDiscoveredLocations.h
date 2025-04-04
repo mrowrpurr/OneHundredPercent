@@ -1,8 +1,7 @@
 #pragma once
 
 #include <RE/Skyrim.h>
+#include <collections.h>
 
-#include <vector>
-
-std::vector<RE::BGSLocation*> GetPlayerDiscoveredLocationList();
-std::vector<RE::BGSLocation*> GetPlayerDiscoveredLocationList();
+std::uint32_t                     GetNumberOfPlayerDiscoveredLocations();
+collections_set<RE::BGSLocation*> GetPlayerDiscoveredLocationList();

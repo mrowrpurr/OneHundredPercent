@@ -45,8 +45,7 @@ void ReloadDiscoverableLocationInfo() {
                     if (mapData) {
                         if (IgnoredLocationIDs.contains(location->GetFormID())) continue;
                         if (mapData->locationName.fullName.empty()) continue;
-                        if (mapData->flags.any(RE::MapMarkerData::Flag::kVisible)) continue;
-
+                        // if (mapData->flags.any(RE::MapMarkerData::Flag::kVisible)) continue;
                         locationInfo->totalDiscoverableLocationCount++;
                         locationInfo->discoverableMapMarkersToLocations[mapData] = location;
                     }
@@ -62,49 +61,3 @@ void ReloadDiscoverableLocationInfo() {
     g_DiscoverableLocations          = std::move(locationInfo);
     g_DiscoverableLocationsReloading = false;
 }
-
-// DiscoverableLocationInfo GetDiscoverableLocationInfo() {
-//     Log("Recalculating total number of discovered locations with map markers...");
-//     auto now = std::chrono::steady_clock::now();
-
-//     DiscoverableLocationInfo DiscoverableLocations;
-
-//     auto* player = RE::PlayerCharacter::GetSingleton();
-
-//     collections_set<RE::MapMarkerData*> discoveredFromPlayerMap;
-
-//     for (auto& markerPtr : player->currentMapMarkers) {
-//         if (auto marker = markerPtr.get()) {
-//             if (const auto* extraMapMarker = marker->extraList.GetByType<RE::ExtraMapMarker>()) {
-//                 if (auto* mapData = extraMapMarker->mapData) {
-//                     if (mapData->flags.any(RE::MapMarkerData::Flag::kVisible) && mapData->flags.any(RE::MapMarkerData::Flag::kCanTravelTo)) {
-//                         if (mapData->locationName.fullName == "Solitude Military Camp") continue;  // Not sure how to skip these ones quite yet
-//                         discoveredFromPlayerMap.insert(mapData);
-//                     }
-//                 }
-//             }
-//         }
-//     }
-
-//     collections_map<RE::MapMarkerData*, RE::BGSLocation*> discoveredFromWorldSpaceToLocations;
-
-//     // Print out the player map ones:
-//     for (auto& markerPtr : discoveredFromPlayerMap) {
-//         auto foundFromWorldSpace = discoveredFromWorldSpaceToLocations.find(markerPtr);
-//         if (foundFromWorldSpace == discoveredFromWorldSpaceToLocations.end()) discoveredFromPlayerMap.erase(markerPtr);
-//         else Log("[Player discovered] DISCOVERED: {}", markerPtr->locationName.GetFullName());
-//     }
-
-//     // Print out the DiscoverableLocations stats:
-//     Log("Total locations: {}", DiscoverableLocations.totalLocations);
-//     Log("Discovered locations: {}", DiscoverableLocations.DiscoverableLocations);
-//     Log("Discovered locations from player map: {}", discoveredFromPlayerMap.size());
-
-//     auto durationMs = std::chrono::duration_cast<std::chrono::milliseconds>(now - std::chrono::steady_clock::now()).count();
-//     Log("Recalculation took {} ms", durationMs);
-
-//     DiscoverableLocations.clearedLocations    = 0;
-//     DiscoverableLocations.DiscoverableLocations = discoveredFromPlayerMap.size();  // + ?
-
-//     return DiscoverableLocations;
-// }

@@ -2,11 +2,11 @@
 
 #include <RE/Skyrim.h>
 #include <SKSE/SKSE.h>
-#include <collections.h>
 
 #include <atomic>
 #include <cstdint>
 #include <string>
+#include <vector>
 
 enum class LocationEventType : std::uint32_t {
     None       = 0,
@@ -37,7 +37,7 @@ struct LocationEvent {
 };
 
 struct SaveData {
-    collections_map<std::string, LocationEvent> locationEvents;
+    std::vector<LocationEvent> locationEvents;
 
     void Save(SKSE::SerializationInterface* intfc);
     void Load(SKSE::SerializationInterface* intfc);

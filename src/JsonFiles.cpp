@@ -9,18 +9,8 @@
 #include <nlohmann/json.hpp>
 
 #include "Config.h"
+#include "FormUtils.h"
 #include "SillyMessages.h"
-#include "StringUtils.h"
-
-inline RE::FormID GetFormID(const RE::TESFile* plugin, RE::FormID localFormId) {
-    // Special case for Skyrim.esm which should have 0 as its index (instead of 80)
-    if (ToLowerCase(plugin->GetFilename()) == "skyrim.esm") return localFormId;  // For Skyrim.esm, we keep the local FormID as is
-    if (plugin->IsLight()) {
-        return (localFormId & 0xFFF) | (0xFE000 | (plugin->GetSmallFileCompileIndex() << 12));
-    } else {
-        return (localFormId & 0xFFFFFF) | (plugin->GetCompileIndex() << 24);
-    }
-}
 
 void LoadSillyMessagesFromJsonFile(std::filesystem::path jsonFilePath) {
     try {

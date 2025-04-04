@@ -83,24 +83,24 @@ SillyMessages::SillyMessages() {
     // Don't load location messages immediately - defer until needed
 }
 
-bool SillyMessages::HasSpecificLocationMessage(const std::string& locationName) {
+bool SillyMessages::HasSpecificLocationMessage(std::string_view locationName) {
     if (!loadedSpecificLocationMessages) {
         LoadSpecificLocationMessages();
     }
 
-    return specificLocationMessages.contains(locationName) && !specificLocationMessages[locationName].empty();
+    return specificLocationMessages.contains(locationName.data()) && !specificLocationMessages[locationName.data()].empty();
 }
 
-std::string SillyMessages::GetRandomSpecificLocationMessage(const std::string& locationName) {
+std::string SillyMessages::GetRandomSpecificLocationMessage(std::string_view locationName) {
     if (!loadedSpecificLocationMessages) {
         LoadSpecificLocationMessages();
     }
 
-    if (!specificLocationMessages.contains(locationName) || specificLocationMessages[locationName].empty()) {
-        return locationName;  // Fall back to just the location name if no message found
+    if (!specificLocationMessages.contains(locationName.data()) || specificLocationMessages[locationName.data()].empty()) {
+        return std::string{locationName};  // Fall back to just the location name if no message found
     }
 
-    const auto&                     messages = specificLocationMessages[locationName];
+    const auto&                     messages = specificLocationMessages[locationName.data()];
     static std::random_device       rd;
     static std::mt19937             gen(rd());
     std::uniform_int_distribution<> distrib(0, messages.size() - 1);

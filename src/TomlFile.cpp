@@ -1,4 +1,4 @@
-#include "IniFile.h"
+#include "TomlFile.h"
 
 #include <SKSE/SKSE.h>
 #include <SkyrimScripting/Logging.h>
@@ -17,8 +17,11 @@ void LoadIni() {
         auto tomlConfig = toml::parse_file(Config::INI_FILE_PATH.string());
         if (tomlConfig.contains("OnScreenMessages")) {
             auto onScreenMessagesSection               = tomlConfig["OnScreenMessages"];
+            g_iniConfig.enable_on_screen_messages      = onScreenMessagesSection["enable_on_screen_messages"].value_or(true);
             g_iniConfig.message_on_location_discovered = onScreenMessagesSection["message_on_location_discovered"].value_or(true);
             g_iniConfig.message_on_location_cleared    = onScreenMessagesSection["message_on_location_cleared"].value_or(true);
+            g_iniConfig.color_on_location_discovered   = onScreenMessagesSection["color_on_location_discovered"].value_or("");
+            g_iniConfig.color_on_location_cleared      = onScreenMessagesSection["color_on_location_cleared"].value_or("");
         } else {
             Log("'OnScreenMessages' section not found in INI. Using default values.");
             goto use_defaults;
@@ -26,7 +29,8 @@ void LoadIni() {
 
         if (tomlConfig.contains("Journal")) {
             auto journalSection                                          = tomlConfig["Journal"];
-            g_iniConfig.percentage_based_message_in_journal              = journalSection["percentage_based_message_in_journal"].value_or(true);
+            g_iniConfig.enable_journal                                   = journalSection["enable_journal"].value_or(true);
+            g_iniConfig.show_percentage_based_message_in_journal         = journalSection["show_percentage_based_message_in_journal"].value_or(true);
             g_iniConfig.show_silly_message_in_journal                    = journalSection["show_silly_message_in_journal"].value_or(true);
             g_iniConfig.show_recent_locations_in_journal                 = journalSection["show_recent_locations_in_journal"].value_or(true);
             g_iniConfig.show_message_for_most_recent_location_in_journal = journalSection["show_message_for_most_recent_location_in_journal"].value_or(true);
@@ -46,20 +50,28 @@ void LoadIni() {
     goto log_values;
 
 use_defaults:
+    g_iniConfig.enable_on_screen_messages                        = true;
     g_iniConfig.message_on_location_discovered                   = true;
     g_iniConfig.message_on_location_cleared                      = true;
-    g_iniConfig.percentage_based_message_in_journal              = true;
+    g_iniConfig.color_on_location_discovered                     = "";
+    g_iniConfig.color_on_location_cleared                        = "";
+    g_iniConfig.enable_journal                                   = true;
+    g_iniConfig.show_percentage_based_message_in_journal         = true;
     g_iniConfig.show_silly_message_in_journal                    = true;
     g_iniConfig.show_recent_locations_in_journal                 = true;
     g_iniConfig.show_message_for_most_recent_location_in_journal = true;
     Log("Using default configuration values.");
 
 log_values:
-    Log("Current configuration:");
-    Log("  message_on_location_discovered: {}", g_iniConfig.message_on_location_discovered);
-    Log("  message_on_location_cleared: {}", g_iniConfig.message_on_location_cleared);
-    Log("  percentage_based_message_in_journal: {}", g_iniConfig.percentage_based_message_in_journal);
-    Log("  show_silly_message_in_journal: {}", g_iniConfig.show_silly_message_in_journal);
-    Log("  show_recent_locations_in_journal: {}", g_iniConfig.show_recent_locations_in_journal);
-    Log("  show_message_for_most_recent_location_in_journal: {}", g_iniConfig.show_message_for_most_recent_location_in_journal);
+    Log("Configuration:");
+    Log("- enable_on_screen_messages: {}", g_iniConfig.enable_on_screen_messages);
+    Log("- message_on_location_discovered: {}", g_iniConfig.message_on_location_discovered);
+    Log("- message_on_location_cleared: {}", g_iniConfig.message_on_location_cleared);
+    Log("- color_on_location_discovered: {}", g_iniConfig.color_on_location_discovered);
+    Log("- color_on_location_cleared: {}", g_iniConfig.color_on_location_cleared);
+    Log("- enable_journal: {}", g_iniConfig.enable_journal);
+    Log("- show_percentage_based_message_in_journal: {}", g_iniConfig.show_percentage_based_message_in_journal);
+    Log("- show_silly_message_in_journal: {}", g_iniConfig.show_silly_message_in_journal);
+    Log("- show_recent_locations_in_journal: {}", g_iniConfig.show_recent_locations_in_journal);
+    Log("- show_message_for_most_recent_location_in_journal: {}", g_iniConfig.show_message_for_most_recent_location_in_journal);
 }

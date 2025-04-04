@@ -5,6 +5,7 @@
 #include <SkyrimScripting/Logging.h>
 
 #include "Config.h"
+#include "FormUtils.h"
 
 inline void WriteString(SKSE::SerializationInterface* intfc, const std::string& str) {
     std::size_t len = str.size();
@@ -23,7 +24,7 @@ void SaveData::Save(SKSE::SerializationInterface* intfc) {
     std::uint32_t count = static_cast<std::uint32_t>(locationEvents.size());
     intfc->WriteRecordData(count);
 
-    for (const auto& [key, e] : locationEvents) {
+    for (const auto& e : locationEvents) {
         WriteString(intfc, e.locationName);
         intfc->WriteRecordData(static_cast<std::uint32_t>(e.eventType));
         intfc->WriteRecordData(e.eventTime);
@@ -52,7 +53,7 @@ void SaveData::Load(SKSE::SerializationInterface* intfc) {
         ReadString(intfc, e.eventCellName);
         intfc->ReadRecordData(e.locationFormID);
         ReadString(intfc, e.locationPluginName);
-        locationEvents[e.locationName] = std::move(e);
+        locationEvents.push_back(std::move(e));
     }
 }
 
@@ -86,45 +87,24 @@ void SetupSaveCallbacks() {
     serializationInterface->SetLoadCallback(LoadCallback);
 }
 
-/*
-From CommonLibSSE:
-    FormID GetLocalFormID() {
-        auto file = GetFile(0);
-        RE::FormID fileIndex = file->compileIndex << (3 * 8);
-        fileIndex += file->smallFileCompileIndex << ((1 * 8) + 4);
-        return formID & ~fileIndex;
-    }
-*/
-
-const RE::FormID GetLocalFormID(const RE::BGSLocation* location) {
-    if (!location) return 0;
-
-    auto file = location->GetFile(0);
-    if (!file) return 0;
-
-    RE::FormID fileIndex = file->compileIndex << (3 * 8);
-    fileIndex += file->smallFileCompileIndex << ((1 * 8) + 4);
-
-    return location->GetFormID() & ~fileIndex;
-}
-
 void SaveLocationEvent(LocationEventType type, const RE::BGSLocation* location) {
     auto* playerCharacter = RE::PlayerCharacter::GetSingleton();
     auto* currentLocation = playerCharacter->GetCurrentLocation();
     auto  locationName    = std::string{location->GetFullName()};
     auto& saveData        = GetSaveData();
 
-    auto existing = saveData.locationEvents.find(locationName);
+    auto existing = std::find_if(saveData.locationEvents.begin(), saveData.locationEvents.end(), [&](const LocationEvent& e) { return e.locationName == locationName; });
+
     if (existing != saveData.locationEvents.end()) {
         // If it is, update the time...
-        existing->second.eventTime = RE::Calendar::GetSingleton()->GetCurrentGameTime();
+        existing->eventTime = RE::Calendar::GetSingleton()->GetCurrentGameTime();
         // And if the new event type is "Cleared", update the event type to "Cleared" if it was previously "Discovered"
-        if (existing->second.eventType == LocationEventType::Discovered && type == LocationEventType::Cleared) existing->second.eventType = LocationEventType::Cleared;
-        Log("[Save] [UpdateLocationEvent] {} - {} - {}", existing->second.locationName, LocationEventTypeToString(existing->second.eventType), existing->second.eventCellName);
+        if (existing->eventType == LocationEventType::Discovered && type == LocationEventType::Cleared) existing->eventType = LocationEventType::Cleared;
+        Log("[Save] [UpdateLocationEvent] {} - {} - {}", existing->locationName, LocationEventTypeToString(existing->eventType), existing->eventCellName);
         return;
     }
 
-    auto& addedLocationEvent = saveData.locationEvents[locationName] = LocationEvent{
+    auto& addedLocationEvent = saveData.locationEvents.emplace_back(LocationEvent{
         locationName,
         type,
         RE::Calendar::GetSingleton()->GetCurrentGameTime(),
@@ -133,7 +113,7 @@ void SaveLocationEvent(LocationEventType type, const RE::BGSLocation* location) 
         currentLocation ? currentLocation->GetFullName() : "<Unknown Location>",
         location ? GetLocalFormID(location) : 0,
         location ? location->GetFile(0)->GetFilename().data() : "",
-    };
+    });
     Log("[Save] [AddLocationEvent] {} - {} - {}", addedLocationEvent.locationName, LocationEventTypeToString(addedLocationEvent.eventType), addedLocationEvent.eventCellName);
 }
 
