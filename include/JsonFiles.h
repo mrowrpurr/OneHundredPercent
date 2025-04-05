@@ -11,8 +11,8 @@ struct IgnoredLocation {
     std::string plugin;
 };
 
-inline collections_set<RE::FormID>  IgnoredLocationIDs;
-inline collections_set<std::string> IgnoredMapMarkers;
+inline collections_set<RE::FormID>  IgnoredMapMarkers;
+inline collections_set<std::string> IgnoredLocationNames;
 
-void LoadSillyMessagesFromJsonFile(std::filesystem::path jsonFilePath);
+void LoadFileFile(std::filesystem::path jsonFilePath);
 void FindAndLoadAllJsonFiles();

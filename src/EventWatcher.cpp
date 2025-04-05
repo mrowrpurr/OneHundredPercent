@@ -18,15 +18,15 @@ public:
     }
 
     RE::BSEventNotifyControl ProcessEvent(const RE::LocationDiscovery::Event* event, RE::BSTEventSource<RE::LocationDiscovery::Event>*) override {
-        auto* DiscoverableMapMarkers = GetDiscoverableMapMarkers();
-        auto  foundLocation          = DiscoverableMapMarkers->DiscoverableMapMarkersToReferences.find(event->mapMarkerData);
-        if (foundLocation != DiscoverableMapMarkers->DiscoverableMapMarkersToReferences.end()) {
-            Log("[Event] Location Discovered: {}", foundLocation->second->GetFormID());
-            // EventHandler::OnLocationDiscovered(foundLocation->second);
-            // EventHandler::OnLocationDiscovered()
-        } else {
-            Log("[Event] Discovered location (not found in discoverable locations list) - {}", event->mapMarkerData->locationName.GetFullName());
-        }
+        // auto* DiscoverableMapMarkers = GetDiscoverableMapMarkers();
+        // auto  foundLocation          = DiscoverableMapMarkers->discoverableMapMarkersToReferences.find(event->mapMarkerData);
+        // if (foundLocation != DiscoverableMapMarkers->discoverableMapMarkersToReferences.end()) {
+        //     Log("[Event] Location Discovered: {}", foundLocation->second->GetFormID());
+        //     // EventHandler::OnLocationDiscovered(foundLocation->second);
+        //     // EventHandler::OnLocationDiscovered()
+        // } else {
+        //     Log("[Event] Discovered location (not found in discoverable locations list) - {}", event->mapMarkerData->locationName.GetFullName());
+        // }
         return RE::BSEventNotifyControl::kContinue;
     }
 

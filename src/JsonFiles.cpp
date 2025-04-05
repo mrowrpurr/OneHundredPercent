@@ -12,7 +12,7 @@
 #include "FormUtils.h"
 #include "SillyMessages.h"
 
-void LoadSillyMessagesFromJsonFile(std::filesystem::path jsonFilePath) {
+void LoadFileFile(std::filesystem::path jsonFilePath) {
     try {
         Log("Loading JSON file: {}", jsonFilePath.string());
 
@@ -36,7 +36,7 @@ void LoadSillyMessagesFromJsonFile(std::filesystem::path jsonFilePath) {
         for (auto& [fileKey, fileValue] : jsonData.items()) {
             Log("File: {}, Key: {}", jsonFilePath.string(), fileKey);
 
-            if (fileKey == "IgnoredLocations" && fileValue.is_array()) {
+            if (fileKey == "IgnoredMapMarkers" && fileValue.is_array()) {
                 for (const auto& location : fileValue) {
                     if (location.is_object() && location.contains("formId") && location.contains("plugin")) {
                         try {
@@ -49,22 +49,22 @@ void LoadSillyMessagesFromJsonFile(std::filesystem::path jsonFilePath) {
                                 plugins[pluginFilename] = plugin;
                             }
                             if (plugin) {
-                                Log("Configured location to ignore: {:x} from plugin: {}", localFormId, pluginFilename);
-                                IgnoredLocationIDs.insert(GetFormID(plugin, localFormId));
+                                Log("Configured map marker to ignore: {:x} from plugin: {}", localFormId, pluginFilename);
+                                IgnoredMapMarkers.insert(GetFormID(plugin, localFormId));
                             } else {
                                 Log("Plugin not found or invalid: {}", pluginFilename);
                             }
                         } catch (const std::exception& e) {
-                            SKSE::log::error("Error parsing IgnoredLocation in file {}: {}", jsonFilePath.string(), e.what());
+                            SKSE::log::error("Error parsing IgnoredMapMarkers in file {}: {}", jsonFilePath.string(), e.what());
                         }
                     }
                 }
-            } else if (fileKey == "IgnoredMapMarkers" && fileValue.is_array()) {
+            } else if (fileKey == "IgnoredLocationNames" && fileValue.is_array()) {
                 for (const auto& locationName : fileValue) {
                     if (locationName.is_string()) {
                         std::string name = locationName.get<std::string>();
                         Log("Configured location name to ignore: {}", name);
-                        IgnoredMapMarkers.insert(ToLowerCase(name));
+                        IgnoredLocationNames.insert(ToLowerCase(name));
                     }
                 }
             } else {
@@ -121,14 +121,14 @@ void FindAndLoadAllJsonFiles() {
         }
 
         // Clear IgnoredLocations before loading
-        IgnoredLocationIDs.clear();
+        IgnoredMapMarkers.clear();
         // Also clear IgnoredMapMarkers before loading
         IgnoredMapMarkers.clear();
 
         // Iterate through all files in the directory
         for (const auto& entry : std::filesystem::directory_iterator(Config::JSON_FILES_FOLDER)) {
             if (entry.is_regular_file() && entry.path().extension() == ".json") {
-                LoadSillyMessagesFromJsonFile(entry.path());
+                LoadFileFile(entry.path());
             }
         }
 

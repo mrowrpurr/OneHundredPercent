@@ -88,7 +88,7 @@ void EventHandler::UpdateJournalWithLatestStats(std::string_view sillyMessage) {
     auto& saveData = GetSaveData();
 
     // Get percentage discovered
-    auto totalDiscoverableMapMarkers = GetDiscoverableMapMarkers()->totalDiscoverableMapMarkersCount;
+    auto totalDiscoverableMapMarkers = GetDiscoverableMapMarkers()->GetTotalDiscoverableMapMarkersCount();
     auto recentlyDiscoveredMarkers   = saveData.GetTotalDiscoveredMapMarkersCount();
     auto percentageDiscovered        = static_cast<float>(recentlyDiscoveredMarkers) / totalDiscoverableMapMarkers * 100.0f;
     auto integerPercentage           = static_cast<int>(std::floor(percentageDiscovered));

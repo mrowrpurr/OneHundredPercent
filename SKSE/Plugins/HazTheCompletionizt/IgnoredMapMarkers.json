@@ -1,11 +1,54 @@
 {
   "IgnoredMapMarkers": [
-    "Whiterun::Whiterun Military Camp",
-    "Windhelm::Windhelm Military Camp",
-    "Riften::Riften Military Camp",
-    "Markarth::Markarth Military Camp",
-    "Solitude::Solitude Military Camp",
-    "Dayspring Canyon::Fort Dawnguard",
-    "Solstheim::Campsite"
+    {
+      "comment": "Solitude Military Camp",
+      "formId": "ec194",
+      "plugin": "Skyrim.esm"
+    },
+    {
+      "comment": "Markarth Military Camp",
+      "formId": "94c29",
+      "plugin": "Skyrim.esm"
+    },
+    {
+      "comment": "Riften Military Camp",
+      "formId": "ec195",
+      "plugin": "Skyrim.esm"
+    },
+    {
+      "comment": "Whiterun Military Camp",
+      "formId": "ec192",
+      "plugin": "Skyrim.esm"
+    },
+    {
+      "comment": "Solitude Military Camp",
+      "formId": "34896",
+      "plugin": "Skyrim.esm"
+    },
+    {
+      "comment": "Windhelm Military Camp",
+      "formId": "9003b",
+      "plugin": "Skyrim.esm"
+    },
+    {
+      "comment": "Markarth Military Camp",
+      "formId": "ec196",
+      "plugin": "Skyrim.esm"
+    },
+    {
+      "comment": "Riften Military Camp",
+      "formId": "a8844",
+      "plugin": "Skyrim.esm"
+    },
+    {
+      "comment": "Whiterun Military Camp",
+      "formId": "94a1f",
+      "plugin": "Skyrim.esm"
+    },
+    {
+      "comment": "Windhelm Military Camp",
+      "formId": "ec193",
+      "plugin": "Skyrim.esm"
+    }
   ]
 }

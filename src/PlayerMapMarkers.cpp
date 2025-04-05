@@ -65,7 +65,7 @@ void UpdateSaveGameToIncludeDiscoveredPlayerMapMarkers() {
     //                     if (findLocation != DiscoverableMapMarkers->DiscoverableMapMarkersToReferences.end()) {
     //                         Log("[Debug] [Found location]: {}::{}", findLocation->second->GetFullName(), mapData->locationName.GetFullName());
 
-    //                         if (IgnoredLocationIDs.contains(findLocation->second->GetFormID())) continue;  // Skip any ignored location IDs
+    //                         if (IgnoredMapMarkers.contains(findLocation->second->GetFormID())) continue;  // Skip any ignored location IDs
     //                         else Log("[Debug] [Not ignored location]: {}::{}", findLocation->second->GetFullName(), mapData->locationName.GetFullName());
 
     //                         if (IgnoredMapMarkers.contains(ToLowerCase(std::format("{}::{}", findLocation->second->GetFullName(), mapData->locationName.GetFullName()))))
