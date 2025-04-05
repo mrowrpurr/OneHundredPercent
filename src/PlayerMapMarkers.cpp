@@ -53,7 +53,7 @@ void UpdateSaveGameToIncludeDiscoveredPlayerMapMarkers() {
     }
 
     auto& saveData = GetSaveData();
-
+    
     for (auto& markerPtr : player->currentMapMarkers) {
         if (auto marker = markerPtr.get()) {
             if (const auto* extraMapMarker = marker->extraList.GetByType<RE::ExtraMapMarker>()) {

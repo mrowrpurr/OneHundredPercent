@@ -74,26 +74,36 @@ void ReloadDiscoverableLocationInfo() {
                 auto* ref = refHandle.get();
                 if (!ref) continue;
 
-                auto* location = ref->GetCurrentLocation();
-                if (!location || location->fullName.empty()) continue;
+                if (auto* extraMapMarker = ref->extraList.GetByType<RE::ExtraMapMarker>()) {
+                    if (auto* mapData = extraMapMarker->mapData) {
+                        Log("Analyzing map marker {}. EditorID: {}", mapData->locationName.GetFullName(), ref->GetFormEditorID());
 
-                if (auto* marker = ref->extraList.GetByType<RE::ExtraMapMarker>()) {
-                    if (auto* mapData = marker->mapData) {
-                        if (IgnoredLocationIDs.contains(location->GetFormID())) continue;
-                        if (mapData->locationName.fullName.empty()) continue;
+                        //     if (auto* location = persistent->GetLocation()) {
+                        //         if (location->fullName.empty()) continue;
+                        //         if (IgnoredLocationIDs.contains(location->GetFormID())) continue;
+                        //         if (mapData->locationName.fullName.empty()) continue;
 
-                        // Mark this location as discoverable!
-                        locationInfo->discoverableLocations.insert(location);
+                        //         // Mark this location as discoverable!
+                        //         locationInfo->discoverableLocations.insert(location);
 
-                        // Associate the map marker with the location
-                        locationInfo->discoverableMapMarkersToLocations[mapData] = location;
+                        //         // Associate the map marker with the location
+                        //         locationInfo->discoverableMapMarkersToLocations[mapData] = location;
+                        //         Log("Associated map marker {} with location {} - {:x} in {}", mapData->locationName.GetFullName(), location->GetName(),
+                        //         location->GetLocalFormID(),
+                        //             location->GetFile(0)->GetFilename());
 
-                        auto* file = location->GetFile(0);
-                        countOfDiscoverableLocationsPerFile[file]++;
-                        locationInfo->totalDiscoverableLocationCount++;
+                        //         auto* file = location->GetFile(0);
+                        //         countOfDiscoverableLocationsPerFile[file]++;
+                        //         locationInfo->totalDiscoverableLocationCount++;
 
-                        if (!g_hasLoggedFullListOfDiscoverableLocations)
-                            Log("Discoverable Location (from ref marker): {} - {:x} in {}", location->GetName(), location->GetLocalFormID(), location->GetFile(0)->GetFilename());
+                        //         if (!g_hasLoggedFullListOfDiscoverableLocations)
+                        //             Log("Discoverable Location (from ref marker): {} - {:x} in {}", location->GetName(), location->GetLocalFormID(),
+                        //                 location->GetFile(0)->GetFilename());
+                        //     } else {
+                        //         Log("NO LOCATION for reference for marker location {}", mapData->locationName.GetFullName());
+                        //     }
+                        // } else {
+                        //     Log("NO PARENT CELL for reference for marker location {}", mapData->locationName.GetFullName());
                     }
                 }
             }
