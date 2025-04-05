@@ -49,6 +49,16 @@
       "comment": "Windhelm Military Camp",
       "formId": "ec193",
       "plugin": "Skyrim.esm"
+    },
+    {
+      "comment": "Solstheim",
+      "formId": "16fe7",
+      "plugin": "Dragonborn.esm"
+    },
+    {
+      "comment": "Fort Dawnguard",
+      "formId": "13f21",
+      "plugin": "dawnguard.esm"
     }
   ]
 }

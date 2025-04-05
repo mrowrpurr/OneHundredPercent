@@ -182,7 +182,8 @@ void SaveData::SaveDiscoveryEvent(LocationEventType type, const RE::MapMarkerDat
     // Add it to the vector that has the ordered list of discovered locations
     // UNLESS this is a discovery from the player map, which means
     // we don't know exactly WHEN it was actually discovered
-    if (type != LocationEventType::DiscoveredFromPlayerMap) recentlyDiscoveredMarkers.push_back(refFormIdentifier);
+    // if (type != LocationEventType::DiscoveredFromPlayerMap) recentlyDiscoveredMarkers.push_back(refFormIdentifier); <--- for now, let's ALWAYS add to recent :)
+    recentlyDiscoveredMarkers.push_back(refFormIdentifier);
 
     // If the emplace was successful, we can log the event
     auto& addedLocationEvent = emplaceResult.first->second;

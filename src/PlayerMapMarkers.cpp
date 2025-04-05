@@ -7,7 +7,6 @@
 #include <atomic>
 
 #include "DiscoverableMapMarkers.h"
-#include "JsonFiles.h"
 #include "SaveData.h"
 
 std::atomic<bool> g_isUpdateSaveGameToIncludeDiscoveredPlayerMapMarkersCurrentlyRunning{false};
@@ -70,7 +69,8 @@ void UpdateSaveGameToIncludeDiscoveredPlayerMapMarkers() {
     auto& allLocations = saveData.GetDiscoveryEvents();
     for (auto& [id, locationEvent] : allLocations) {
         if (locationEvent.eventType == LocationEventType::DiscoveredFromPlayerMap) {
-            Log("[FROM SAVE] [DISCOVERED]: {} - {} - {}", locationEvent.locationName, LocationEventTypeToString(locationEvent.eventType), locationEvent.eventCellName);
+            Log("[FROM SAVE] [DISCOVERED]: {} - {} - {} - {:x} @ {}", locationEvent.locationName, LocationEventTypeToString(locationEvent.eventType), locationEvent.eventCellName,
+                locationEvent.formIdentifier.localFormID, locationEvent.formIdentifier.pluginName);
         }
     }
 
