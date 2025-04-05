@@ -5,6 +5,8 @@
 #include <SkyrimScripting/Logging.h>
 
 #include "Config.h"
+#include "DiscoverableMapMarkers.h"
+#include "JsonFiles.h"
 
 inline void WriteString(SKSE::SerializationInterface* intfc, const std::string& str) {
     std::size_t len = str.size();
@@ -121,56 +123,71 @@ collections_map<FormIdentifier, LocationEvent>& SaveData::GetDiscoveryEvents() {
 std::vector<FormIdentifier>& SaveData::GetRecentlyDiscoveredMapMarkerIDs() { return recentlyDiscoveredMarkers; }
 
 void SaveData::SaveDiscoveryEvent(LocationEventType type, const RE::MapMarkerData* mapMarkerData) {
-    // Log("[Save] [SaveDiscoveryEvent] {} - {}", LocationEventTypeToString(type), mapMarkerData->locationName);
+    Log("[Save] [SaveDiscoveryEvent] {} - {}", LocationEventTypeToString(type), mapMarkerData->locationName.GetFullName());
 
-    // auto* player         = RE::PlayerCharacter::GetSingleton();
-    // auto  locationFormId = FormIdentifier::CreateIdentifier(location);
+    if (IgnoredLocationNames.contains(ToLowerCase(mapMarkerData->locationName.GetFullName()))) {
+        Log("[Save] [Ignored due to name] {} - {}", LocationEventTypeToString(type), mapMarkerData->locationName.GetFullName());
+        return;
+    }
 
-    // auto existing = discoveryEvents.find(locationFormId);
-    // if (existing != discoveryEvents.end()) {
-    //     // If it is, update the time...
-    //     existing->second.eventTime = RE::Calendar::GetSingleton()->GetCurrentGameTime();
-    //     // And if the new event type is "Cleared", update the event type to "Cleared" if it was previously "Discovered"
-    //     if (existing->second.eventType == LocationEventType::Discovered && type == LocationEventType::Cleared) existing->second.eventType = LocationEventType::Cleared;
-    //     Log("[Save] [UpdateLocationEvent] {} - {} - {}", existing->second.locationName, LocationEventTypeToString(existing->second.eventType), existing->second.eventCellName);
-    //     return &existing->second;
-    // }
+    auto* discoverableMapMarkers = GetDiscoverableMapMarkers();
+    auto* ref                    = discoverableMapMarkers->GetReferenceForMarker(mapMarkerData);
+    if (!ref) {
+        Log("[Save] [Ignored due to not being a discoverable map marker] {} - {}", LocationEventTypeToString(type), mapMarkerData->locationName.GetFullName());
+        return;
+    }
+    if (IgnoredMapMarkers.contains(ref->GetFormID())) {
+        Log("[Save] [Ignored due to being in the ignored map markers list] {} - {}", LocationEventTypeToString(type), mapMarkerData->locationName.GetFullName());
+        return;
+    }
+    if (!mapMarkerData->flags.any(RE::MapMarkerData::Flag::kVisible)) {
+        Log("[Save] [Ignored due to not being visible] {} - {}", LocationEventTypeToString(type), mapMarkerData->locationName.GetFullName());
+        return;
+    }
+    if (!mapMarkerData->flags.any(RE::MapMarkerData::Flag::kCanTravelTo)) {
+        Log("[Save] [Ignored due to not being able to travel to] {} - {}", LocationEventTypeToString(type), mapMarkerData->locationName.GetFullName());
+        return;
+    }
 
-    // auto* currentLocation = player->GetCurrentLocation();
+    auto* player            = RE::PlayerCharacter::GetSingleton();
+    auto  refFormIdentifier = FormIdentifier::CreateIdentifier(ref);
 
-    // auto emplaceResult = discoveryEvents.emplace(
-    //     locationFormId,
-    //     LocationEvent{
-    //         locationFormId,
-    //         std::string{location->GetFullName()},
-    //         type,
-    //         RE::Calendar::GetSingleton()->GetCurrentGameTime(),
-    //         player->GetPosition(),
-    //         player->GetAngle(),
-    //         currentLocation ? currentLocation->GetFullName() : "<Unknown Location>",
-    //     }
-    // );
+    auto existing = discoveryEvents.find(refFormIdentifier);
+    if (existing != discoveryEvents.end()) {
+        Log("[Save] [Already discovered] {} - {} - {}", existing->second.locationName, LocationEventTypeToString(existing->second.eventType), existing->second.eventCellName);
+        return;
+    }
 
-    // if (!emplaceResult.second) {
-    //     Log("[Save] [Failed to add location event] {} - {} - {}", emplaceResult.first->second.locationName, LocationEventTypeToString(emplaceResult.first->second.eventType),
-    //         emplaceResult.first->second.eventCellName);
-    //     return nullptr;
-    // }
+    auto* currentLocation = player->GetCurrentLocation();
 
-    // // Add it to the vector that has the ordered list of discovered locations
-    // // UNLESS this is a discovery from the player map, which means
-    // // we don't know exactly WHEN it was actually discovered
-    // if (type != LocationEventType::DiscoveredFromPlayerMap) recentlyDiscoveredMarkers.push_back(locationFormId);
+    auto emplaceResult = discoveryEvents.emplace(
+        refFormIdentifier,
+        LocationEvent{
+            refFormIdentifier,
+            mapMarkerData->locationName.GetFullName(),
+            type,
+            RE::Calendar::GetSingleton()->GetCurrentGameTime(),
+            player->GetPosition(),
+            player->GetAngle(),
+            currentLocation ? currentLocation->GetFullName() : "<Unknown Location>",
+        }
+    );
 
-    // // If the emplace was successful, we can log the event
-    // auto& addedLocationEvent = emplaceResult.first->second;
-    // Log("[Save] [AddLocationEvent] {} - {} - {}", addedLocationEvent.locationName, LocationEventTypeToString(addedLocationEvent.eventType), addedLocationEvent.eventCellName);
-    // return &addedLocationEvent;
+    if (!emplaceResult.second) {
+        Log("[Save] [Failed to add location event] {} - {} - {}", emplaceResult.first->second.locationName, LocationEventTypeToString(emplaceResult.first->second.eventType),
+            emplaceResult.first->second.eventCellName);
+        return;
+    }
+
+    // Add it to the vector that has the ordered list of discovered locations
+    // UNLESS this is a discovery from the player map, which means
+    // we don't know exactly WHEN it was actually discovered
+    if (type != LocationEventType::DiscoveredFromPlayerMap) recentlyDiscoveredMarkers.push_back(refFormIdentifier);
+
+    // If the emplace was successful, we can log the event
+    auto& addedLocationEvent = emplaceResult.first->second;
+    Log("[Save] [SUCCESS] {} - {} - {}", addedLocationEvent.locationName, LocationEventTypeToString(addedLocationEvent.eventType), addedLocationEvent.eventCellName);
 }
-
-// void SaveData::DiscoveredMapMarker(const RE::BGSLocation* location) { SaveDiscoveryEvent(LocationEventType::Discovered, location); }
-// // void SaveData::ClearedLocation(const RE::BGSLocation* location) { SaveDiscoveryEvent(LocationEventType::Cleared, location); }
-// void SaveData::FoundPreviouslyDiscoveredLocationOnPlayersMap(const RE::BGSLocation* location) { SaveDiscoveryEvent(LocationEventType::DiscoveredFromPlayerMap, location); }
 
 LocationEvent* SaveData::LookupMapMarker(const FormIdentifier& mapMarkerReferenceFormID) {
     auto found = discoveryEvents.find(mapMarkerReferenceFormID);

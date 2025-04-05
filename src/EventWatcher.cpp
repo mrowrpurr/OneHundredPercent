@@ -27,6 +27,7 @@ public:
         // } else {
         //     Log("[Event] Discovered location (not found in discoverable locations list) - {}", event->mapMarkerData->locationName.GetFullName());
         // }
+    // EventHandler::
         return RE::BSEventNotifyControl::kContinue;
     }
 

@@ -54,47 +54,20 @@ void UpdateSaveGameToIncludeDiscoveredPlayerMapMarkers() {
 
     auto& saveData = GetSaveData();
 
-    // for (auto& markerPtr : player->currentMapMarkers) {
-    //     if (auto marker = markerPtr.get()) {
-    //         if (const auto* extraMapMarker = marker->extraList.GetByType<RE::ExtraMapMarker>()) {
-    //             if (auto* mapData = extraMapMarker->mapData) {
-    //                 if (mapData->flags.any(RE::MapMarkerData::Flag::kVisible) && mapData->flags.any(RE::MapMarkerData::Flag::kCanTravelTo)) {
-    //                     Log("[Debug] [Discovered Location from Player Map Markers]: {}", mapData->locationName.GetFullName());
-
-    //                     auto findLocation = DiscoverableMapMarkers->DiscoverableMapMarkersToReferences.find(mapData);
-    //                     if (findLocation != DiscoverableMapMarkers->DiscoverableMapMarkersToReferences.end()) {
-    //                         Log("[Debug] [Found location]: {}::{}", findLocation->second->GetFullName(), mapData->locationName.GetFullName());
-
-    //                         if (IgnoredMapMarkers.contains(findLocation->second->GetFormID())) continue;  // Skip any ignored location IDs
-    //                         else Log("[Debug] [Not ignored location]: {}::{}", findLocation->second->GetFullName(), mapData->locationName.GetFullName());
-
-    //                         if (IgnoredMapMarkers.contains(ToLowerCase(std::format("{}::{}", findLocation->second->GetFullName(), mapData->locationName.GetFullName()))))
-    //                             continue;  // Skip any ignored map markers
-    //                         else Log("[Debug] [Not ignored map marker]: {}::{}", findLocation->second->GetFullName(), mapData->locationName.GetFullName());
-
-    //                         if (!saveData.IsMapMarkerDiscovered(findLocation->second)) {
-    //                             // It's discovered
-    //                             // It's on the player's map
-    //                             // And it's not yet in the save game
-    //                             saveData.FoundPreviouslyDiscoveredLocationOnPlayersMap(findLocation->second);
-
-    //                             Log("[Player Map Markers] Discovered location: {}::{} ... {:x} @ {}", findLocation->second->GetFullName(), mapData->locationName.GetFullName(),
-    //                                 findLocation->second->GetLocalFormID(), findLocation->second->GetFile(0)->GetFilename());
-    //                         } else {
-    //                             Log("[Debug] [Already discovered location]: {}::{}", findLocation->second->GetFullName(), mapData->locationName.GetFullName());
-    //                         }
-    //                     } else {
-    //                         Log("[Debug] [Location not in the overall Discovereable locations list]: {}::{}", mapData->locationName.GetFullName(),
-    //                             mapData->locationName.GetFullName());
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
+    for (auto& markerPtr : player->currentMapMarkers) {
+        if (auto marker = markerPtr.get()) {
+            if (const auto* extraMapMarker = marker->extraList.GetByType<RE::ExtraMapMarker>()) {
+                if (auto* mapData = extraMapMarker->mapData) {
+                    if (mapData->flags.any(RE::MapMarkerData::Flag::kVisible) && mapData->flags.any(RE::MapMarkerData::Flag::kCanTravelTo)) {
+                        saveData.SaveDiscoveryEvent(LocationEventType::DiscoveredFromPlayerMap, mapData);
+                    }
+                }
+            }
+        }
+    }
 
     // Debug...
-    auto& allLocations = GetSaveData().GetDiscoveryEvents();
+    auto& allLocations = saveData.GetDiscoveryEvents();
     for (auto& [id, locationEvent] : allLocations) {
         if (locationEvent.eventType == LocationEventType::DiscoveredFromPlayerMap) {
             Log("[FROM SAVE] [DISCOVERED]: {} - {} - {}", locationEvent.locationName, LocationEventTypeToString(locationEvent.eventType), locationEvent.eventCellName);

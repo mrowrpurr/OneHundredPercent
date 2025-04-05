@@ -63,16 +63,7 @@ struct JournalEntry {
     std::string      text;
 };
 
-/*
-    [Journal]
-    enable_journal = true
-    show_percentage_in_journal = true
-    show_message_for_percentage_in_journal = true
-    show_recent_locations_in_journal = true
-    show_message_for_most_recent_location_in_journal = true
-*/
-
-void EventHandler::UpdateJournalWithLatestStats(std::string_view sillyMessage) {
+void EventHandler::UpdateJournalWithLatestStats() {
     if (GetConfig().enable_journal == false) {
         Log("Journal updates are disabled.");
         return;
@@ -91,7 +82,7 @@ void EventHandler::UpdateJournalWithLatestStats(std::string_view sillyMessage) {
     auto totalDiscoverableMapMarkers = GetDiscoverableMapMarkers()->GetTotalDiscoverableMapMarkersCount();
     auto recentlyDiscoveredMarkers   = saveData.GetTotalDiscoveredMapMarkersCount();
     auto percentageDiscovered        = static_cast<float>(recentlyDiscoveredMarkers) / totalDiscoverableMapMarkers * 100.0f;
-    auto integerPercentage           = static_cast<int>(std::floor(percentageDiscovered));
+    // auto        integerPercentage              = static_cast<int>(std::floor(percentageDiscovered));
 
     std::vector<JournalEntry> journalEntries;
 
@@ -99,7 +90,7 @@ void EventHandler::UpdateJournalWithLatestStats(std::string_view sillyMessage) {
 
     // 1. Percentage discovered
     if (GetConfig().show_percentage_in_journal) {
-        auto percentageMessage = std::format("{} discovered locations out of {} ({}%)", recentlyDiscoveredMarkers, totalDiscoverableMapMarkers, integerPercentage);
+        auto percentageMessage = std::format("{} discovered locations out of {} ({:.1f}%)", recentlyDiscoveredMarkers, totalDiscoverableMapMarkers, percentageDiscovered);
         journalEntries.push_back({JournalEntryType::PercentageDiscovered, percentageMessage});
         Log("[Journal] Percentage discovered: {} - {}", percentageDiscovered, percentageMessage);
     }
@@ -202,16 +193,15 @@ void EventHandler::UpdateJournalWithLatestStats(std::string_view sillyMessage) {
     Log("Journal update took {} ms", durationMs);
 }
 
-// void EventHandler::OnLocationDiscovered(const RE::MapMarkerData* mapMarkerData) {
-//     GetSaveData().DiscoveredLocation(location);
-//     auto sillyMessage = GetSillyMessage_OnLocationDiscovered(location->GetName());
-//     SendFormattedDebugNotificationMessage(sillyMessage, GetConfig().color_on_location_discovered);
-//     UpdateJournalWithLatestStats(sillyMessage);
-// }
+void EventHandler::OnMapMarkerDiscovered(const RE::MapMarkerData* mapMarkerData) {
+    GetSaveData().SaveDiscoveryEvent(LocationEventType::Discovered, mapMarkerData);
 
-// void EventHandler::OnLocationCleared(const RE::BGSLocation* location) {
-//     GetSaveData().ClearedLocation(location);
-//     auto sillyMessage = GetSillyMessage_OnLocationCleared(location->GetName());
-//     SendFormattedDebugNotificationMessage(sillyMessage, GetConfig().color_on_location_cleared);
-//     UpdateJournalWithLatestStats(sillyMessage);
-// }
+    if (GetConfig().enable_on_screen_messages) {
+        auto sillyMessage = GetSillyMessage_OnLocationDiscovered(mapMarkerData->locationName.GetFullName());
+        SendFormattedDebugNotificationMessage(sillyMessage, GetConfig().color_on_location_discovered);
+    }
+
+    if (GetConfig().enable_journal) {
+        UpdateJournalWithLatestStats();
+    }
+}

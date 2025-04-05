@@ -6,20 +6,17 @@
 #include <cstdint>
 
 class DiscoverableMapMarkers {
-    std::uint32_t                                           totalDiscoverableMapMarkersCount = 0;
-    collections_map<RE::MapMarkerData*, RE::TESObjectREFR*> discoverableMapMarkersToReferences;
-    collections_set<RE::MapMarkerData*>                     discoverableMapMarkers;
+    std::uint32_t                                                       totalDiscoverableMapMarkersCount = 0;
+    collections_map<const RE::MapMarkerData*, const RE::TESObjectREFR*> discoverableMapMarkersToReferences;
+    collections_set<const RE::MapMarkerData*>                           discoverableMapMarkers;
 
 public:
-    std::uint32_t                                            GetTotalDiscoverableMapMarkersCount() const { return totalDiscoverableMapMarkersCount; }
-    collections_map<RE::MapMarkerData*, RE::TESObjectREFR*>& GetDiscoverableMapMarkersToReferences() { return discoverableMapMarkersToReferences; }
-    collections_set<RE::MapMarkerData*>&                     GetDiscoverableMapMarkers() { return discoverableMapMarkers; }
+    std::uint32_t                                                        GetTotalDiscoverableMapMarkersCount() const;
+    collections_map<const RE::MapMarkerData*, const RE::TESObjectREFR*>& GetDiscoverableMapMarkersToReferences();
+    collections_set<const RE::MapMarkerData*>&                           GetDiscoverableMapMarkers();
 
-    void AddDiscoverableMapMarker(RE::MapMarkerData* mapMarkerData, RE::TESObjectREFR* ref) {
-        discoverableMapMarkersToReferences.emplace(mapMarkerData, ref);
-        discoverableMapMarkers.emplace(mapMarkerData);
-        totalDiscoverableMapMarkersCount++;
-    }
+    void                     AddDiscoverableMapMarker(const RE::MapMarkerData* mapMarkerData, const RE::TESObjectREFR* ref);
+    const RE::TESObjectREFR* GetReferenceForMarker(const RE::MapMarkerData* mapMarkerData);
 };
 
 void                    ReloadDiscoverableMapMarkers();

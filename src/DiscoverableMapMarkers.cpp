@@ -44,7 +44,7 @@ void ReloadDiscoverableMapMarkers() {
                 if (auto* extraMapMarker = ref->extraList.GetByType<RE::ExtraMapMarker>()) {
                     if (auto* mapData = extraMapMarker->mapData) {
                         if (!mapData->locationName.fullName.empty()) {
-                            if (IgnoredLocationNames.contains(ToLowerCase(mapData->locationName.fullName))) {
+                            if (IgnoredLocationNames.contains(ToLowerCase(mapData->locationName.GetFullName()))) {
                                 Log("[Discoverable Map Marker]: Ignoring map marker with name '{}' from {:x} @ {}", mapData->locationName.GetFullName(), ref->GetLocalFormID(),
                                     file->GetFilename());
                                 continue;
@@ -69,4 +69,22 @@ void ReloadDiscoverableMapMarkers() {
     g_DiscoverableMapMarkers                    = std::move(locationInfo);
     g_DiscoverableMapMarkersReloading           = false;
     g_hasLoggedFullListOfDiscoverableMapMarkers = true;
+}
+
+std::uint32_t DiscoverableMapMarkers::GetTotalDiscoverableMapMarkersCount() const { return totalDiscoverableMapMarkersCount; }
+
+collections_map<const RE::MapMarkerData*, const RE::TESObjectREFR*>& DiscoverableMapMarkers::GetDiscoverableMapMarkersToReferences() { return discoverableMapMarkersToReferences; }
+
+collections_set<const RE::MapMarkerData*>& DiscoverableMapMarkers::GetDiscoverableMapMarkers() { return discoverableMapMarkers; }
+
+void DiscoverableMapMarkers::AddDiscoverableMapMarker(const RE::MapMarkerData* mapMarkerData, const RE::TESObjectREFR* ref) {
+    discoverableMapMarkersToReferences.emplace(mapMarkerData, ref);
+    discoverableMapMarkers.emplace(mapMarkerData);
+    totalDiscoverableMapMarkersCount++;
+}
+
+const RE::TESObjectREFR* DiscoverableMapMarkers::GetReferenceForMarker(const RE::MapMarkerData* mapMarkerData) {
+    auto found = discoverableMapMarkersToReferences.find(mapMarkerData);
+    if (found != discoverableMapMarkersToReferences.end()) return found->second;
+    return nullptr;
 }
