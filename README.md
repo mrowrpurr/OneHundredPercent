@@ -12,7 +12,24 @@
 
 ![Screenshot](screenshots/MaraStatue.png)
 
-## `HazTheCompletionizt.toml`
+## Configuration Files
+
+```
+\---SKSE
+    \---Plugins
+        |   HazTheCompletionizt.toml
+        |   
+        \---HazTheCompletionizt
+                IgnoredLocationNames.json
+                IgnoredMapMarkers.json
+                OnMatchingLocationCleared.json
+                OnMatchingLocationDiscovered.json
+                OnSpecificLocationCleared.json
+                OnSpecificLocationDiscovered.json
+                PercentageDiscoveredMessages.json
+```
+
+### `HazTheCompletionizt.toml`
 
 ```toml
 [OnScreenMessages]
@@ -30,6 +47,19 @@ show_recent_locations_in_journal = true
 show_message_for_most_recent_location_in_journal = true
 max_recent_locations_in_journal = 50
 ```
+
+### JSON files
+
+JSON files are used for:
+
+- If you want to ignore certain map markers and have them not be counted towards the completionist percentage, you can add them to `IgnoredMapMarkers.json` or to `IgnoredLocationNames.json`.
+
+You can also configure the messages that appear in your journal and/or on-screen when you discover a certain % of locations:
+- `PercentageDiscoveredMessages.json`
+
+And you can configure the messages that appear in your journal and/or on-screen when you discover a new location or clear a location:
+- If you want to trigger an on-screen message when a specific location is discovered or cleared, you can add them to `OnSpecificLocationDiscovered.json` or `OnSpecificLocationCleared.json`.
+- If you want to trigger an on-screen message when a location is discovered or cleared that matches a specific name, you can add them to `OnMatchingLocationDiscovered.json` or `OnMatchingLocationCleared.json`.
 
 ## Credits
 
