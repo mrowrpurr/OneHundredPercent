@@ -24,6 +24,8 @@ inline std::string LocationEventTypeToString(LocationEventType type) {
             return "Discovered";
         case LocationEventType::Cleared:
             return "Cleared";
+        case LocationEventType::DiscoveredFromMapMarker:
+            return "DiscoveredFromMapMarker";
         default:
             return "None";
     }

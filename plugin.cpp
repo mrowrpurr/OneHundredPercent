@@ -17,13 +17,14 @@ SKSEPlugin_Entrypoint {
 
 SKSEPlugin_OnDataLoaded {
     WatchForEvents();
-    FindAndLoadAllJsonFiles();  // OnDataLoaded because it requires data to lookup forms
-    ReloadDiscoverableLocationInfo();
+    FindAndLoadAllJsonFiles();         // OnDataLoaded because it requires data to lookup forms
+    ReloadDiscoverableLocationInfo();  // Must be done AFTER we load the .json
 }
 
 void OnGameLoad() {
     ResetPlayerMapMarkerLookupCache();
     ReloadDiscoverableLocationInfo();
+    UpdateSaveGameToIncludeDiscoveredPlayerMapMarkers();
     EventHandler::UpdateJournalWithLatestStats();
 }
 

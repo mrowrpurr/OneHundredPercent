@@ -117,6 +117,8 @@ void SetupSaveCallbacks() {
 }
 
 LocationEvent* SaveData::SaveLocationEvent(LocationEventType type, const RE::BGSLocation* location) {
+    Log("[Save] [SaveLocationEvent] {} - {}", LocationEventTypeToString(type), location->GetFullName());
+
     auto* player         = RE::PlayerCharacter::GetSingleton();
     auto  locationFormId = FormIdentifier::CreateIdentifier(location);
 

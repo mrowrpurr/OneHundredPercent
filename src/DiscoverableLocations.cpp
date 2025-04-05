@@ -25,7 +25,46 @@ void ReloadDiscoverableLocationInfo() {
 
     auto                                         locationInfo = std::make_unique<DiscoverableLocationInfo>();
     collections_map<RE::TESFile*, std::uint32_t> countOfDiscoverableLocationsPerFile;
-    auto                                         worldspaces = RE::TESDataHandler::GetSingleton()->GetFormArray<RE::TESWorldSpace>();
+
+    /*
+     * Add all Location w/ World Markers into discoverable locations
+     *
+     * Note: not all of them have the MapMarkerData* but we can at least track them as discoverable locations
+     */
+    auto locationForms = RE::TESDataHandler::GetSingleton()->GetFormArray<RE::BGSLocation>();
+    for (auto* location : locationForms) {
+        if (!location) continue;
+        if (IgnoredLocationIDs.contains(location->GetFormID())) continue;
+        if (location->fullName.empty()) continue;
+        if (location->worldLocMarker && location->worldLocMarker.get()) {
+            // Mark this location as discoverable!
+            locationInfo->discoverableLocations.insert(location);
+
+            // See if we can get the marker to associate with it:
+            auto foundMarker = false;
+            if (auto* extraMapMarker = location->worldLocMarker.get()->extraList.GetByType<RE::ExtraMapMarker>()) {
+                if (auto* mapMarkerData = extraMapMarker->mapData) {
+                    // Associate the map marker with the location
+                    locationInfo->discoverableMapMarkersToLocations[mapMarkerData] = location;
+                    foundMarker                                                    = true;
+                }
+            }
+
+            auto* file = location->GetFile(0);
+            countOfDiscoverableLocationsPerFile[file]++;
+            locationInfo->totalDiscoverableLocationCount++;
+
+            if (!g_hasLoggedFullListOfDiscoverableLocations) {
+                if (foundMarker) Log("Discoverable Location (with marker): {} - {:x} in {}", location->GetName(), location->GetLocalFormID(), location->GetFile(0)->GetFilename());
+                else Log("Discoverable Location (without marker): {} - {:x} in {}", location->GetName(), location->GetLocalFormID(), location->GetFile(0)->GetFilename());
+            }
+        }
+    }
+
+    /*
+     * Go through all references in the game looking for markers and associate the markers
+     */
+    auto worldspaces = RE::TESDataHandler::GetSingleton()->GetFormArray<RE::TESWorldSpace>();
     for (auto* worldspace : worldspaces) {
         if (!worldspace) continue;
 
@@ -35,24 +74,26 @@ void ReloadDiscoverableLocationInfo() {
                 auto* ref = refHandle.get();
                 if (!ref) continue;
 
-                // 3. Location must exist and have a name (i.e., not a dummy marker)
                 auto* location = ref->GetCurrentLocation();
                 if (!location || location->fullName.empty()) continue;
 
                 if (auto* marker = ref->extraList.GetByType<RE::ExtraMapMarker>()) {
-                    auto* mapData = marker->mapData;
-                    if (mapData) {
+                    if (auto* mapData = marker->mapData) {
                         if (IgnoredLocationIDs.contains(location->GetFormID())) continue;
                         if (mapData->locationName.fullName.empty()) continue;
-                        locationInfo->discoverableMapMarkersToLocations[mapData] = location;
-                        auto foundLocation                                       = locationInfo->discoverableLocations.find(location);
-                        if (foundLocation != locationInfo->discoverableLocations.end()) continue;  // Location already exists, skip it!
+
+                        // Mark this location as discoverable!
                         locationInfo->discoverableLocations.insert(location);
+
+                        // Associate the map marker with the location
+                        locationInfo->discoverableMapMarkersToLocations[mapData] = location;
+
                         auto* file = location->GetFile(0);
                         countOfDiscoverableLocationsPerFile[file]++;
                         locationInfo->totalDiscoverableLocationCount++;
+
                         if (!g_hasLoggedFullListOfDiscoverableLocations)
-                            Log("Discoverable Location: {} - {:x} in {}", location->GetName(), location->GetLocalFormID(), location->GetFile(0)->GetFilename());
+                            Log("Discoverable Location (from ref marker): {} - {:x} in {}", location->GetName(), location->GetLocalFormID(), location->GetFile(0)->GetFilename());
                     }
                 }
             }
