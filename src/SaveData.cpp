@@ -154,7 +154,17 @@ void SaveData::SaveDiscoveryEvent(LocationEventType type, const RE::MapMarkerDat
 
     auto existing = discoveryEvents.find(refFormIdentifier);
     if (existing != discoveryEvents.end()) {
-        Log("[Save] [Already discovered] {} - {} - {}", existing->second.locationName, LocationEventTypeToString(existing->second.eventType), existing->second.eventCellName);
+        if (type == LocationEventType::Cleared && existing->second.eventType != LocationEventType::Cleared) {
+            // If the existing event is not cleared, we update it
+            existing->second.eventType     = LocationEventType::Cleared;
+            existing->second.eventTime     = RE::Calendar::GetSingleton()->GetCurrentGameTime();
+            existing->second.eventPosition = player->GetPosition();
+            existing->second.eventRotation = player->GetAngle();
+            Log("[Save] [Updated existing location event] {} - {} - {}", existing->second.locationName, LocationEventTypeToString(existing->second.eventType),
+                existing->second.eventCellName);
+        } else {
+            Log("[Save] [Already discovered] {} - {} - {}", existing->second.locationName, LocationEventTypeToString(existing->second.eventType), existing->second.eventCellName);
+        }
         return;
     }
 

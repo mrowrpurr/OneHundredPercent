@@ -14,13 +14,16 @@
 enum class LocationEventType : std::uint32_t {
     None                    = 0,
     Discovered              = 1,
-    DiscoveredFromPlayerMap = 2,
+    Cleared                 = 2,
+    DiscoveredFromPlayerMap = 3,
 };
 
 inline std::string LocationEventTypeToString(LocationEventType type) {
     switch (type) {
         case LocationEventType::Discovered:
             return "Discovered";
+        case LocationEventType::Cleared:
+            return "Cleared";
         case LocationEventType::DiscoveredFromPlayerMap:
             return "Discovered from player map";
         default:

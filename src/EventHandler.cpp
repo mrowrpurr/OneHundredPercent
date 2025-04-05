@@ -110,7 +110,15 @@ void EventHandler::UpdateJournalWithLatestStats() {
     if (GetConfig().show_message_for_most_recent_location_in_journal) {
         if (auto* mostRecentLocationEvent = saveData.GetMostRecentlyDiscoveredLocation()) {
             Log("[Journal] Most recent location: Discovered location: {}", mostRecentLocationEvent->locationName);
-            auto sillyRecentLocationMessage = SillyMessages::instance().GetRandomMessage_LocationDiscovered(mostRecentLocationEvent->locationName);
+            std::string sillyRecentLocationMessage;
+            switch (mostRecentLocationEvent->eventType) {
+                case LocationEventType::Cleared:
+                    sillyRecentLocationMessage = SillyMessages::instance().GetRandomMessage_LocationCleared(mostRecentLocationEvent->locationName);
+                    break;
+                default:
+                    sillyRecentLocationMessage = SillyMessages::instance().GetRandomMessage_LocationDiscovered(mostRecentLocationEvent->locationName);
+                    break;
+            }
             if (!sillyRecentLocationMessage.empty()) {
                 journalEntries.push_back({JournalEntryType::MostRecentLocationSillyMessage, sillyRecentLocationMessage});
                 Log("[Journal] [Message] Most recent location: Discovered location: {} - {}", mostRecentLocationEvent->locationName, sillyRecentLocationMessage);
@@ -129,7 +137,14 @@ void EventHandler::UpdateJournalWithLatestStats() {
         for (auto i = numberOfrecentlyDiscoveredMarkers; i > numberOfrecentlyDiscoveredMarkers - maxLocations; --i) {
             if (auto* locationEvent = saveData.GetRecentlyDiscoveredLocation(i - 1)) {
                 std::string locationMessage;
-                locationMessage = std::format("Discovered location: {}", locationEvent->locationName);
+                switch (locationEvent->eventType) {
+                    case LocationEventType::Cleared:
+                        locationMessage = std::format("Cleared location: {}", locationEvent->locationName);
+                        break;
+                    default:
+                        locationMessage = std::format("Discovered location: {}", locationEvent->locationName);
+                        break;
+                }
                 journalEntries.push_back({JournalEntryType::RecentLocation, locationMessage});
                 Log("[Journal] {}", locationMessage);
             } else {
@@ -178,7 +193,16 @@ void EventHandler::OnMapMarkerDiscovered(const RE::MapMarkerData* mapMarkerData)
         SendFormattedDebugNotificationMessage(sillyMessage, GetConfig().color_on_location_discovered);
     }
 
-    if (GetConfig().enable_journal) {
-        UpdateJournalWithLatestStats();
+    if (GetConfig().enable_journal) UpdateJournalWithLatestStats();
+}
+
+void EventHandler::OnMapMarkerCleared(const RE::MapMarkerData* mapMarkerData) {
+    GetSaveData().SaveDiscoveryEvent(LocationEventType::Cleared, mapMarkerData);
+
+    if (GetConfig().enable_on_screen_messages) {
+        auto sillyMessage = GetSillyMessage_OnLocationCleared(mapMarkerData->locationName.GetFullName());
+        SendFormattedDebugNotificationMessage(sillyMessage, GetConfig().color_on_location_cleared);
     }
+
+    if (GetConfig().enable_journal) UpdateJournalWithLatestStats();
 }
