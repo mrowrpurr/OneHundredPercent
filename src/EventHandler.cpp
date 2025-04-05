@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <format>
 
-#include "DiscoverableLocations.h"
+#include "DiscoverableMapMarkers.h"
 #include "JournalManager.h"
 #include "SaveData.h"
 #include "SillyMessages.h"
@@ -88,10 +88,10 @@ void EventHandler::UpdateJournalWithLatestStats(std::string_view sillyMessage) {
     auto& saveData = GetSaveData();
 
     // Get percentage discovered
-    auto totalDiscoverableLocations = GetDiscoverableLocationInfo()->totalDiscoverableLocationCount;
-    auto discoveredLocations        = saveData.GetTotalDiscoveredLocationCount();
-    auto percentageDiscovered       = static_cast<float>(discoveredLocations) / totalDiscoverableLocations * 100.0f;
-    auto integerPercentage          = static_cast<int>(std::floor(percentageDiscovered));
+    auto totalDiscoverableMapMarkers = GetDiscoverableMapMarkers()->totalDiscoverableMapMarkersCount;
+    auto recentlyDiscoveredMarkers   = saveData.GetTotalDiscoveredMapMarkersCount();
+    auto percentageDiscovered        = static_cast<float>(recentlyDiscoveredMarkers) / totalDiscoverableMapMarkers * 100.0f;
+    auto integerPercentage           = static_cast<int>(std::floor(percentageDiscovered));
 
     std::vector<JournalEntry> journalEntries;
 
@@ -99,7 +99,7 @@ void EventHandler::UpdateJournalWithLatestStats(std::string_view sillyMessage) {
 
     // 1. Percentage discovered
     if (GetConfig().show_percentage_in_journal) {
-        auto percentageMessage = std::format("{} discovered locations out of {} ({}%)", discoveredLocations, totalDiscoverableLocations, integerPercentage);
+        auto percentageMessage = std::format("{} discovered locations out of {} ({}%)", recentlyDiscoveredMarkers, totalDiscoverableMapMarkers, integerPercentage);
         journalEntries.push_back({JournalEntryType::PercentageDiscovered, percentageMessage});
         Log("[Journal] Percentage discovered: {} - {}", percentageDiscovered, percentageMessage);
     }
@@ -116,60 +116,60 @@ void EventHandler::UpdateJournalWithLatestStats(std::string_view sillyMessage) {
     }
 
     // 3. Silly message (for the most recent location)
-    if (GetConfig().show_message_for_most_recent_location_in_journal) {
-        if (auto* mostRecentLocationEvent = saveData.GetMostRecentlyDiscoveredLocation()) {
-            switch (mostRecentLocationEvent->eventType) {
-                case LocationEventType::Cleared: {
-                    Log("[Journal] Most recent location: Cleared location: {}", mostRecentLocationEvent->locationName);
-                    auto sillyRecentLocationMessage = SillyMessages::instance().GetRandomMessage_LocationCleared(mostRecentLocationEvent->locationName);
-                    if (!sillyRecentLocationMessage.empty()) {
-                        journalEntries.push_back({JournalEntryType::MostRecentLocationSillyMessage, sillyRecentLocationMessage});
-                        Log("[Journal] [Message] Most recent location: Cleared location: {} - {}", mostRecentLocationEvent->locationName, sillyRecentLocationMessage);
-                    } else {
-                        Log("[Journal] No message found for most recent location: {}", mostRecentLocationEvent->locationName);
-                    }
-                    break;
-                }
-                default: {
-                    Log("[Journal] Most recent location: Discovered location: {}", mostRecentLocationEvent->locationName);
-                    auto sillyRecentLocationMessage = SillyMessages::instance().GetRandomMessage_LocationDiscovered(mostRecentLocationEvent->locationName);
-                    if (!sillyRecentLocationMessage.empty()) {
-                        journalEntries.push_back({JournalEntryType::MostRecentLocationSillyMessage, sillyRecentLocationMessage});
-                        Log("[Journal] [Message] Most recent location: Discovered location: {} - {}", mostRecentLocationEvent->locationName, sillyRecentLocationMessage);
-                    } else {
-                        Log("[Journal] No message found for most recent location: {}", mostRecentLocationEvent->locationName);
-                    }
-                    break;
-                }
-            }
-        }
-    }
+    // if (GetConfig().show_message_for_most_recent_location_in_journal) {
+    //     if (auto* mostRecentLocationEvent = saveData.GetMostRecentlyDiscoveredLocation()) {
+    //         switch (mostRecentLocationEvent->eventType) {
+    //             case LocationEventType::Cleared: {
+    //                 Log("[Journal] Most recent location: Cleared location: {}", mostRecentLocationEvent->locationName);
+    //                 auto sillyRecentLocationMessage = SillyMessages::instance().GetRandomMessage_LocationCleared(mostRecentLocationEvent->locationName);
+    //                 if (!sillyRecentLocationMessage.empty()) {
+    //                     journalEntries.push_back({JournalEntryType::MostRecentLocationSillyMessage, sillyRecentLocationMessage});
+    //                     Log("[Journal] [Message] Most recent location: Cleared location: {} - {}", mostRecentLocationEvent->locationName, sillyRecentLocationMessage);
+    //                 } else {
+    //                     Log("[Journal] No message found for most recent location: {}", mostRecentLocationEvent->locationName);
+    //                 }
+    //                 break;
+    //             }
+    //             default: {
+    //                 Log("[Journal] Most recent location: Discovered location: {}", mostRecentLocationEvent->locationName);
+    //                 auto sillyRecentLocationMessage = SillyMessages::instance().GetRandomMessage_LocationDiscovered(mostRecentLocationEvent->locationName);
+    //                 if (!sillyRecentLocationMessage.empty()) {
+    //                     journalEntries.push_back({JournalEntryType::MostRecentLocationSillyMessage, sillyRecentLocationMessage});
+    //                     Log("[Journal] [Message] Most recent location: Discovered location: {} - {}", mostRecentLocationEvent->locationName, sillyRecentLocationMessage);
+    //                 } else {
+    //                     Log("[Journal] No message found for most recent location: {}", mostRecentLocationEvent->locationName);
+    //                 }
+    //                 break;
+    //             }
+    //         }
+    //     }
+    // }
 
     // 4. Discovered locations
-    if (GetConfig().show_recent_locations_in_journal && GetConfig().max_recent_locations_in_journal > 0) {
-        auto recentLocationCount         = 0;
-        auto maxLocations                = std::min(saveData.GetRecentlyDiscoveredLocationCount(), GetConfig().max_recent_locations_in_journal);
-        auto numberOfDiscoveredLocations = saveData.GetRecentlyDiscoveredLocationCount();
-        recentLocationCount              = maxLocations;
-        for (auto i = numberOfDiscoveredLocations; i > numberOfDiscoveredLocations - maxLocations; --i) {
-            if (auto* locationEvent = saveData.GetRecentlyDiscoveredLocation(i - 1)) {
-                std::string locationMessage;
-                switch (locationEvent->eventType) {
-                    case LocationEventType::Cleared:
-                        locationMessage = std::format("Cleared location: {}", locationEvent->locationName);
-                        break;
-                    default:
-                        locationMessage = std::format("Discovered location: {}", locationEvent->locationName);
-                        break;
-                }
-                journalEntries.push_back({JournalEntryType::RecentLocation, locationMessage});
-                Log("[Journal] {}", locationMessage);
-            } else {
-                SKSE::log::error("[Journal] [Error] Failed to get recently discovered location: {}", i);
-                break;
-            }
-        }
-    }
+    // if (GetConfig().show_recent_locations_in_journal && GetConfig().max_recent_locations_in_journal > 0) {
+    //     auto recentLocationCount               = 0;
+    //     auto maxLocations                      = std::min(saveData.GetRecentlyDiscoveredMapMarkersCount(), GetConfig().max_recent_locations_in_journal);
+    //     auto numberOfrecentlyDiscoveredMarkers = saveData.GetRecentlyDiscoveredMapMarkersCount();
+    //     recentLocationCount                    = maxLocations;
+    //     for (auto i = numberOfrecentlyDiscoveredMarkers; i > numberOfrecentlyDiscoveredMarkers - maxLocations; --i) {
+    //         if (auto* locationEvent = saveData.GetRecentlyDiscoveredLocation(i - 1)) {
+    //             std::string locationMessage;
+    //             switch (locationEvent->eventType) {
+    //                 case LocationEventType::Cleared:
+    //                     locationMessage = std::format("Cleared location: {}", locationEvent->locationName);
+    //                     break;
+    //                 default:
+    //                     locationMessage = std::format("Discovered location: {}", locationEvent->locationName);
+    //                     break;
+    //             }
+    //             journalEntries.push_back({JournalEntryType::RecentLocation, locationMessage});
+    //             Log("[Journal] {}", locationMessage);
+    //         } else {
+    //             SKSE::log::error("[Journal] [Error] Failed to get recently discovered location: {}", i);
+    //             break;
+    //         }
+    //     }
+    // }
 
     // Ok, now we gotta show the things!
     for (auto i = 0; i < journalEntries.size(); ++i) {
@@ -202,16 +202,16 @@ void EventHandler::UpdateJournalWithLatestStats(std::string_view sillyMessage) {
     Log("Journal update took {} ms", durationMs);
 }
 
-void EventHandler::OnLocationDiscovered(const RE::BGSLocation* location) {
-    GetSaveData().DiscoveredLocation(location);
-    auto sillyMessage = GetSillyMessage_OnLocationDiscovered(location->GetName());
-    SendFormattedDebugNotificationMessage(sillyMessage, GetConfig().color_on_location_discovered);
-    UpdateJournalWithLatestStats(sillyMessage);
-}
+// void EventHandler::OnLocationDiscovered(const RE::MapMarkerData* mapMarkerData) {
+//     GetSaveData().DiscoveredLocation(location);
+//     auto sillyMessage = GetSillyMessage_OnLocationDiscovered(location->GetName());
+//     SendFormattedDebugNotificationMessage(sillyMessage, GetConfig().color_on_location_discovered);
+//     UpdateJournalWithLatestStats(sillyMessage);
+// }
 
-void EventHandler::OnLocationCleared(const RE::BGSLocation* location) {
-    GetSaveData().ClearedLocation(location);
-    auto sillyMessage = GetSillyMessage_OnLocationCleared(location->GetName());
-    SendFormattedDebugNotificationMessage(sillyMessage, GetConfig().color_on_location_cleared);
-    UpdateJournalWithLatestStats(sillyMessage);
-}
+// void EventHandler::OnLocationCleared(const RE::BGSLocation* location) {
+//     GetSaveData().ClearedLocation(location);
+//     auto sillyMessage = GetSillyMessage_OnLocationCleared(location->GetName());
+//     SendFormattedDebugNotificationMessage(sillyMessage, GetConfig().color_on_location_cleared);
+//     UpdateJournalWithLatestStats(sillyMessage);
+// }

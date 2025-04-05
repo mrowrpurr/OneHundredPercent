@@ -7,10 +7,10 @@
 #include "EventHandler.h"
 
 namespace PapyrusFunctions {
-    void UpdateJournalWithLatestDiscoverableLocationInfo(RE::StaticFunctionTag*) { EventHandler::UpdateJournalWithLatestStats(); }
+    void UpdateJournalWithLatestDiscoverableMapMarkers(RE::StaticFunctionTag*) { EventHandler::UpdateJournalWithLatestStats(); }
 
     bool BindFunctions(RE::BSScript::Internal::VirtualMachine* vm) {
-        vm->RegisterFunction("UpdateJournalWithLatestDiscoverableLocationInfo", "MP_HazTheCompletionizt", UpdateJournalWithLatestDiscoverableLocationInfo);
+        vm->RegisterFunction("UpdateJournalWithLatestDiscoverableMapMarkers", "MP_HazTheCompletionizt", UpdateJournalWithLatestDiscoverableMapMarkers);
         return true;
     }
 }

@@ -1,3 +1,3 @@
 scriptName MP_HazTheCompletionizt hidden
 
-function UpdateJournalWithLatestDiscoverableLocationInfo() global native
+function UpdateJournalWithLatestDiscoverableMapMarkers() global native

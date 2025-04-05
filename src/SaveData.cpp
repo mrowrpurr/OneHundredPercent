@@ -42,39 +42,39 @@ void LocationEvent::Load(SKSE::SerializationInterface* intfc) {
 }
 
 void SaveData::Save(SKSE::SerializationInterface* intfc) {
-    // Save locationEvents map
-    std::uint32_t mapCount = static_cast<std::uint32_t>(locationEvents.size());
+    // Save discoveryEvents map
+    std::uint32_t mapCount = static_cast<std::uint32_t>(discoveryEvents.size());
     intfc->WriteRecordData(mapCount);
 
     // Iterate through the map and save each LocationEvent
-    for (const auto& [formIdentifier, event] : locationEvents) {
+    for (const auto& [formIdentifier, event] : discoveryEvents) {
         event.Save(intfc);
     }
 
-    // Save discoveredLocations vector
-    std::uint32_t vectorCount = static_cast<std::uint32_t>(discoveredLocations.size());
+    // Save recentlyDiscoveredMarkers vector
+    std::uint32_t vectorCount = static_cast<std::uint32_t>(recentlyDiscoveredMarkers.size());
     intfc->WriteRecordData(vectorCount);
 
     // Iterate through the vector and save each FormIdentifier
-    for (const auto& formIdentifier : discoveredLocations) {
+    for (const auto& formIdentifier : recentlyDiscoveredMarkers) {
         intfc->WriteRecordData(formIdentifier);
     }
 }
 
 void SaveData::Load(SKSE::SerializationInterface* intfc) {
-    // Load locationEvents map
-    locationEvents.clear();
+    // Load discoveryEvents map
+    discoveryEvents.clear();
     std::uint32_t mapCount;
     intfc->ReadRecordData(mapCount);
 
     for (std::uint32_t i = 0; i < mapCount; ++i) {
         LocationEvent event;
         event.Load(intfc);
-        locationEvents.emplace(event.formIdentifier, std::move(event));
+        discoveryEvents.emplace(event.formIdentifier, std::move(event));
     }
 
-    // Load discoveredLocations vector
-    discoveredLocations.clear();
+    // Load recentlyDiscoveredMarkers vector
+    recentlyDiscoveredMarkers.clear();
     std::uint32_t vectorCount;
     intfc->ReadRecordData(vectorCount);
 
@@ -82,7 +82,7 @@ void SaveData::Load(SKSE::SerializationInterface* intfc) {
     for (std::uint32_t i = 0; i < vectorCount; ++i) {
         FormIdentifier formIdentifier;
         intfc->ReadRecordData(formIdentifier);
-        discoveredLocations.push_back(formIdentifier);
+        recentlyDiscoveredMarkers.push_back(formIdentifier);
     }
 }
 
@@ -116,83 +116,94 @@ void SetupSaveCallbacks() {
     serializationInterface->SetLoadCallback(LoadCallback);
 }
 
-LocationEvent* SaveData::SaveLocationEvent(LocationEventType type, const RE::BGSLocation* location) {
-    Log("[Save] [SaveLocationEvent] {} - {}", LocationEventTypeToString(type), location->GetFullName());
+collections_map<FormIdentifier, LocationEvent>& SaveData::GetDiscoveryEvents() { return discoveryEvents; }
 
-    auto* player         = RE::PlayerCharacter::GetSingleton();
-    auto  locationFormId = FormIdentifier::CreateIdentifier(location);
+std::vector<FormIdentifier>& SaveData::GetRecentlyDiscoveredMapMarkerIDs() { return recentlyDiscoveredMarkers; }
 
-    auto existing = locationEvents.find(locationFormId);
-    if (existing != locationEvents.end()) {
-        // If it is, update the time...
-        existing->second.eventTime = RE::Calendar::GetSingleton()->GetCurrentGameTime();
-        // And if the new event type is "Cleared", update the event type to "Cleared" if it was previously "Discovered"
-        if (existing->second.eventType == LocationEventType::Discovered && type == LocationEventType::Cleared) existing->second.eventType = LocationEventType::Cleared;
-        Log("[Save] [UpdateLocationEvent] {} - {} - {}", existing->second.locationName, LocationEventTypeToString(existing->second.eventType), existing->second.eventCellName);
-        return &existing->second;
-    }
+void SaveData::SaveDiscoveryEvent(LocationEventType type, const RE::MapMarkerData* mapMarkerData) {
+    // Log("[Save] [SaveDiscoveryEvent] {} - {}", LocationEventTypeToString(type), mapMarkerData->locationName);
 
-    auto* currentLocation = player->GetCurrentLocation();
+    // auto* player         = RE::PlayerCharacter::GetSingleton();
+    // auto  locationFormId = FormIdentifier::CreateIdentifier(location);
 
-    auto emplaceResult = locationEvents.emplace(
-        locationFormId,
-        LocationEvent{
-            locationFormId,
-            std::string{location->GetFullName()},
-            type,
-            RE::Calendar::GetSingleton()->GetCurrentGameTime(),
-            player->GetPosition(),
-            player->GetAngle(),
-            currentLocation ? currentLocation->GetFullName() : "<Unknown Location>",
-        }
-    );
+    // auto existing = discoveryEvents.find(locationFormId);
+    // if (existing != discoveryEvents.end()) {
+    //     // If it is, update the time...
+    //     existing->second.eventTime = RE::Calendar::GetSingleton()->GetCurrentGameTime();
+    //     // And if the new event type is "Cleared", update the event type to "Cleared" if it was previously "Discovered"
+    //     if (existing->second.eventType == LocationEventType::Discovered && type == LocationEventType::Cleared) existing->second.eventType = LocationEventType::Cleared;
+    //     Log("[Save] [UpdateLocationEvent] {} - {} - {}", existing->second.locationName, LocationEventTypeToString(existing->second.eventType), existing->second.eventCellName);
+    //     return &existing->second;
+    // }
 
-    if (!emplaceResult.second) {
-        Log("[Save] [Failed to add location event] {} - {} - {}", emplaceResult.first->second.locationName, LocationEventTypeToString(emplaceResult.first->second.eventType),
-            emplaceResult.first->second.eventCellName);
-        return nullptr;
-    }
+    // auto* currentLocation = player->GetCurrentLocation();
 
-    // Add it to the vector that has the ordered list of discovered locations
-    // UNLESS this is a discovery from the player map, which means
-    // we don't know exactly WHEN it was actually discovered
-    if (type != LocationEventType::DiscoveredFromMapMarker) discoveredLocations.push_back(locationFormId);
+    // auto emplaceResult = discoveryEvents.emplace(
+    //     locationFormId,
+    //     LocationEvent{
+    //         locationFormId,
+    //         std::string{location->GetFullName()},
+    //         type,
+    //         RE::Calendar::GetSingleton()->GetCurrentGameTime(),
+    //         player->GetPosition(),
+    //         player->GetAngle(),
+    //         currentLocation ? currentLocation->GetFullName() : "<Unknown Location>",
+    //     }
+    // );
 
-    // If the emplace was successful, we can log the event
-    auto& addedLocationEvent = emplaceResult.first->second;
-    Log("[Save] [AddLocationEvent] {} - {} - {}", addedLocationEvent.locationName, LocationEventTypeToString(addedLocationEvent.eventType), addedLocationEvent.eventCellName);
-    return &addedLocationEvent;
+    // if (!emplaceResult.second) {
+    //     Log("[Save] [Failed to add location event] {} - {} - {}", emplaceResult.first->second.locationName, LocationEventTypeToString(emplaceResult.first->second.eventType),
+    //         emplaceResult.first->second.eventCellName);
+    //     return nullptr;
+    // }
+
+    // // Add it to the vector that has the ordered list of discovered locations
+    // // UNLESS this is a discovery from the player map, which means
+    // // we don't know exactly WHEN it was actually discovered
+    // if (type != LocationEventType::DiscoveredFromPlayerMap) recentlyDiscoveredMarkers.push_back(locationFormId);
+
+    // // If the emplace was successful, we can log the event
+    // auto& addedLocationEvent = emplaceResult.first->second;
+    // Log("[Save] [AddLocationEvent] {} - {} - {}", addedLocationEvent.locationName, LocationEventTypeToString(addedLocationEvent.eventType), addedLocationEvent.eventCellName);
+    // return &addedLocationEvent;
 }
 
-void SaveData::DiscoveredLocation(const RE::BGSLocation* location) { SaveLocationEvent(LocationEventType::Discovered, location); }
-void SaveData::ClearedLocation(const RE::BGSLocation* location) { SaveLocationEvent(LocationEventType::Cleared, location); }
-void SaveData::FoundPreviouslyDiscoveredLocationOnPlayersMap(const RE::BGSLocation* location) { SaveLocationEvent(LocationEventType::DiscoveredFromMapMarker, location); }
+// void SaveData::DiscoveredMapMarker(const RE::BGSLocation* location) { SaveDiscoveryEvent(LocationEventType::Discovered, location); }
+// // void SaveData::ClearedLocation(const RE::BGSLocation* location) { SaveDiscoveryEvent(LocationEventType::Cleared, location); }
+// void SaveData::FoundPreviouslyDiscoveredLocationOnPlayersMap(const RE::BGSLocation* location) { SaveDiscoveryEvent(LocationEventType::DiscoveredFromPlayerMap, location); }
 
-LocationEvent* SaveData::LookupLocation(const FormIdentifier& formIdentifier) {
-    auto found = locationEvents.find(formIdentifier);
-    if (found != locationEvents.end()) return &found->second;
+LocationEvent* SaveData::LookupMapMarker(const FormIdentifier& mapMarkerReferenceFormID) {
+    auto found = discoveryEvents.find(mapMarkerReferenceFormID);
+    if (found != discoveryEvents.end()) return &found->second;
     return nullptr;
 }
 
-LocationEvent* SaveData::LookupLocation(const RE::BGSLocation* location) { return LookupLocation(FormIdentifier::CreateIdentifier(location)); }
+LocationEvent* SaveData::LookupMapMarker(const RE::MapMarkerData* mapMarkerData) {
+    // return LookupMapMarker(FormIdentifier::CreateIdentifier(location));
+    return nullptr;
+}
 
 LocationEvent* SaveData::GetMostRecentlyDiscoveredLocation() {
-    if (discoveredLocations.empty()) return nullptr;
-    auto lastDiscoveredLocation = discoveredLocations.back();
-    auto found                  = locationEvents.find(lastDiscoveredLocation);
-    if (found != locationEvents.end()) return &found->second;
+    if (recentlyDiscoveredMarkers.empty()) return nullptr;
+    auto lastDiscoveredLocation = recentlyDiscoveredMarkers.back();
+    auto found                  = discoveryEvents.find(lastDiscoveredLocation);
+    if (found != discoveryEvents.end()) return &found->second;
     return nullptr;
 }
 
 LocationEvent* SaveData::GetRecentlyDiscoveredLocation(std::uint32_t index) {
-    if (index >= discoveredLocations.size()) return nullptr;
-    auto found = locationEvents.find(discoveredLocations[index]);
-    if (found != locationEvents.end()) return &found->second;
+    if (index >= recentlyDiscoveredMarkers.size()) return nullptr;
+    auto found = discoveryEvents.find(recentlyDiscoveredMarkers[index]);
+    if (found != discoveryEvents.end()) return &found->second;
     return nullptr;
 }
 
-bool SaveData::ContainsLocation(const RE::BGSLocation* location) const { return locationEvents.contains(FormIdentifier::CreateIdentifier(location)); }
+bool SaveData::IsMapMarkerDiscovered(const RE::MapMarkerData* mapMarkerData) const {
+    //
+    // return discoveryEvents.contains(FormIdentifier::CreateIdentifier(location));
+    return false;
+}
 
-std::uint32_t SaveData::GetTotalDiscoveredLocationCount() const { return locationEvents.size(); }
+std::uint32_t SaveData::GetTotalDiscoveredMapMarkersCount() const { return discoveryEvents.size(); }
 
-std::uint32_t SaveData::GetRecentlyDiscoveredLocationCount() const { return discoveredLocations.size(); }
+std::uint32_t SaveData::GetRecentlyDiscoveredMapMarkersCount() const { return recentlyDiscoveredMarkers.size(); }
