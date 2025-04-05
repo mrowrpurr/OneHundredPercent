@@ -14,24 +14,29 @@ inline RE::FormID GetFormID(const RE::TESFile* plugin, RE::FormID localFormId) {
     }
 }
 
-/*
-From CommonLibSSE:
-    FormID GetLocalFormID() {
-        auto file = GetFile(0);
-        RE::FormID fileIndex = file->compileIndex << (3 * 8);
-        fileIndex += file->smallFileCompileIndex << ((1 * 8) + 4);
-        return formID & ~fileIndex;
-    }
-*/
+inline const RE::FormID GetLocalFormID(const RE::TESForm* form) {
+    if (!form) return 0;
 
-inline const RE::FormID GetLocalFormID(const RE::BGSLocation* location) {
-    if (!location) return 0;
-
-    auto file = location->GetFile(0);
+    auto file = form->GetFile(0);
     if (!file) return 0;
 
     RE::FormID fileIndex = file->compileIndex << (3 * 8);
     fileIndex += file->smallFileCompileIndex << ((1 * 8) + 4);
 
-    return location->GetFormID() & ~fileIndex;
+    return form->GetFormID() & ~fileIndex;
 }
+
+struct FormIdentifier {
+    RE::FormID  localFormID;
+    std::string pluginName;
+
+    inline static FormIdentifier CreateIdentifier(std::string_view pluginName, RE::FormID localFormId) {
+        FormIdentifier formIdentifier;
+        formIdentifier.localFormID = localFormId;
+        formIdentifier.pluginName  = ToLowerCase(pluginName);
+        return formIdentifier;
+    }
+
+    inline static FormIdentifier CreateIdentifier(RE::TESForm* form) { return CreateIdentifier(ToLowerCase(form->GetFile(0)->GetFilename()), form->GetLocalFormID()); }
+    inline static FormIdentifier CreateIdentifier(const RE::TESForm* form) { return CreateIdentifier(ToLowerCase(form->GetFile(0)->GetFilename()), GetLocalFormID(form)); }
+};

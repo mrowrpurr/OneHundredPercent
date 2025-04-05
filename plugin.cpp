@@ -5,8 +5,10 @@
 #include "EventWatcher.h"
 #include "JsonFiles.h"
 #include "PapyrusFunctions.h"
+#include "PlayerMapMarkers.h"
 #include "SaveData.h"
 #include "TomlFile.h"
+
 
 SKSEPlugin_Entrypoint {
     LoadIni();
@@ -21,9 +23,11 @@ SKSEPlugin_OnDataLoaded {
 }
 
 void OnGameLoad() {
-    EventHandler::UpdateJournalWithLatestStats();
+    ResetPlayerMapMarkerLookupCache();
     ReloadDiscoverableLocationInfo();
+    EventHandler::UpdateJournalWithLatestStats();
 }
 
 SKSEPlugin_OnPostLoadGame { OnGameLoad(); }
+}
 SKSEPlugin_OnNewGame { OnGameLoad(); }

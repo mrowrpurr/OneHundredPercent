@@ -88,7 +88,7 @@ void EventHandler::UpdateJournalWithLatestStats(std::string_view sillyMessage) {
 
     // Get percentage discovered
     auto totalDiscoverableLocations = GetDiscoverableLocationInfo()->totalDiscoverableLocationCount;
-    auto discoveredLocations        = GetNumberOfPlayerDiscoveredLocations();
+    auto discoveredLocations        = GetNumberOfPlayerDiscoveredLocations(); // TODO: let's pull this as a non-recalculated value from the save data
     auto percentageDiscovered       = static_cast<float>(discoveredLocations) / totalDiscoverableLocations * 100.0f;
     auto integerPercentage          = static_cast<int>(std::floor(percentageDiscovered));
 
@@ -199,14 +199,14 @@ void EventHandler::UpdateJournalWithLatestStats(std::string_view sillyMessage) {
 }
 
 void EventHandler::OnLocationDiscovered(const RE::BGSLocation* location) {
-    SaveLocationDiscoveredEvent(location);
+    DiscoveredLocation(location);
     auto sillyMessage = GetSillyMessage_OnLocationDiscovered(location->GetName());
     SendFormattedDebugNotificationMessage(sillyMessage, GetConfig().color_on_location_discovered);
     UpdateJournalWithLatestStats(sillyMessage);
 }
 
 void EventHandler::OnLocationCleared(const RE::BGSLocation* location) {
-    SaveLocationClearedEvent(location);
+    ClearedLocation(location);
     auto sillyMessage = GetSillyMessage_OnLocationCleared(location->GetName());
     SendFormattedDebugNotificationMessage(sillyMessage, GetConfig().color_on_location_cleared);
     UpdateJournalWithLatestStats(sillyMessage);

@@ -2,16 +2,20 @@
 
 #include <RE/Skyrim.h>
 #include <SKSE/SKSE.h>
+#include <collections.h>
 
 #include <atomic>
 #include <cstdint>
 #include <string>
 #include <vector>
 
+#include "FormUtils.h"
+
 enum class LocationEventType : std::uint32_t {
-    None       = 0,
-    Discovered = 1,
-    Cleared    = 2,
+    None                    = 0,
+    Discovered              = 1,
+    Cleared                 = 2,
+    DiscoveredFromMapMarker = 3,
 };
 
 inline std::string LocationEventTypeToString(LocationEventType type) {
@@ -26,18 +30,39 @@ inline std::string LocationEventTypeToString(LocationEventType type) {
 }
 
 struct LocationEvent {
+    FormIdentifier    formIdentifier;
     std::string       locationName;
     LocationEventType eventType;
     float             eventTime;
     RE::NiPoint3      eventPosition;
     RE::NiPoint3      eventRotation;
     std::string       eventCellName;
-    RE::FormID        locationFormID;
-    std::string       locationPluginName;
+
+    void Save(SKSE::SerializationInterface* intfc) const;
+    void Load(SKSE::SerializationInterface* intfc);
 };
 
-struct SaveData {
-    std::vector<LocationEvent> locationEvents;
+class SaveData {
+    collections_map<FormIdentifier, LocationEvent> locationEvents;
+
+public:
+    collections_map<FormIdentifier, LocationEvent> GetLocationEvents() const { return locationEvents; }
+
+    LocationEvent* LookupLocation(const RE::BGSLocation* location) {
+        auto it = locationEvents.find(FormIdentifier::CreateIdentifier(location));
+        if (it != locationEvents.end()) return &it->second;
+        return nullptr;
+    }
+
+    auto GetLocationCount() const { return locationEvents.size(); }
+
+    LocationEvent* SaveLocationEvent(LocationEventType type, const RE::BGSLocation* location);
+
+    inline bool ContainsLocation(const RE::BGSLocation* location) { return locationEvents.contains(FormIdentifier::CreateIdentifier(location)); }
+
+    void DiscoveredLocation(const RE::BGSLocation* location);
+    void ClearedLocation(const RE::BGSLocation* location);
+    void FoundPreviouslyDiscoveredLocationOnPlayersMap(const RE::BGSLocation* location);
 
     void Save(SKSE::SerializationInterface* intfc);
     void Load(SKSE::SerializationInterface* intfc);
@@ -53,6 +78,3 @@ inline SaveData          g_saveData;
 inline std::atomic<bool> g_isSaveDataLoaded{false};
 
 inline SaveData& GetSaveData() { return g_saveData; }
-
-void SaveLocationDiscoveredEvent(const RE::BGSLocation* location);
-void SaveLocationClearedEvent(const RE::BGSLocation* location);
