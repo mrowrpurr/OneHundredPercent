@@ -34,7 +34,7 @@ void LoadTomlConfigFile() {
             g_iniConfig.show_message_for_percentage_in_journal           = journalSection["show_message_for_percentage_in_journal"].value_or(true);
             g_iniConfig.show_recent_locations_in_journal                 = journalSection["show_recent_locations_in_journal"].value_or(true);
             g_iniConfig.show_message_for_most_recent_location_in_journal = journalSection["show_message_for_most_recent_location_in_journal"].value_or(true);
-            g_iniConfig.max_recent_locations_in_journal                  = std::min(journalSection["max_recent_locations_in_journal"].value_or(50), 50);
+            g_iniConfig.max_recent_locations_in_journal                  = std::min(journalSection["max_recent_locations_in_journal"].value_or(500), 500);
         } else {
             Log("'Journal' section not found in INI. Using default values.");
             goto use_defaults;

@@ -45,7 +45,7 @@ show_percentage_in_journal = true
 show_message_for_percentage_in_journal = true
 show_recent_locations_in_journal = true
 show_message_for_most_recent_location_in_journal = true
-max_recent_locations_in_journal = 50
+max_recent_locations_in_journal = 500
 ```
 
 ### JSON files

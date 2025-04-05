@@ -22,7 +22,7 @@ inline bool ReadString(SKSE::SerializationInterface* intfc, std::string& out) {
 }
 
 void LocationEvent::Save(SKSE::SerializationInterface* intfc) const {
-    intfc->WriteRecordData(formIdentifier);
+    formIdentifier.Save(intfc);
     WriteString(intfc, locationName);
     intfc->WriteRecordData(static_cast<std::uint32_t>(eventType));
     intfc->WriteRecordData(eventTime);
@@ -32,7 +32,7 @@ void LocationEvent::Save(SKSE::SerializationInterface* intfc) const {
 }
 
 void LocationEvent::Load(SKSE::SerializationInterface* intfc) {
-    intfc->ReadRecordData(formIdentifier);
+    formIdentifier.Load(intfc);
     ReadString(intfc, locationName);
     std::uint32_t type;
     intfc->ReadRecordData(type);
@@ -48,8 +48,8 @@ void SaveData::Save(SKSE::SerializationInterface* intfc) {
     std::uint32_t mapCount = static_cast<std::uint32_t>(discoveryEvents.size());
     intfc->WriteRecordData(mapCount);
 
-    // Iterate through the map and save each LocationEvent
     for (const auto& [formIdentifier, event] : discoveryEvents) {
+        formIdentifier.Save(intfc);
         event.Save(intfc);
     }
 
@@ -57,9 +57,8 @@ void SaveData::Save(SKSE::SerializationInterface* intfc) {
     std::uint32_t vectorCount = static_cast<std::uint32_t>(recentlyDiscoveredMarkers.size());
     intfc->WriteRecordData(vectorCount);
 
-    // Iterate through the vector and save each FormIdentifier
     for (const auto& formIdentifier : recentlyDiscoveredMarkers) {
-        intfc->WriteRecordData(formIdentifier);
+        formIdentifier.Save(intfc);
     }
 }
 
@@ -70,9 +69,13 @@ void SaveData::Load(SKSE::SerializationInterface* intfc) {
     intfc->ReadRecordData(mapCount);
 
     for (std::uint32_t i = 0; i < mapCount; ++i) {
+        FormIdentifier formIdentifier;
+        formIdentifier.Load(intfc);
+
         LocationEvent event;
         event.Load(intfc);
-        discoveryEvents.emplace(event.formIdentifier, std::move(event));
+
+        discoveryEvents.emplace(formIdentifier, event);
     }
 
     // Load recentlyDiscoveredMarkers vector
@@ -80,10 +83,9 @@ void SaveData::Load(SKSE::SerializationInterface* intfc) {
     std::uint32_t vectorCount;
     intfc->ReadRecordData(vectorCount);
 
-    // Iterate through the vector and load each FormIdentifier
     for (std::uint32_t i = 0; i < vectorCount; ++i) {
         FormIdentifier formIdentifier;
-        intfc->ReadRecordData(formIdentifier);
+        formIdentifier.Load(intfc);
         recentlyDiscoveredMarkers.push_back(formIdentifier);
     }
 }
@@ -235,3 +237,27 @@ bool SaveData::IsMapMarkerDiscovered(const RE::MapMarkerData* mapMarkerData) con
 std::uint32_t SaveData::GetTotalDiscoveredMapMarkersCount() const { return discoveryEvents.size(); }
 
 std::uint32_t SaveData::GetRecentlyDiscoveredMapMarkersCount() const { return recentlyDiscoveredMarkers.size(); }
+
+void SaveData::RemoveLocationsForModsWhichAreNoLongerLoaded() {
+    auto* discoverableMapMarkers = GetDiscoverableMapMarkers();
+    if (!discoverableMapMarkers) return;
+
+    std::vector<FormIdentifier> toRemove;
+    for (const auto& formIdentifier : recentlyDiscoveredMarkers)
+        if (!formIdentifier.IsLoaded()) toRemove.push_back(formIdentifier);
+
+    if (!toRemove.empty()) {
+        Log("[Save] [Removing {} locations for mods that are no longer loaded]", toRemove.size());
+        for (const auto& formIdentifier : toRemove) Log("[Save] [Removing location] {} - {}", formIdentifier.localFormID, formIdentifier.pluginName);
+    }
+
+    for (const auto& formIdentifier : toRemove) {
+        // Remove it from the map:
+        auto found = discoveryEvents.find(formIdentifier);
+        if (found != discoveryEvents.end()) discoveryEvents.erase(found);
+
+        // And remove it from the vector:
+        auto it = std::remove(recentlyDiscoveredMarkers.begin(), recentlyDiscoveredMarkers.end(), formIdentifier);
+        if (it != recentlyDiscoveredMarkers.end()) recentlyDiscoveredMarkers.erase(it, recentlyDiscoveredMarkers.end());
+    }
+}

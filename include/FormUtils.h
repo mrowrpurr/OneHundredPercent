@@ -41,6 +41,28 @@ struct FormIdentifier {
     inline static FormIdentifier CreateIdentifier(const RE::TESForm* form) { return CreateIdentifier(ToLowerCase(form->GetFile(0)->GetFilename()), GetLocalFormID(form)); }
 
     inline bool operator==(const FormIdentifier& other) const { return localFormID == other.localFormID && pluginName == other.pluginName; }
+
+    inline bool IsLoaded() const {
+        auto* dataHandler = RE::TESDataHandler::GetSingleton();
+        if (!dataHandler) return false;
+        auto* form = dataHandler->LookupForm(localFormID, pluginName);
+        return form != nullptr;
+    }
+
+    void Save(SKSE::SerializationInterface* intfc) const {
+        intfc->WriteRecordData(localFormID);
+        std::size_t pluginNameLength = pluginName.size();
+        intfc->WriteRecordData(pluginNameLength);
+        intfc->WriteRecordData(pluginName.data(), pluginNameLength);
+    }
+
+    void Load(SKSE::SerializationInterface* intfc) {
+        intfc->ReadRecordData(localFormID);
+        std::size_t pluginNameLength;
+        intfc->ReadRecordData(pluginNameLength);
+        pluginName.resize(pluginNameLength);
+        intfc->ReadRecordData(pluginName.data(), pluginNameLength);
+    }
 };
 
 namespace std {

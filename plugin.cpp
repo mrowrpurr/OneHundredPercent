@@ -9,7 +9,6 @@
 #include "SaveData.h"
 #include "TomlFile.h"
 
-
 SKSEPlugin_Entrypoint {
     LoadTomlConfigFile();
     SetupSaveCallbacks();
@@ -24,9 +23,9 @@ SKSEPlugin_OnDataLoaded {
 
 void OnGameLoad() {
     ResetPlayerMapMarkerLookupCache();
-    ReloadDiscoverableMapMarkers();
     UpdateSaveGameToIncludeDiscoveredPlayerMapMarkers();
     EventHandler::UpdateJournalWithLatestStats();
+    GetSaveData().RemoveLocationsForModsWhichAreNoLongerLoaded();
 }
 
 SKSEPlugin_OnPostLoadGame { OnGameLoad(); }

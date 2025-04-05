@@ -1,5 +1,3 @@
 {
-  "IgnoredLocationNames": [
-    "Campsite"
-  ]
+  "IgnoredLocationNames": ["Campsite", "Boat"]
 }
