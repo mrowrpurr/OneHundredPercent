@@ -11,5 +11,5 @@ show_percentage_in_journal = true
 show_message_for_percentage_in_journal = true
 show_recent_locations_in_journal = true
 show_message_for_most_recent_location_in_journal = true
-# Maximum number of locations which can be shown in the journal is currently 50
-max_recent_locations_in_journal = 50
+# Maximum number of locations which can be shown in the journal is currently 500
+max_recent_locations_in_journal = 500
