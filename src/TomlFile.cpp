@@ -5,7 +5,7 @@
 
 #include "Config.h"
 
-void LoadIni() {
+void LoadTomlConfigFile() {
     if (g_iniConfigLoaded.exchange(true)) return;
 
     try {

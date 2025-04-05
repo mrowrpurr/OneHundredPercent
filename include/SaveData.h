@@ -44,25 +44,25 @@ struct LocationEvent {
 
 class SaveData {
     collections_map<FormIdentifier, LocationEvent> locationEvents;
+    std::vector<FormIdentifier>                    discoveredLocations;
 
 public:
-    collections_map<FormIdentifier, LocationEvent> GetLocationEvents() const { return locationEvents; }
+    collections_map<FormIdentifier, LocationEvent>& GetLocationEvents() { return locationEvents; }
+    std::vector<FormIdentifier>&                    GetRecentlyDiscoveredLocationIDs() { return discoveredLocations; }
 
-    LocationEvent* LookupLocation(const RE::BGSLocation* location) {
-        auto it = locationEvents.find(FormIdentifier::CreateIdentifier(location));
-        if (it != locationEvents.end()) return &it->second;
-        return nullptr;
-    }
+    LocationEvent* LookupLocation(const RE::BGSLocation* location);
+    LocationEvent* LookupLocation(const FormIdentifier& formIdentifier);
+    LocationEvent* GetMostRecentlyDiscoveredLocation();
+    LocationEvent* GetRecentlyDiscoveredLocation(std::uint32_t index);
 
-    auto GetLocationCount() const { return locationEvents.size(); }
+    bool          ContainsLocation(const RE::BGSLocation* location) const;
+    std::uint32_t GetTotalDiscoveredLocationCount() const;
+    std::uint32_t GetRecentlyDiscoveredLocationCount() const;
 
+    void           DiscoveredLocation(const RE::BGSLocation* location);
+    void           ClearedLocation(const RE::BGSLocation* location);
+    void           FoundPreviouslyDiscoveredLocationOnPlayersMap(const RE::BGSLocation* location);
     LocationEvent* SaveLocationEvent(LocationEventType type, const RE::BGSLocation* location);
-
-    inline bool ContainsLocation(const RE::BGSLocation* location) { return locationEvents.contains(FormIdentifier::CreateIdentifier(location)); }
-
-    void DiscoveredLocation(const RE::BGSLocation* location);
-    void ClearedLocation(const RE::BGSLocation* location);
-    void FoundPreviouslyDiscoveredLocationOnPlayersMap(const RE::BGSLocation* location);
 
     void Save(SKSE::SerializationInterface* intfc);
     void Load(SKSE::SerializationInterface* intfc);

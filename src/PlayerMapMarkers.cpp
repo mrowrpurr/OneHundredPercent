@@ -41,6 +41,7 @@ void UpdateSaveGameToIncludeDiscoveredPlayerMapMarkers() {
             return;
         }
         SearchedWorldSpaces.insert(worldSpaceFormId);
+        Log("Searching world space {} for discovered map markers", player->GetWorldspace()->GetName());
     }
 
     // Get full list of all discoverable locations (which we check the player markers against)

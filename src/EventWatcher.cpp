@@ -6,8 +6,11 @@
 #include "BGSLocationEx.h"
 #include "DiscoverableLocations.h"
 #include "EventHandler.h"
+#include "PlayerMapMarkers.h"
 
-class EventSink : public RE::BSTEventSink<RE::LocationDiscovery::Event>, public RE::BSTEventSink<RE::LocationCleared::Event> {
+class EventSink : public RE::BSTEventSink<RE::LocationDiscovery::Event>,
+                  public RE::BSTEventSink<RE::LocationCleared::Event>,
+                  public RE::BSTEventSink<RE::TESActorLocationChangeEvent> {
 public:
     static EventSink* instance() {
         static EventSink singleton;
@@ -34,6 +37,11 @@ public:
         }
         return RE::BSEventNotifyControl::kContinue;
     }
+
+    RE::BSEventNotifyControl ProcessEvent(const RE::TESActorLocationChangeEvent* event, RE::BSTEventSource<RE::TESActorLocationChangeEvent>*) override {
+        if (event && event->actor && event->actor->IsPlayerRef()) UpdateSaveGameToIncludeDiscoveredPlayerMapMarkers();
+        return RE::BSEventNotifyControl::kContinue;
+    }
 };
 
 void WatchForEvents() {
@@ -46,4 +54,6 @@ void WatchForEvents() {
     BGSLocationEx::Install(trampoline);
 
     RE::LocationCleared::GetEventSource()->AddEventSink(EventSink::instance());
+
+    RE::ScriptEventSourceHolder::GetSingleton()->AddEventSink<RE::TESActorLocationChangeEvent>(EventSink::instance());
 }

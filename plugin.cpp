@@ -9,9 +9,8 @@
 #include "SaveData.h"
 #include "TomlFile.h"
 
-
 SKSEPlugin_Entrypoint {
-    LoadIni();
+    LoadTomlConfigFile();
     SetupSaveCallbacks();
     SetupPapyrusFunctions();
 }
@@ -29,5 +28,4 @@ void OnGameLoad() {
 }
 
 SKSEPlugin_OnPostLoadGame { OnGameLoad(); }
-}
 SKSEPlugin_OnNewGame { OnGameLoad(); }

@@ -16,12 +16,12 @@ struct IniConfig {
     std::uint32_t max_recent_locations_in_journal                  = 50;
 };
 
-void LoadIni();
+void LoadTomlConfigFile();
 
 inline IniConfig         g_iniConfig;
 inline std::atomic<bool> g_iniConfigLoaded = false;
 
 inline IniConfig& GetConfig() {
-    LoadIni();
+    LoadTomlConfigFile();
     return g_iniConfig;
 }

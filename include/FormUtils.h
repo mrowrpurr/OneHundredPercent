@@ -39,4 +39,17 @@ struct FormIdentifier {
 
     inline static FormIdentifier CreateIdentifier(RE::TESForm* form) { return CreateIdentifier(ToLowerCase(form->GetFile(0)->GetFilename()), form->GetLocalFormID()); }
     inline static FormIdentifier CreateIdentifier(const RE::TESForm* form) { return CreateIdentifier(ToLowerCase(form->GetFile(0)->GetFilename()), GetLocalFormID(form)); }
+
+    inline bool operator==(const FormIdentifier& other) const { return localFormID == other.localFormID && pluginName == other.pluginName; }
 };
+
+namespace std {
+    template <>
+    struct hash<FormIdentifier> {
+        std::size_t operator()(const FormIdentifier& identifier) const {
+            std::size_t hash1 = std::hash<RE::FormID>{}(identifier.localFormID);
+            std::size_t hash2 = std::hash<std::string>{}(identifier.pluginName);
+            return hash1 ^ (hash2 << 1);  // Combine the two hashes
+        }
+    };
+}
