@@ -31,7 +31,7 @@ target("Build Papyrus Scripts")
     
 skse_plugin({
     name = "One Hundred Percent",
-    version = "0.0.1",
+    version = "1.0.1",
     author = "Mrowr Purr",
     email = "mrowr.purr@gmail.com",
     mod_files = {"Scripts", "OneHundredPercent.esp", "SKSE"},
