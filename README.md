@@ -72,6 +72,7 @@ ANY NUMBER OF FILES can add entries to any of the following top-level keys:
 - `OnMatchingLocationDiscovered`
 - `OnSpecificLocationCleared`
 - `OnSpecificLocationDiscovered`
+- `PercentageDiscoveredMessages`
 - `IgnoredLocationNames`
 - `IgnoredMapMarkers`
 
