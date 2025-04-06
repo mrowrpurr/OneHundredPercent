@@ -2,7 +2,7 @@
 
 **[Download from Releases](https://github.com/MrowrMisc/HazTheCompletionizt/releases)**
 
-## Screenshots
+# Screenshots
 
 ![Screenshot](screenshots/Started-Completionist.png)
 
@@ -12,7 +12,7 @@
 
 ![Screenshot](screenshots/MaraStatue.png)
 
-## Configuration Files
+# Configuration Files
 
 ```
 \---SKSE
@@ -29,7 +29,7 @@
                 PercentageDiscoveredMessages.json
 ```
 
-### `HazTheCompletionizt.toml`
+## `HazTheCompletionizt.toml`
 
 ```toml
 [OnScreenMessages]
@@ -48,7 +48,7 @@ show_message_for_most_recent_location_in_journal = true
 max_recent_locations_in_journal = 500
 ```
 
-### JSON files
+## JSON files
 
 JSON files are used for:
 
@@ -61,7 +61,28 @@ And you can configure the messages that appear in your journal and/or on-screen 
 - If you want to trigger an on-screen message when a specific location is discovered or cleared, you can add them to `OnSpecificLocationDiscovered.json` or `OnSpecificLocationCleared.json`.
 - If you want to trigger an on-screen message when a location is discovered or cleared that matches a specific name, you can add them to `OnMatchingLocationDiscovered.json` or `OnMatchingLocationCleared.json`.
 
-## Credits
+### How the JSON files work
+
+All `.json` files in `SKSE/Plugins/HazTheCompletionizt` are loaded when the game starts.
+
+You can add as many as you want. The name of the `.json` file is not important.
+
+ANY NUMBER OF FILES can add entries to any of the following top-level keys:
+- `OnMatchingLocationCleared`
+- `OnMatchingLocationDiscovered`
+- `OnSpecificLocationCleared`
+- `OnSpecificLocationDiscovered`
+- `IgnoredLocationNames`
+- `IgnoredMapMarkers`
+
+Take a look at the files for examples.
+
+You can add new entries to the existing files **or** you can add new files with the same structure
+and the values are merged together.
+
+(_This allows the messages/etc to be extended via different mods_)
+
+# Credits
 
 - `digitalApple` - https://next.nexusmods.com/profile/digitalApple?gameId=1704
   > _for [`BountyQuestsRedoneNG`](https://github.com/digital-apple/BountyQuestsRedoneNG) for hooks for updating Quest objectives_ - `MIT License`
