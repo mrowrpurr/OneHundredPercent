@@ -1,4 +1,6 @@
-# Haz the Completionizt
+# One Hundred Percent 💯
+
+> _previously known as: Haz the Completionizt_
 
 **[Download from Releases](https://github.com/MrowrMisc/HazTheCompletionizt/releases)**
 
