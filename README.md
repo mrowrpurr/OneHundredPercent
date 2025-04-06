@@ -34,12 +34,12 @@
 ## `OneHundredPercent.toml`
 
 ```toml
-[OnScreenMessages]
-enable_on_screen_messages = true
-message_on_location_discovered = true
-color_on_location_discovered = "#00ffff"
-message_on_location_cleared = true
-color_on_location_cleared = "#ff0000"
+[Notifications]
+enable_notifications = true
+on_location_discovered_notification = true
+on_location_discovered_notification_color = "#00ffff"
+on_location_cleared_notification = true
+on_location_cleared_notification_color = "#ff0000"
 
 [Journal]
 enable_journal = true

@@ -32,7 +32,7 @@ void SendFormattedDebugNotificationMessage(std::string_view text, std::string_vi
 
 std::string GetSillyMessage_OnLocationDiscovered(std::string_view locationName) {
     std::string sillyMessage;
-    if (GetConfig().message_on_location_discovered) {
+    if (GetConfig().on_location_discovered_notification) {
         if (SillyMessages::instance().HasSpecificLocationMessage(locationName.data())) sillyMessage = SillyMessages::instance().GetRandomSpecificLocationMessage(locationName);
         else sillyMessage = SillyMessages::instance().GetRandomMessage_LocationDiscovered(locationName);
         if (!sillyMessage.empty()) Log("[Message] Location discovered: {} - {}", locationName, sillyMessage);
@@ -43,7 +43,7 @@ std::string GetSillyMessage_OnLocationDiscovered(std::string_view locationName) 
 
 std::string GetSillyMessage_OnLocationCleared(std::string_view locationName) {
     std::string sillyMessage;
-    if (GetConfig().message_on_location_cleared) {
+    if (GetConfig().on_location_cleared_notification) {
         sillyMessage = SillyMessages::instance().GetRandomMessage_LocationCleared(locationName);
         if (!sillyMessage.empty()) Log("[Message] Location cleared: {} - {}", locationName, sillyMessage);
         else Log("No message found for cleared location: {}", locationName);
@@ -203,7 +203,7 @@ void EventHandler::OnMapMarkerDiscovered(const RE::MapMarkerData* mapMarkerData)
 
     if (GetConfig().enable_on_screen_messages) {
         auto sillyMessage = GetSillyMessage_OnLocationDiscovered(mapMarkerData->locationName.GetFullName());
-        SendFormattedDebugNotificationMessage(sillyMessage, GetConfig().color_on_location_discovered);
+        SendFormattedDebugNotificationMessage(sillyMessage, GetConfig().on_location_discovered_notification_color);
     }
 
     if (GetConfig().enable_journal) UpdateJournalWithLatestStats();
@@ -214,7 +214,7 @@ void EventHandler::OnMapMarkerCleared(const RE::MapMarkerData* mapMarkerData) {
 
     if (GetConfig().enable_on_screen_messages) {
         auto sillyMessage = GetSillyMessage_OnLocationCleared(mapMarkerData->locationName.GetFullName());
-        SendFormattedDebugNotificationMessage(sillyMessage, GetConfig().color_on_location_cleared);
+        SendFormattedDebugNotificationMessage(sillyMessage, GetConfig().on_location_cleared_notification_color);
     }
 
     if (GetConfig().enable_journal) UpdateJournalWithLatestStats();

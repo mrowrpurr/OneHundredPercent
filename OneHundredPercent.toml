@@ -12,7 +12,18 @@ max_recent_locations_in_journal = 500
 # OnScreenMessages refers to the on-screen messages which usually
 # appear in the center of the screen, e.g. for when you start a new quest objective.
 [OnScreenMessages]
-enable_on_screen_messages = true
+enable_on_screen_messages = false
+
+# Currently, it's all or nothing.
+# Only enable_on_screen_messsages works.
+#
+# The below settings are not used yet (and may never be?)
+# They are intended to let you configure which of the messages
+# pop up on the screen:
+# show_percentage_updates_on_screen = false
+# show_message_for_percentage_on_screen = true
+# show_message_for_most_recent_location_on_screen = true
+# show_recently_discovered_locations_on_screen = false
 
 # Settings for notification messages
 #

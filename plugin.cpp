@@ -3,6 +3,7 @@
 #include "DiscoverableMapMarkers.h"
 #include "EventHandler.h"
 #include "EventWatcher.h"
+#include "HudNotifications.h"
 #include "JsonFiles.h"
 #include "PapyrusFunctions.h"
 #include "PlayerMapMarkers.h"
@@ -13,6 +14,7 @@ SKSEPlugin_Entrypoint {
     LoadTomlConfigFile();
     SetupSaveCallbacks();
     SetupPapyrusFunctions();
+    HudNotifications::InstallHook();
 }
 
 SKSEPlugin_OnDataLoaded {
