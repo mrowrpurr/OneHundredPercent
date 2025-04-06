@@ -238,9 +238,9 @@ std::uint32_t SaveData::GetTotalDiscoveredMapMarkersCount() const { return disco
 
 std::uint32_t SaveData::GetRecentlyDiscoveredMapMarkersCount() const { return recentlyDiscoveredMarkers.size(); }
 
-void SaveData::RemoveLocationsForModsWhichAreNoLongerLoaded() {
+std::uint32_t SaveData::RemoveLocationsForModsWhichAreNoLongerLoaded() {
     auto* discoverableMapMarkers = GetDiscoverableMapMarkers();
-    if (!discoverableMapMarkers) return;
+    if (!discoverableMapMarkers) return 0;
 
     std::vector<FormIdentifier> toRemove;
     for (const auto& formIdentifier : recentlyDiscoveredMarkers)
@@ -254,10 +254,18 @@ void SaveData::RemoveLocationsForModsWhichAreNoLongerLoaded() {
     for (const auto& formIdentifier : toRemove) {
         // Remove it from the map:
         auto found = discoveryEvents.find(formIdentifier);
-        if (found != discoveryEvents.end()) discoveryEvents.erase(found);
+        if (found != discoveryEvents.end()) {
+            discoveryEvents.erase(found);
+            Log("[Save] (map) [Removed location] {:x} @ {}", formIdentifier.localFormID, formIdentifier.pluginName.c_str());
+        }
 
         // And remove it from the vector:
         auto it = std::remove(recentlyDiscoveredMarkers.begin(), recentlyDiscoveredMarkers.end(), formIdentifier);
-        if (it != recentlyDiscoveredMarkers.end()) recentlyDiscoveredMarkers.erase(it, recentlyDiscoveredMarkers.end());
+        if (it != recentlyDiscoveredMarkers.end()) {
+            recentlyDiscoveredMarkers.erase(it, recentlyDiscoveredMarkers.end());
+            Log("[Save] (vector) [Removed location] {:X} @ {}", formIdentifier.localFormID, formIdentifier.pluginName.c_str());
+        }
     }
+
+    return toRemove.size();
 }

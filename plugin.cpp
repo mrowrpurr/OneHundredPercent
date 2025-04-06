@@ -24,8 +24,8 @@ SKSEPlugin_OnDataLoaded {
 void OnGameLoad() {
     ResetPlayerMapMarkerLookupCache();
     UpdateSaveGameToIncludeDiscoveredPlayerMapMarkers();
-    EventHandler::UpdateJournalWithLatestStats();
     GetSaveData().RemoveLocationsForModsWhichAreNoLongerLoaded();
+    EventHandler::UpdateJournalWithLatestStats();
 }
 
 SKSEPlugin_OnPostLoadGame { OnGameLoad(); }

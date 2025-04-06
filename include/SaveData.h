@@ -61,7 +61,7 @@ public:
     LocationEvent* LookupMapMarker(const FormIdentifier& mapMarkerReferenceFormID);
     LocationEvent* GetMostRecentlyDiscoveredLocation();
     LocationEvent* GetRecentlyDiscoveredLocation(std::uint32_t index);
-    void           RemoveLocationsForModsWhichAreNoLongerLoaded();
+    std::uint32_t  RemoveLocationsForModsWhichAreNoLongerLoaded();
 
     bool IsMapMarkerDiscovered(const RE::MapMarkerData* mapMarkerData) const;
 

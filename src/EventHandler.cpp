@@ -136,6 +136,8 @@ void EventHandler::UpdateJournalWithLatestStats() {
         recentLocationCount                    = maxLocations;
         for (auto i = numberOfrecentlyDiscoveredMarkers; i > numberOfrecentlyDiscoveredMarkers - maxLocations; --i) {
             if (auto* locationEvent = saveData.GetRecentlyDiscoveredLocation(i - 1)) {
+                Log("Journal (LocationEvent) {:x} @ {} - {}", locationEvent->formIdentifier.localFormID, locationEvent->formIdentifier.pluginName, locationEvent->locationName);
+
                 std::string locationMessage;
                 switch (locationEvent->eventType) {
                     case LocationEventType::Cleared:
@@ -153,6 +155,9 @@ void EventHandler::UpdateJournalWithLatestStats() {
             }
         }
     }
+
+    Log("> Here are the journal entries to be added:");
+    for (const auto& message : journalEntries) Log("> [Journal] {}", message.text);
 
     // Ok, now we gotta show the things!
     for (auto i = 0; i < journalEntries.size(); ++i) {
@@ -176,9 +181,17 @@ void EventHandler::UpdateJournalWithLatestStats() {
         }
     }
 
-    Log("> Here are the journal entries to be added:");
-    for (const auto& message : journalEntries) {
-        Log("> [Journal] {}", message.text);
+    // Now keep going up and find journal entries and check if they are empty text or not
+    // and if they're not empty text, empty the text and mark as inactive/not visible:
+    auto objectiveId = journalEntries.size();
+    while (journalEntries.size() < GetConfig().max_recent_locations_in_journal) {
+        Log("Checking for objectiveId {} ...", objectiveId);
+        if (JournalManager::IsObjectiveVisible(objectiveId)) {
+            JournalManager::ClearObjective(objectiveId);
+            objectiveId++;
+        } else {
+            break;
+        }
     }
 
     auto durationMs = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastJournalUpdate).count();

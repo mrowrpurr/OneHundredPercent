@@ -17,16 +17,6 @@ namespace JournalManager {
     }
 
     void SetStatus(std::uint32_t index, bool visible, bool completed, bool active) {
-        // If it's objective index 0, we ALWAYS use this...
-        // if (index == 0) {
-        //     visible   = true;
-        //     completed = false;
-        //     active    = true;
-        // } else {
-        //     // it should NEVER be active if it's not 0
-        //     active = false;
-        // }
-
         Log(">> Setting status for objective {}: visible={}, completed={}", index, visible, completed);
         if (auto* objective = GetObjective(index)) {
             if (visible) {
