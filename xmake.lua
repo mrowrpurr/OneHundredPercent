@@ -30,11 +30,11 @@ target("Build Papyrus Scripts")
     compile_papyrus_scripts()
     
 skse_plugin({
-    name = "Haz the Completionizt",
+    name = "One Hundred Percent",
     version = "0.0.1",
     author = "Mrowr Purr",
     email = "mrowr.purr@gmail.com",
-    mod_files = {"Scripts", "HazTheCompletionizt.esp", "SKSE"},
+    mod_files = {"Scripts", "OneHundredPercent.esp", "SKSE"},
     deps = {"Build Papyrus Scripts"},
     packages = {"SkyrimScripting.Plugin", "collections", "unordered_dense", "nlohmann_json", "toml++"},
 })

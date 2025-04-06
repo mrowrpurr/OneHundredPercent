@@ -1,6 +1,6 @@
 # Haz the Completionizt
 
-**[Download from Releases](https://github.com/MrowrMisc/HazTheCompletionizt/releases)**
+**[Download from Releases](https://github.com/MrowrMisc/OneHundredPercent/releases)**
 
 # Screenshots
 
@@ -17,9 +17,9 @@
 ```
 \---SKSE
     \---Plugins
-        |   HazTheCompletionizt.toml
+        |   OneHundredPercent.toml
         |   
-        \---HazTheCompletionizt
+        \---OneHundredPercent
                 IgnoredLocationNames.json
                 IgnoredMapMarkers.json
                 OnMatchingLocationCleared.json
@@ -29,7 +29,7 @@
                 PercentageDiscoveredMessages.json
 ```
 
-## `HazTheCompletionizt.toml`
+## `OneHundredPercent.toml`
 
 ```toml
 [OnScreenMessages]
@@ -63,7 +63,7 @@ And you can configure the messages that appear in your journal and/or on-screen 
 
 ### How the JSON files work
 
-All `.json` files in `SKSE/Plugins/HazTheCompletionizt` are loaded when the game starts.
+All `.json` files in `SKSE/Plugins/OneHundredPercent` are loaded when the game starts.
 
 You can add as many as you want. The name of the `.json` file is not important.
 

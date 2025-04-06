@@ -10,7 +10,7 @@ namespace PapyrusFunctions {
     void UpdateJournalWithLatestDiscoverableMapMarkers(RE::StaticFunctionTag*) { EventHandler::UpdateJournalWithLatestStats(); }
 
     bool BindFunctions(RE::BSScript::Internal::VirtualMachine* vm) {
-        vm->RegisterFunction("UpdateJournalWithLatestDiscoverableMapMarkers", "MP_HazTheCompletionizt", UpdateJournalWithLatestDiscoverableMapMarkers);
+        vm->RegisterFunction("UpdateJournalWithLatestDiscoverableMapMarkers", "MP_OneHundredPercent", UpdateJournalWithLatestDiscoverableMapMarkers);
         return true;
     }
 }

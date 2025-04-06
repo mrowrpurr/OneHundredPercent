@@ -55,7 +55,7 @@ SillyMessages& SillyMessages::instance() {
 SillyMessages::SillyMessages() {
     // Load percentage messages from PercentageDiscovered.json
     try {
-        auto pluginPath = std::filesystem::path("Data/SKSE/Plugins/HazTheCompletionizt");
+        auto pluginPath = std::filesystem::path("Data/SKSE/Plugins/OneHundredPercent");
         auto jsonPath   = pluginPath / "PercentageDiscovered.json";
 
         if (std::filesystem::exists(jsonPath)) {
@@ -110,7 +110,7 @@ std::string SillyMessages::GetRandomSpecificLocationMessage(std::string_view loc
 
 void SillyMessages::LoadSpecificLocationMessages() {
     try {
-        auto pluginPath = std::filesystem::path("Data/SKSE/Plugins/HazTheCompletionizt");
+        auto pluginPath = std::filesystem::path("Data/SKSE/Plugins/OneHundredPercent");
         auto jsonPath   = pluginPath / "OnSpecificLocationDiscovered.json";
 
         if (!std::filesystem::exists(jsonPath)) {

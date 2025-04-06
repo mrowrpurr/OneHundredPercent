@@ -1,3 +1,3 @@
-scriptName MP_HazTheCompletionizt hidden
+scriptName MP_OneHundredPercent hidden
 
 function UpdateJournalWithLatestDiscoverableMapMarkers() global native

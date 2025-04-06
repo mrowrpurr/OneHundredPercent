@@ -10,7 +10,7 @@ void LoadTomlConfigFile() {
 
     try {
         if (!std::filesystem::exists(Config::INI_FILE_PATH)) {
-            Log("INI file not found at: {}. Using default values.", Config::INI_FILE_PATH.string());
+            Log("TOML config file not found at: {}. Using default values.", Config::INI_FILE_PATH.string());
             goto use_defaults;
         }
 
@@ -40,10 +40,10 @@ void LoadTomlConfigFile() {
             goto use_defaults;
         }
     } catch (const toml::parse_error& e) {
-        Log("Error parsing INI file: {}", e.what());
+        Log("Error parsing TOML config file: {}", e.what());
         goto use_defaults;
     } catch (const std::exception& e) {
-        Log("Unexpected error loading INI file: {}", e.what());
+        Log("Unexpected error loading TOML config file: {}", e.what());
         goto use_defaults;
     }
 
