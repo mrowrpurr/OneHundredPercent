@@ -24,3 +24,9 @@ on_location_discovered_notification = true
 on_location_discovered_notification_color = "00ffff"
 on_location_cleared_notification = true
 on_location_cleared_notification_color = "#ff0000"
+
+
+
+
+
+
