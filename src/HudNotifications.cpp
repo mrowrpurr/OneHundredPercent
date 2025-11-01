@@ -66,7 +66,6 @@ namespace HudNotifications {
                 front.sound  = "";
                 front.quest  = nullptr;
                 front.word   = nullptr;
-                front.type   = 0;
                 front.time   = 0;
             }
         }

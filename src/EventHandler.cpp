@@ -23,10 +23,10 @@ void SendFormattedDebugNotificationMessage(std::string_view text, std::string_vi
         return;
     }
     if (color.empty()) {
-        RE::DebugNotification(text.data());
+        RE::SendHUDMessage::ShowHUDMessage(text.data());
     } else {
         if (color[0] == '#') color.remove_prefix(1);
-        RE::DebugNotification(std::format("<font color='#{}'>{}</font>", color, text.data()).c_str());
+        RE::SendHUDMessage::ShowHUDMessage(std::format("<font color='#{}'>{}</font>", color, text.data()).c_str());
     }
 }
 
