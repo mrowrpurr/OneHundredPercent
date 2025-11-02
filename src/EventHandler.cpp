@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <format>
 
+#include "DebugNotification.h"
 #include "DiscoverableMapMarkers.h"
 #include "JournalManager.h"
 #include "SaveData.h"
@@ -23,10 +24,11 @@ void SendFormattedDebugNotificationMessage(std::string_view text, std::string_vi
         return;
     }
     if (color.empty()) {
-        RE::SendHUDMessage::ShowHUDMessage(text.data());
+        RE::DebugNotification(std::string(text).c_str());
     } else {
         if (color[0] == '#') color.remove_prefix(1);
-        RE::SendHUDMessage::ShowHUDMessage(std::format("<font color='#{}'>{}</font>", color, text.data()).c_str());
+        auto message = std::format("<font color='#{}'>{}</font>", color, text);
+        RE::DebugNotification(message.c_str());
     }
 }
 
