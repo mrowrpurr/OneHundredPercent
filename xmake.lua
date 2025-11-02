@@ -3,6 +3,8 @@ add_rules("mode.debug")
 
 set_languages("c++23")
 
+set_policy("package.requires_lock", true)
+
 option("commonlib")
     set_default("skyrim-commonlib-ae")
 option_end()
@@ -26,9 +28,9 @@ add_requires(
     "toml++"
 )
 
--- target("Build Papyrus Scripts")
---     set_kind("phony")
---     compile_papyrus_scripts()
+target("Build Papyrus Scripts")
+    set_kind("phony")
+    compile_papyrus_scripts()
     
 skse_plugin({
     name = "One Hundred Percent",
@@ -36,6 +38,6 @@ skse_plugin({
     author = "Mrowr Purr",
     email = "mrowr.purr@gmail.com",
     mod_files = {"Scripts", "OneHundredPercent.esp", "SKSE"},
-    -- deps = {"Build Papyrus Scripts"},
+    deps = {"Build Papyrus Scripts"},
     packages = {"SkyrimScripting.Plugin", "collections", "unordered_dense", "nlohmann_json", "toml++"},
 })
